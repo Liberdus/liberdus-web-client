@@ -1,0 +1,93 @@
+<template>
+  <v-ons-page>
+    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <div class="import-account-container">
+      <p class="secret-key-warning">
+        Do not share your
+        <strong>Secret Key</strong> to anyone
+      </p>
+      <p id="secret-key">
+        <strong>{{ secretKey }}</strong>
+      </p>
+      <qriously :value="secretKey" :size="200" class="qr-code" />
+      <Button text="Copy Secret Key" :onClick="onCopy" />
+    </div>
+  </v-ons-page>
+</template>
+
+<script>
+import Vue from "vue";
+import "onsenui/css/onsenui.css";
+import "onsenui/css/onsen-css-components.css";
+import VueOnsen from "vue-onsenui/esm";
+import OnsenComponents from "~/components/Onsen";
+import ChatText from "~/components/ChatText";
+import ChatInput from "~/components/ChatInput";
+import VueQriously from "vue-qriously";
+import { mapGetters, mapActions } from "vuex";
+import utils from "../../assets/utils";
+import ToolBar from "~/components/ToolBar";
+import Title from "~/components/baisc/Title";
+import Button from "~/components/baisc/Button";
+
+Vue.use(VueOnsen);
+Vue.use(VueQriously);
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+
+export default {
+  components: {
+    Title,
+    Button,
+    ToolBar
+  },
+  data: function() {
+    return {};
+  },
+  computed: {
+    ...mapGetters({
+      getWallet: "wallet/getWallet",
+      isUIReady: "chat/isUIReady"
+    }),
+    secretKey() {
+      // return this.getWallet.entry.keys.secretKey
+      return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
+    }
+  },
+  methods: {
+    redirect(url, option) {
+      this.$router.push(url);
+    },
+    onCopy() {
+      utils.copyToClipboard(this.secretKey);
+      this.$ons.notification.alert("Copied to clipboard!");
+    }
+  }
+};
+</script>
+
+<style>
+#secret-key {
+  margin: 20px auto;
+  word-break: break-word;
+  font-family: Inconsolata-Regular;
+  font-size: 19px;
+  color: #2f457a;
+  letter-spacing: -0.21px;
+  text-align: center;
+  line-height: 27px;
+  width: 310px;
+}
+#secret-key > strong {
+user-select: text;
+}
+.qr-code {
+  margin: 20px auto;
+}
+.import-account-container .secret-key-warning {
+  font-family: Poppins;
+  font-size: 14px;
+  color: #ce6f43;
+  letter-spacing: -0.16px;
+  text-align: center;
+}
+</style>

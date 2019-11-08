@@ -1,0 +1,84 @@
+<template>
+  <v-ons-page>
+    <div class="create-account-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
+      <Title text="Getting Started" />
+      <Button-Outline text="Import Account" :onClick="onImportAccount" />
+      <Button text="Create Account" :onClick="onCreateAccount" />
+    </div>
+  </v-ons-page>
+</template>
+
+<script>
+import Vue from "vue";
+import "onsenui/css/onsenui.css";
+import "onsenui/css/onsen-css-components.css";
+import VueOnsen from "vue-onsenui/esm";
+import OnsenComponents from "~/components/Onsen";
+import ChatText from "~/components/ChatText";
+import ChatInput from "~/components/ChatInput";
+import Title from "~/components/baisc/Title";
+import Button from "~/components/baisc/Button";
+import ButtonOutline from "~/components/baisc/ButtonOutline";
+import backgroundUrl from "~/assets/images/liberdus_background.png";
+
+Vue.use(VueOnsen);
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+export default {
+  components: { Button, ButtonOutline, Title },
+  data: function() {
+    return {
+      username: "",
+      backgroundUrl
+    };
+  },
+  methods: {
+    onCreateAccount() {
+      this.$router.push("/createaccount");
+    },
+    onImportAccount() {
+      this.$router.push("/setting/import");
+    }
+  }
+};
+</script>
+
+<style>
+.create-account-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  background: #fbfbfb;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position-x: center;
+  background-position-y: 100px;
+}
+.create-account-container .new-message-btn {
+  font-size: 11px;
+  color: #43b8e7;
+}
+
+#getting-started {
+  font-size: 27px;
+  color: #43b8e7;
+  letter-spacing: -0.3px;
+  text-align: left;
+  margin-bottom: 30px;
+}
+
+.import-user-btn {
+  margin: 20px;
+  background: #ffffff;
+  border: 2px solid #43b8e7;
+  border-radius: 30px;
+  font-family: HelveticaNeue-Medium;
+  font-size: 13px;
+  color: #43b8e7;
+  letter-spacing: -0.14px;
+  text-align: center;
+  margin-bottom: 5px;
+}
+</style>
