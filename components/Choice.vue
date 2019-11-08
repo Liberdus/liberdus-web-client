@@ -28,7 +28,8 @@ export default {
   border-radius: 20px;
   border: none;
   background: #2648d8;
-  font-family: Poppins-Bold;
+  font-family: Poppins;
+  font-weight: 700;
   font-size: 12px;
   color: #ffffff;
   letter-spacing: 0.47px;
@@ -36,7 +37,8 @@ export default {
   padding-top: 2px;
 }
 .choice .value {
-  font-family: Poppins-Bold;
+    font-family: Poppins;
+  font-weight: 700;
   font-size: 14px;
   color: #0a2463;
   letter-spacing: 0.54px;

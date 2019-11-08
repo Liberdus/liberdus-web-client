@@ -136,14 +136,14 @@ export default {
   width: 100%;
   max-width: 600px;
   padding: 20px;
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #484848;
   letter-spacing: 0.17px;
   line-height: 20px;
 }
 .add-new-choice {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #0a2463;
   letter-spacing: 0;
@@ -168,7 +168,7 @@ export default {
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
 }
 .coin-usage-warning {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 12px;
   color: #6a6a6a;
   letter-spacing: 0;

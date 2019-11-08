@@ -48,7 +48,7 @@ export default {
   line-height: 20px;
 }
 .proposal-list-item .proposal-description {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #6a6a6a;
   letter-spacing: 0;
@@ -56,7 +56,7 @@ export default {
   text-align: left;
 }
 .proposal-list-item .proposal-footer > p {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #0a2463;
   letter-spacing: 0;

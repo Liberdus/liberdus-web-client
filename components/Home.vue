@@ -181,7 +181,7 @@ export default {
   background: #ffffff;
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
   border-radius: 27.5px;
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 16px;
   color: #0a2463;
   letter-spacing: 0;

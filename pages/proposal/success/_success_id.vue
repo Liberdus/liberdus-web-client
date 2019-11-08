@@ -63,21 +63,21 @@ export default {
   justify-content: space-between;
 }
 .proposal-detail-container .proposal-info-detail .label {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 11px;
   color: #9d9d9d;
   letter-spacing: 0;
   line-height: 20px;
 }
 .proposal-detail-container .proposal-info-detail .value {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 12px;
   color: #0a2463;
   letter-spacing: 0;
   line-height: 20px;
 }
 .proposal-detail-container .proposal-description {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #6a6a6a;
   letter-spacing: 0;
@@ -85,7 +85,7 @@ export default {
   margin: 10px auto;
 }
 .proposal-detail-container .sub-head {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 15px;
   color: #0a2463;
   letter-spacing: 0;

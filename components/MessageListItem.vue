@@ -33,21 +33,22 @@ export default {
   justify-content: space-between;
 }
 .recent-message-list-item .username-timestamp .username {
-  font-family: Poppins-Bold;
+  font-family: Poppins;
+  font-weight: 700;
   font-size: 12px;
   color: #0a2463;
   letter-spacing: -0.17px;
   text-align: left;
 }
 .recent-message-list-item .username-timestamp .timestamp {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 13px;
   color: #0a2463;
   letter-spacing: -0.14px;
   text-align: left;
 }
 .recent-message-list-item .last-message-text {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 13px;
   color: #535353;
   letter-spacing: -0.14px;

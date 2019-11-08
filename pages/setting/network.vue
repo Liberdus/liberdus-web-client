@@ -128,7 +128,7 @@ export default {
   text-align: left;
 }
 .network-container .sub-head {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 15px;
   color: #0a2463;
   letter-spacing: 0;

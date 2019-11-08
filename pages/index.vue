@@ -205,7 +205,7 @@ h1 {
   margin-top: 5px;
 }
 .text-body {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 16px;
   color: #0a2463;
   letter-spacing: 0;
@@ -219,7 +219,7 @@ h1 {
   background: #ffffff;
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   border-radius: 30px;
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #484848;
   letter-spacing: 0.17px;
@@ -262,7 +262,7 @@ h1 {
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
   border-radius: 20px;
   padding: 10px;
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 14px;
   color: #0a2463;
   letter-spacing: 0;
@@ -276,14 +276,14 @@ h1 {
   letter-spacing: 0;
 }
 .label {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 11px;
   color: #6a6969;
   letter-spacing: 0;
   line-height: 20px;
 }
 .value {
-  font-family: Poppins-Regular;
+  font-family: Poppins;
   font-size: 12px;
   color: #0a2463;
   letter-spacing: 0;
