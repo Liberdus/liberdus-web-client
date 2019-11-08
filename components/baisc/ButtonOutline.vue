@@ -18,7 +18,7 @@ export default {
   border: 2px solid #2648d8;
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   border-radius: 30px;
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 15px;
   color: #2648d8;
   letter-spacing: -0.17px;

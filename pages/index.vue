@@ -242,7 +242,7 @@ h1 {
 }
 .modal__content {
   background: #fff;
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 22px;
   color: #0a2463;
   letter-spacing: 0;
@@ -270,7 +270,7 @@ h1 {
   padding-left: 20px;
 }
 .title-2 {
-  font-family: Poppins-Medium !important;
+  font-family: Poppins !important;
   font-size: 22px !important;
   color: #0a2463;
   letter-spacing: 0;

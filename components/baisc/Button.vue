@@ -19,7 +19,7 @@ export default {
   box-shadow: 0 3px 4px 3px rgba(203, 203, 203, 0.2),
     0 4px 8px 0 rgba(0, 0, 0, 0.08);
   border-radius: 30px;
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 13px;
   color: #ffffff;
   letter-spacing: -0.14px;

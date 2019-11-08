@@ -66,7 +66,7 @@ export default {
 </script>
 <style scoped>
 .toolbar__title {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 20px;
   color: #0a2463;
   letter-spacing: 0;
@@ -105,7 +105,7 @@ export default {
   top: 100px;
 }
 .setting-title {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 28px;
   color: #0a2463;
   letter-spacing: 0;

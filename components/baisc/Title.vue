@@ -13,7 +13,7 @@ export default {
 </script>
 <style scoped>
 .title {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 28px;
   color: #0a2463;
   letter-spacing: 0;

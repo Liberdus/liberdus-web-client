@@ -138,7 +138,7 @@ export default {
   margin: 30px auto;
 }
 .total-balance h1 .total-unit {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 14px;
   color: #2648d8;
   letter-spacing: -0.16px;

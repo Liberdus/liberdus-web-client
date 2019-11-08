@@ -121,7 +121,7 @@ export default {
 .network-container p {
   text-align: left;
   margin-bottom: 10px;
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 14px;
   color: #333333;
   letter-spacing: -0.16px;

@@ -64,7 +64,7 @@ export default {
 }
 .chat-text-container .chat .chat-message {
   user-select: text;
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 12px;
   color: #4d4d4d;
   letter-spacing: -0.13px;

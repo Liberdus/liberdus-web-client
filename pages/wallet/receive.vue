@@ -100,7 +100,7 @@ height: 48px;
   align-items: center;
 }
 .import-account-container p {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 13px;
   color: #636363;
   letter-spacing: -0.14px;

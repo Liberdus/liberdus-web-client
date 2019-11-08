@@ -59,14 +59,14 @@ export default {
   padding-right: 15px;
 }
 .transaction-list-item .type-plus-address .transaction-type {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 12px;
   color: #9a9a9a;
   letter-spacing: -0.13px;
   text-align: left;
 }
 .transaction-list-item .timestamp {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 12px;
   color: #9a9a9a;
   letter-spacing: -0.13px;

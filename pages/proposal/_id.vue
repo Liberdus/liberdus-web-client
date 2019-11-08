@@ -97,7 +97,7 @@ export default {
   text-align: left;
 }
 .proposal-detail-container .proposal-title {
-  font-family: Poppins-Medium;
+  font-family: Poppins;
   font-size: 22px;
   color: #0a2463;
   letter-spacing: 0;
