@@ -164,6 +164,15 @@ export default {
   height: 100vh;
   text-align: center;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #fbfbfb;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position-x: center;
+  background-position-y: 100px;
 }
 
 .create-account-container .already-registered {
@@ -174,11 +183,11 @@ export default {
   margin-top: 15px;
 }
 .create-account-container .create-account-content {
-  max-width: 300px;
+  max-width: 600px;
 }
 .create-username-input-container {
   margin: 20px auto;
-  max-width: 300px;
+  max-width: 600px;
 }
 .create-account-container p {
   text-align: left;

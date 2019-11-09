@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <div class="create-account-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
+    <div class="welcome-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
       <Title text="Getting Started" />
       <Button-Outline text="Import Account" :onClick="onImportAccount" />
       <Button text="Create Account" :onClick="onCreateAccount" />
@@ -43,12 +43,13 @@ export default {
 </script>
 
 <style>
-.create-account-container {
+.welcome-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
+  /* max-width:600px; */
   height: 100vh;
   background: #fbfbfb;
   background-repeat: no-repeat;
@@ -56,7 +57,7 @@ export default {
   background-position-x: center;
   background-position-y: 100px;
 }
-.create-account-container .new-message-btn {
+.welcome-container .new-message-btn {
   font-size: 11px;
   color: #43b8e7;
 }
