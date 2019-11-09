@@ -1,6 +1,7 @@
 <template>
   <v-ons-page class="create-account-page">
     <div class="create-account-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
+      <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome'}" />
       <div v-if="creatingHandle" class="create-account-content">
         <h3>Creating New Account</h3>
         <v-ons-progress-bar indeterminate></v-ons-progress-bar>
@@ -102,8 +103,8 @@ export default {
     }),
     async onCreateAccount() {
       // TODO:
-      this.$router.push('/')
-      return
+      this.$router.push("/");
+      return;
       let self = this;
       if (!this.username || this.username.length === 0) return;
       let entry = utils.createWallet(this.username);
@@ -177,7 +178,7 @@ export default {
 }
 .create-username-input-container {
   margin: 20px auto;
-    max-width: 300px;
+  max-width: 300px;
 }
 .create-account-container p {
   text-align: left;

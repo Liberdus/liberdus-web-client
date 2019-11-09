@@ -78,7 +78,7 @@ export default {
   position: fixed;
   top: calc(100% - 80px);
   z-index: 100;
-  background: #fbfbfb;
+  background: #efefef;
   box-shadow: 0 -2px 4px 0 rgba(206, 206, 206, 0.5);
 }
 .text-input.chat-input {
@@ -95,6 +95,8 @@ export default {
   padding-left: 5px;
   color: #d79341;
   max-width: 600px;
+  top: 10px;
+  position: relative;
 }
 .chat-input-container .required-toll.not-enough-toll {
   color: red;

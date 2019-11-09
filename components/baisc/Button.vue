@@ -24,8 +24,8 @@ export default {
   color: #ffffff;
   letter-spacing: -0.14px;
   text-align: center;
-  width: 90%;
-  max-width: 350px;
+  width: 100%;
+  max-width: 600px;
   min-width: 300px;
   height: 55px;
   cursor: pointer;

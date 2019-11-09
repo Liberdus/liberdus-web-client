@@ -21,6 +21,7 @@ export default {
   padding-left: 20px;
   align-items: center;
   margin: 10px auto;
+  cursor: pointer;
 }
 .choice .tag {
   width: 23px;

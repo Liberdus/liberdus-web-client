@@ -69,7 +69,7 @@ export default {
 #secret-key {
   margin: 20px auto;
   word-break: break-word;
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 19px;
   color: #2f457a;
   letter-spacing: -0.21px;

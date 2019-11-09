@@ -2,6 +2,7 @@
   <v-ons-page>
     <tool-bar :option="{ menu: true, notification: true, back: false}" />
     <Title text="Your Votes" />
+    <p style="text-align: center" class="body">coming soon...</p>
     <div></div>
   </v-ons-page>
 </template>

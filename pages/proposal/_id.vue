@@ -37,9 +37,11 @@
       <p class="sub-head">Proposed Values</p>
       <p class="proposal-description">Please select one of 3 proposed new values to vote</p>
 
-      <Choice tag="A" value="20" />
-      <Choice tag="B" value="50" />
-      <Choice tag="C" value="100" />
+      <div class="choice-list-container">
+        <Choice tag="A" value="20" />
+        <Choice tag="B" value="50" />
+        <Choice tag="C" value="100" />
+      </div>
 
       <Button text="Next" :onClick="goToConfirmVote" />
     </div>
@@ -112,7 +114,7 @@ export default {
 .proposal-detail-container .proposal-info-detail .label {
   font-family: Poppins;
   font-size: 11px;
-  color: #9d9d9d;
+  color: #6e6e6e;
   letter-spacing: 0;
   line-height: 20px;
 }
@@ -142,5 +144,8 @@ export default {
   width: 100%;
   height: 1px;
   background: #d8d8d8;
+}
+.choice-list-container {
+  margin: 20px auto;
 }
 </style>

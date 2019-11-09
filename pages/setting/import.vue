@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, back: true}" />
+    <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome'}" />
     <div class="import-account-container">
       <p class="text-body">
         Enter or Scan your
@@ -81,6 +81,9 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onImportAccount() {
+      this.redirect('/')
+      return
+      // TODO:
       let { handle, entry } = await utils.importWallet(this.secretKey);
       let wallet = {
         handle: handle,

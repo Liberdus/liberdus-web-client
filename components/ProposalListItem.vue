@@ -39,6 +39,7 @@ export default {
   width: 90%;
   margin: 20px auto;
   padding: 20px;
+  cursor: pointer;
 }
 .proposal-list-item .proposal-title {
   font-family: Poppins;

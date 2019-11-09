@@ -78,7 +78,7 @@ export default {
   margin-top: 10px;
 }
 .transaction-list-item .transaction-amount.receive-amount {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 20px;
   color: #3ec942;
   letter-spacing: -0.3px;
@@ -86,7 +86,7 @@ export default {
   line-height: 20px;
 }
 .transaction-list-item .transaction-amount.send-amount {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 20px;
   color: #ef764f;
   letter-spacing: -0.3px;
@@ -97,7 +97,7 @@ export default {
   color: green;
 }
 .other-person-address {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 12px;
   color: #0a2463;
   letter-spacing: 0.24px;

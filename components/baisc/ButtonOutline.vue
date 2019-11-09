@@ -23,8 +23,8 @@ export default {
   color: #2648d8;
   letter-spacing: -0.17px;
   text-align: center;
-  width: 90%;
-  max-width: 350px;
+  width: 100%;
+  max-width: 600px;
   min-width: 300px;
   height: 55px;
   cursor: pointer;
@@ -32,5 +32,6 @@ export default {
   display: block;
   position: relative;
   margin: 10px auto;
+  outline: none;
 }
 </style>

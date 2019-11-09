@@ -134,7 +134,7 @@ export default {
   letter-spacing: 0;
 }
 .network-container p span {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 18px;
   color: #333333;
 }

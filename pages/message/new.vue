@@ -117,9 +117,10 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  /* position: fixed; */
+  width: 90%;
+  max-width: 600px;
   z-index: 100;
+  margin: 20px auto;
 }
 .new-message-input {
   height: 40px;
@@ -132,6 +133,9 @@ export default {
 }
 .current-friend-list {
   padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 .current-friend-list .list-item {
   background: #fbfbfb;
@@ -153,7 +157,8 @@ export default {
   background: #ffffff;
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
   border-radius: 5px;
-  width: 300px;
   margin: 10px auto;
+  width: 100%;
+  max-width: 600px;
 }
 </style>

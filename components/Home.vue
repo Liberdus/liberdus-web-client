@@ -128,7 +128,7 @@ export default {
   width: 100%;
 }
 .total-balance h1 {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 42px;
   color: #2648d8;
   letter-spacing: 0;

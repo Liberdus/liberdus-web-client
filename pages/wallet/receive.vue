@@ -107,7 +107,7 @@ height: 48px;
   text-align: center;
 }
 #username {
-  font-family: Inconsolata-Regular;
+  font-family: Inconsolata;
   font-size: 24px;
   color: #2f457a;
   letter-spacing: -0.21px;

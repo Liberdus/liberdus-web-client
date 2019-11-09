@@ -24,7 +24,9 @@
         </div>
         <div>
           <p class="label">Selected value to vote</p>
-          <Choice tag="A" value="20" />
+          <div class="choice-list-container">
+            <Choice tag="A" value="20" />
+          </div>
         </div>
       </div>
 
@@ -74,5 +76,4 @@ export default {
 </script>
 
 <style>
-
 </style>

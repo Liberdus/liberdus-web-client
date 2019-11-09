@@ -140,8 +140,8 @@ export default {
 .send-coins-container {
   text-align: center;
   margin-top: 30px;
-  width: 80%;
-  max-width: 300px;
+  width: 90%;
+  max-width: 600px;
   margin: 30px auto;
 }
 .send-coins-container p {
@@ -171,8 +171,8 @@ export default {
 }
 .send-username-input {
   height: 40px;
-  width: 90%;
-  max-width: 300px;
+  width: 100%;
+  max-width: 600px;
 }
 .send-username-input.send-amount-input {
   width: 100%;
