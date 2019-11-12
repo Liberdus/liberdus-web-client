@@ -26,7 +26,7 @@ import OnsenComponents from "~/components/Onsen";
 import Message from "~/components/Message";
 import Home from "~/components/Home";
 import ProposalList from "~/components/ProposalList";
-import VoteList from "~/components/VoteList";
+import MyVoteList from "~/components/MyVoteList";
 import Setting from "~/components/Setting";
 import utils from "../assets/utils";
 import { mapGetters, mapActions } from "vuex";
@@ -45,7 +45,7 @@ export default {
     Home,
     Setting,
     ProposalList,
-    VoteList
+    MyVoteList
   },
   data() {
     return {
@@ -68,7 +68,7 @@ export default {
         {
           icon: this.md() ? null : "ion-ios-people",
           label: "Vote",
-          page: VoteList,
+          page: MyVoteList,
           key: "vote"
         },
         {
@@ -212,7 +212,7 @@ h1 {
   line-height: 20px;
 }
 .select {
-  width: 100%!important;
+  width: 100% !important;
   min-width: 300px;
 }
 .text-input {
@@ -228,7 +228,7 @@ h1 {
   height: 48px;
   padding: 0px 20px;
   min-width: 300px;
-      margin: 10px auto;
+  margin: 10px auto;
 }
 .tabbar {
   background: #ffffff;
@@ -288,5 +288,14 @@ h1 {
   color: #0a2463;
   letter-spacing: 0;
   line-height: 20px;
+}
+.progress-bar {
+  height: 10px;
+  border-radius: 10px;
+  background-color: #d8d8d8;
+}
+.progress-bar__primary,
+.progress-bar__secondary {
+  background-color: #2648d8;
 }
 </style>
