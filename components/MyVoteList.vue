@@ -63,4 +63,9 @@ export default {
 </script>
 
 <style>
+.my-vote-list-container {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+}
 </style>
