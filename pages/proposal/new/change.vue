@@ -2,7 +2,7 @@
   <v-ons-page>
     <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
     <div class="proposal-create-container">
-      <h2 class="title-2">Propose a change</h2>
+      <h2 class="title-2">Propose new network parameter</h2>
       <div>
         <p class="label">Select a parameter to change</p>
         <div class="drop-down-container">
@@ -15,7 +15,13 @@
 
       <div>
         <p class="label">Description</p>
-        <textarea name="description-input" class="description-input" cols="30" rows="5"></textarea>
+        <textarea
+          name="description-input"
+          class="description-input"
+          v-model="description"
+          cols="30"
+          rows="5"
+        ></textarea>
       </div>
 
       <div>
@@ -23,6 +29,7 @@
         <input
           type="text"
           placeholder="Choice A"
+          v-model="newValue"
           class="text-input"
           autocorrect="off"
           autocomplete="off"
@@ -30,7 +37,7 @@
         />
       </div>
 
-      <div>
+      <!-- <div>
         <p class="label">Enter new value for choice B</p>
         <input
           type="text"
@@ -40,14 +47,23 @@
           autocomplete="off"
           autocapitalize="off"
         />
-      </div>
+      </div>-->
 
       <button class="add-new-choice">
         <v-ons-icon icon="ion-ios-add" size="lg"></v-ons-icon>Add New Choice
       </button>
 
-      <p class="coin-usage-warning">You will spend 5 coins to create this proposal</p>
-      <Button text="Submit Proposal" :onClick="onSubmitProposal" />
+      <p>Allow: {{allowProposal}}</p>
+
+      <p
+        class="coin-usage-warning"
+        v-if="!allowProposal"
+      >Proposal window is closed now. Next proposal window will start at {{ new Date(this.nextProposalWindow) }}</p>
+      <p
+        class="coin-usage-warning"
+        v-else
+      >Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
+      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
     </div>
   </v-ons-page>
 </template>
@@ -80,30 +96,109 @@ export default {
   },
   data: function() {
     return {
-      selectedParameter: "Daily account maintenance fee",
+      selectedParameter: "transactionFee",
+      allowProposal: false,
       parameters: [
         {
           id: 1,
-          text: "Daily account maintenance fee",
-          value: "Daily account maintenance fee"
+          text: "Maintenance Fee",
+          value: "maintenanceFee"
         },
         {
           id: 2,
-          text: "Transaction Fee",
-          value: "Transaction Fee"
+          text: "Maintenance Interval",
+          value: "maintenanceInterval"
         },
         {
           id: 3,
-          text: "Daily reward",
-          value: "Daily reward"
+          text: "Node Reward Amount",
+          value: "nodeRewardAmount"
+        },
+        {
+          id: 4,
+          text: "Node Reward Interval",
+          value: "nodeRewardInterval"
+        },
+        {
+          id: 5,
+          text: "Transaction Fee",
+          value: "transactionFee"
+        },
+        {
+          id: 6,
+          text: "Proposal Fee",
+          value: "proposalFee"
+        },
+        {
+          id: 7,
+          text: "Stake Required",
+          value: "stakeRequired"
+        },
+        {
+          id: 8,
+          text: "Node Penalty",
+          value: "nodePenalty"
         }
-      ]
+      ],
+      newValue: "",
+      description: "",
+      nextProposalWindow: null,
+      currentProposalWindow: null,
+      proposalWindowChecker: null
     };
   },
+  computed: {
+    ...mapGetters({
+      getWallet: "wallet/getWallet",
+      getAppState: "chat/getAppState"
+    })
+  },
+  mounted: async function() {
+    this.proposalWindowChecker = setInterval(async () => {
+      this.allowProposal = await this.isProposalWindowOpen();
+    }, 3000);
+  },
+  beforeDestroy: function() {
+    console.log('Clearing proposal window checker...')
+    clearInterval(this.proposalWindowChecker);
+  },
   methods: {
-    onSubmitProposal() {
-      // this.$router.push("/proposal/confirm/123");
-      // alert('')
+    async onSubmitProposal() {
+      let myWallet = this.getWallet;
+      let proposal = {
+        parameters: {}
+      };
+      proposal.parameters[this.selectedParameter] = parseInt(this.newValue);
+      proposal.description = this.description;
+      let proposalTx = await utils.createProposal(
+        myWallet,
+        this.selectedParameter,
+        parseFloat(this.newValue)
+      );
+      console.log(proposalTx);
+      let isSubmitted = await utils.submitProposl(proposalTx);
+      if (isSubmitted) {
+        this.$ons.notification.alert("Your proposal is submitted.");
+        this.newValue = "";
+        this.redirect("/");
+      }
+    },
+    redirect(url) {
+      this.$router.push(url);
+    },
+    async isProposalWindowOpen() {
+      let networkParameters = await utils.queryParameters();
+      let proposalWindow = networkParameters.proposalWindow;
+      let applyWindow = networkParameters.applyWindow;
+
+      this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
+      this.currentProposalWindow = proposalWindow;
+
+      let now = Date.now();
+      if (now > proposalWindow[0] && now < proposalWindow[1]) {
+        return true;
+      }
+      return false;
     }
   }
 };

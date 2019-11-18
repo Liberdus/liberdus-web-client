@@ -1,9 +1,11 @@
 <template>
   <v-ons-page>
     <div class="welcome-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
-      <Title text="Getting Started" />
-      <Button-Outline text="Import Account" :onClick="onImportAccount" />
-      <Button text="Create Account" :onClick="onCreateAccount" />
+      <div class="welcome-content">
+        <Title text="Getting Started" />
+        <Button-Outline text="Import Account" :onClick="onImportAccount" />
+        <Button text="Create Account" :onClick="onCreateAccount" />
+      </div>
     </div>
   </v-ons-page>
 </template>
@@ -60,6 +62,10 @@ export default {
 .welcome-container .new-message-btn {
   font-size: 11px;
   color: #43b8e7;
+}
+.welcome-container .welcome-content {
+  width: 90%;
+  max-width: 600px;
 }
 
 #getting-started {

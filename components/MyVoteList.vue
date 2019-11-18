@@ -1,9 +1,14 @@
 <template>
   <v-ons-page>
     <tool-bar :option="{ menu: true, notification: true, back: false}" />
-    <Title text="My Votes" />
-    <div class="my-vote-list-container">
-      <MyVoteListItem v-for="vote in votes" :key="vote.title" :vote="vote" />
+    <Title text="Completed Proposal" />
+    <div class="proposal-list-container">
+      <ProposalListItem
+        v-for="proposal in allCompletedProposalList"
+        :key="proposal.id"
+        :proposal="proposal"
+        @click="redirect('/proposal/${proposal.id}')"
+      />
     </div>
   </v-ons-page>
 </template>
@@ -18,13 +23,16 @@ import ToolBar from "~/components/ToolBar";
 import MyVoteListItem from "~/components/MyVoteListItem";
 import Title from "~/components/baisc/Title";
 import Button from "~/components/baisc/Button";
+import ProposalListItem from "~/components/ProposalListItem";
+
 export default {
   components: {
     MessageListItem,
     Title,
     ToolBar,
     Button,
-    MyVoteListItem
+    MyVoteListItem,
+    ProposalListItem
   },
   data: function() {
     return {
@@ -58,6 +66,38 @@ export default {
         }
       ]
     };
+  },
+  computed: {
+    ...mapGetters({
+      getWallet: "wallet/getWallet",
+      getAppState: "chat/getAppState",
+      getLastMessage: "chat/getLastMessage",
+      getLastTx: "chat/getLastTx",
+      isUIReady: "chat/isUIReady",
+      getActiveProposals: "proposal/getActiveProposals",
+      getCompletedProposals: "proposal/getCompletedProposals",
+      getActiveDevProposals: "proposal/getActiveDevProposals",
+      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+    }),
+    allCompletedProposalList() {
+      let list = [];
+      if (this.getCompletedDevProposals.length > 0) this.getCompletedDevProposals.forEach(p => {
+         console.log('adding completed DEV proposals')
+        let obj = {...p}
+        console.log(obj)
+        list.push(obj)
+      });
+      if (this.getCompletedProposals.length > 0) this.getCompletedProposals.forEach(p => {
+        console.log('adding completed proposals')
+        let obj = {...p}
+        list.push(obj)
+      });
+      // list = list.sort((a, b) => b.timestamp - a.timestamp);
+      console.log(this.getCompletedDevProposals.length, this.getCompletedDevProposals)
+      console.log(this.getCompletedProposals.length, this.getCompletedProposals)
+      console.log(list)
+      return list;
+    }
   }
 };
 </script>

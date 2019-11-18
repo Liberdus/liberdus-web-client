@@ -8,7 +8,7 @@
       <!-- {{ getAppState }} -->
       <div class="total-balance">
         <h1 v-if="getAppState">
-          {{ getAppState.data.balance }}
+          {{ getAppState.data.balance.toFixed(3) }}
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
@@ -16,8 +16,8 @@
           <span class="total-unit">LBD</span>
         </h1>
       </div>
-      <div class="total-balance">
-        <h4 v-if="getAppState">@{{ getWallet.handle }}</h4>
+      <div>
+        <h4 v-if="getAppState" class="user-alias">@{{ getWallet.handle }}</h4>
       </div>
       <div class="wallet-action-container">
         <div class="wallet-action">
@@ -59,26 +59,7 @@ export default {
   },
   data: function() {
     return {
-      transactions: [
-        {
-          type: "send",
-          amount: 100,
-          timestamp: Date.now(),
-          otherPersonAddress: "0xab753d087318d0f26391b171cfc98a22f66fc95b"
-        },
-        {
-          type: "receive",
-          amount: 30,
-          timestamp: Date.now(),
-          otherPersonAddress: "0xab753d087318d0f26391b171cfc98a22f66fc95b"
-        },
-        {
-          type: "send",
-          amount: 20000,
-          timestamp: Date.now(),
-          otherPersonAddress: "0xab753d087318d0f26391b171cfc98a22f66fc95b"
-        }
-      ]
+
     };
   },
   computed: {
@@ -86,34 +67,36 @@ export default {
       getWallet: "wallet/getWallet",
       getAppState: "chat/getAppState",
       isUIReady: "chat/isUIReady"
-    })
-    // transactions() {
-    //   if (!this.getWallet || !this.getAppState) return [];
-    //   let myAddress = this.getWallet.entry.address;
-    //   let txs = this.getAppState.data.transactions;
-    //   return txs.map(tx => {
-    //     let type;
-    //     let otherPersonAddress;
-    //     if (tx.type === "transfer") {
-    //       if (tx.srcAcc == myAddress && tx.tgt == myAddress) type = "self";
-    //       else if (tx.srcAcc == myAddress) {
-    //         type = "send";
-    //         otherPersonAddress = tx.tgtAcc;
-    //       } else if (tx.tgtAcc == myAddress) {
-    //         type = "receive";
-    //         otherPersonAddress = tx.srcAcc;
-    //       } else type = "claim";
-    //     } else {
-    //       type = tx.type;
-    //     }
-    //     return {
-    //       type,
-    //       otherPersonAddress,
-    //       timestamp: tx.timestamp,
-    //       amount: tx.amount
-    //     };
-    //   });
-    // }
+    }),
+    transactions() {
+      if (!this.getWallet || !this.getAppState) return [];
+      let myAddress = this.getWallet.entry.address;
+      let txs = this.getAppState.data.transactions;
+      return txs
+      .filter(tx => tx.type === 'transfer')
+      .map(tx => {
+        let type;
+        let otherPersonAddress;
+        if (tx.type === "transfer") {
+          if (tx.from == myAddress && tx.to == myAddress) type = "self";
+          else if (tx.from == myAddress) {
+            type = "send";
+            otherPersonAddress = tx.to;
+          } else if (tx.to == myAddress) {
+            type = "receive";
+            otherPersonAddress = tx.from;
+          } else type = "claim";
+        } else {
+          type = tx.type;
+        }
+        return {
+          type,
+          otherPersonAddress,
+          timestamp: tx.timestamp,
+          amount: tx.amount
+        };
+      });
+    }
   }
 };
 </script>
@@ -134,7 +117,7 @@ export default {
   letter-spacing: 0;
   text-align: center;
   line-height: 42px;
-  width: 200px;
+  width: 300px;
   margin: 30px auto;
 }
 .total-balance h1 .total-unit {
@@ -195,5 +178,11 @@ export default {
 
 .white-button .ons-icon {
   margin-right: 10px;
+}
+.home-tab-container .user-alias {
+  text-align: center;
+  color: #092363;
+  font-family: Poppins !important;
+  font-size: 20px;
 }
 </style>

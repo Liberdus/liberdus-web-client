@@ -36,21 +36,21 @@ export default {
   data: function() {
     return {
       messageList: [
-        {
-          handle: "osyed",
-          timestamp: Date.now(),
-          lastMessage: "Hi, how is it going ?"
-        },
-        {
-          handle: "asyed",
-          timestamp: Date.now(),
-          lastMessage: "Sweet !"
-        },
-        {
-          handle: "andrewF",
-          timestamp: Date.now(),
-          lastMessage: "Awesome !"
-        }
+        // {
+        //   handle: "osyed",
+        //   timestamp: Date.now(),
+        //   lastMessage: "Hi, how is it going ?"
+        // },
+        // {
+        //   handle: "asyed",
+        //   timestamp: Date.now(),
+        //   lastMessage: "Sweet !"
+        // },
+        // {
+        //   handle: "andrewF",
+        //   timestamp: Date.now(),
+        //   lastMessage: "Awesome !"
+        // }
       ]
     };
   },
@@ -119,7 +119,7 @@ export default {
     async refreshAppState() {
       let self = this;
       if (self.getWallet && self.isUIReady) {
-        console.log("Refreshing App state...");
+        // console.log("Refreshing App state...");
         let myHandle = this.getWallet.handle;
         let myAccountData = await utils.queryAccount(myHandle);
         let processedState = await this.processData(myAccountData);

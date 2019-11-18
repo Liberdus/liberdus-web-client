@@ -1,5 +1,5 @@
 <template>
-  <button class="default-button" @click="onClick">{{ text }}</button>
+  <button class="default-button" @click="onClick" :disabled="isDisabled">{{ text }}</button>
 </template>
 <script>
 export default {
@@ -9,6 +9,10 @@ export default {
     },
     onClick: {
       type: Function
+    },
+    isDisabled: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -33,5 +37,9 @@ export default {
   position: relative;
   display: block;
   margin: 10px auto;
+}
+.default-button:disabled {
+  background: #d1d1d1;
+  cursor: not-allowed;
 }
 </style>

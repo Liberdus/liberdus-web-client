@@ -1,10 +1,24 @@
 <template>
-  <div class="proposal-list-item" @click="redirect('/proposal/123')">
-    <h4 class="proposal-title">{{proposal.title}}</h4>
-    <p class="proposal-description">{{proposal.description}}</p>
-    <div class="proposal-footer">
-      <p>Total {{ proposal.voteCount }} votes</p>
-      <p>{{ timestamp }}</p>
+  <div class="proposal-list-item" @click="redirect('/proposal/' + proposal.id)">
+    <div v-if="proposal.type === 'proposal'">
+      {{ proposal.type}}
+      <h4 v-if="proposalTitle" class="proposal-title">{{proposalTitle}}</h4>
+      <p class="proposal-type">Parameter proposal</p>
+
+      <!-- <p class="proposal-description">{{proposal.description}}</p> -->
+      <div class="proposal-footer">
+        <p>Total {{ proposal.totalVotes }} votes</p>
+        <p>{{ timestamp }}</p>
+      </div>
+    </div>
+
+    <div v-else-if="proposal.type === 'dev_proposal'">
+      <h4 v-if="proposalTitle" class="proposal-title">{{ proposalTitle }}</h4>
+      <p class="proposal-type">Dev proposal</p>
+      <div class="proposal-footer">
+        <p>Total {{ proposal.totalVotes }} votes</p>
+        <p>{{ timestamp }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -17,6 +31,20 @@ export default {
   computed: {
     timestamp() {
       return moment(this.proposal.timestamp).calendar();
+    },
+    proposalTitle() {
+      if (this.proposal.type === "dev_proposal")
+        return this.proposal.description;
+      let title = "";
+      if (Object.keys(this.proposal.proposedParameters).length > 0) {
+        for (let key in this.proposal.proposedParameters) {
+          if (title.length === 0) title += key;
+          else title += `, ${key}`;
+        }
+      } else {
+        title = "Current Network Parameters";
+      }
+      return title;
     }
   },
   async mounted() {
@@ -24,7 +52,6 @@ export default {
   },
   methods: {
     redirect(url) {
-      console.log("redirect");
       this.$router.push(url);
     }
   }

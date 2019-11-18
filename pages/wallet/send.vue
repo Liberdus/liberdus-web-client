@@ -118,8 +118,6 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onSend() {
-      // TODO:
-      return
       let isSubmitted = await utils.transferTokens(
         this.username,
         this.amount,

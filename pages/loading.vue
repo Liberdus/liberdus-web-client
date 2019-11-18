@@ -1,7 +1,7 @@
 <template >
   <v-ons-page>
     <div id="loading-container">
-      <img id="loading-logo" src="../assets/images/loading-logo.png" alt="">
+      <img id="loading-logo" src="../assets/images/loading-logo.png" alt />
       <!-- <v-ons-progress-bar indeterminate></v-ons-progress-bar> -->
     </div>
   </v-ons-page>

@@ -1,13 +1,16 @@
 <template>
   <v-ons-page>
     <tool-bar :option="{ menu: true, notification: true, back: false}" />
-    <Title text="Proposals" />
+    <Title text="Active Proposals" />
+    <!-- {{ getActiveDevProposals }}
+    {{ getCompletedDevProposals }}
+    {{ allActiveProposalList }} -->
     <div class="proposal-list-container">
       <ProposalListItem
-        v-for="proposal in proposals"
-        :key="proposal.title"
+        v-for="proposal in allActiveProposalList"
+        :key="proposal.id"
         :proposal="proposal"
-        @click="redirect('/proposal/123')"
+        @click="redirect('/proposal/${proposal.id}')"
       />
     </div>
   </v-ons-page>
@@ -33,29 +36,7 @@ export default {
   },
   data: function() {
     return {
-      proposals: [
-        {
-          title: "Daily coins paid to node runners",
-          description:
-            "Sed placeat incidunt est aliquid. Architecto et culpa velit maiores sit quo voluptatibus vitae….",
-          voteCount: 2334,
-          timestamp: Date.now()
-        },
-        {
-          title: "Increase transaction fee",
-          description:
-            "Sed placeat incidunt est aliquid. Architecto et culpa velit maiores sit quo voluptatibus vitae….",
-          voteCount: 2334,
-          timestamp: Date.now()
-        },
-        {
-          title: "Remove Staking Requirement",
-          description:
-            "Sed placeat incidunt est aliquid. Architecto et culpa velit maiores sit quo voluptatibus vitae….",
-          voteCount: 2334,
-          timestamp: Date.now()
-        }
-      ]
+      proposalList: []
     };
   },
   computed: {
@@ -64,40 +45,91 @@ export default {
       getAppState: "chat/getAppState",
       getLastMessage: "chat/getLastMessage",
       getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady"
+      isUIReady: "chat/isUIReady",
+      getActiveProposals: "proposal/getActiveProposals",
+      getCompletedProposals: "proposal/getCompletedProposals",
+      getActiveDevProposals: "proposal/getActiveDevProposals",
+      getCompletedDevProposals: "proposal/getCompletedDevProposals"
     }),
     shouldRender() {
       let should = this.isUIReady;
       return should;
     },
-    messageList() {
-      if (this.getAppState && this.isUIReady) {
-        let chats = this.getAppState.data.chats;
-        let handles = Object.keys(chats);
-        let list = [];
-        for (let handle in chats) {
-          list.push({
-            handle,
-            timestamp: R.takeLast(1, chats[handle].messages)[0].timestamp,
-            lastMessage: R.takeLast(1, chats[handle].messages)[0].body
-          });
-        }
-        list = list.sort((a, b) => b.timestamp - a.timestamp);
-        return list;
-      } else {
-        return [];
-      }
+    allActiveProposalList() {
+     let list = [];
+      this.getActiveProposals.forEach(p => {
+        let obj = {...p}
+        list.push(obj)
+      });
+      this.getActiveDevProposals.forEach(p => {
+        let obj = {...p}
+        list.push(obj)
+      });
+      // list = list.sort((a, b) => b.timestamp - a.timestamp);
+      return list;
     }
   },
   methods: {
     ...mapActions({
       updateAppState: "chat/updateAppState",
       updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx"
+      updateLastTx: "chat/updateLastTx",
+      updateActiveProposals: "proposal/updateActiveProposals",
+      updateCompletedProposals: "proposal/updateCompletedProposals",
+      updateActiveDevProposals: "proposal/updateActiveDevProposals",
+      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
     }),
     redirect(url) {
-        console.log("redirect")
       this.$router.push(url);
+    },
+    async refreshProposalList() {
+      let allProposals = await utils.queryProposals();
+      let currentParameters = await utils.queryParameters();
+      allProposals = allProposals
+        .map(proposal => {
+          let proposedParameters = utils.getDifferentParameter(
+            proposal,
+            currentParameters
+          );
+          let obj = { ...proposal };
+          obj.proposedParameters = proposedParameters;
+          obj.type = "proposal";
+          return obj;
+        })
+        .filter(proposal => {
+          if (
+            proposal.proposedParameters &&
+            Object.keys(proposal.proposedParameters).length > 0
+          )
+            return true;
+          else return false;
+        });
+
+      let activeProposalList = allProposals.filter(
+        proposal => proposal.winner !== true && proposal.winner !== false
+      );
+      let completedProposalList = allProposals.filter(
+        proposal => proposal.winner === true || proposal.winner === false
+      );
+
+      this.updateActiveProposals(activeProposalList);
+      this.updateCompletedProposals(completedProposalList);
+    },
+    async refreshDevProposalList() {
+      let allDevProposals = await utils.queryDevProposals();
+      allDevProposals = allDevProposals.map(proposal => {
+        let obj = { ...proposal };
+        obj.type = "dev_proposal";
+        return obj;
+      });
+      let activeDevProposalList = allDevProposals.filter(
+        proposal => proposal.approved !== true && proposal.approved !== false
+      );
+      let completedDevProposalList = allDevProposals.filter(
+        proposal => proposal.approved === true || proposal.approved === false
+      );
+      this.updateActiveDevProposals(activeDevProposalList);
+      this.updateCompletedDevProposals(completedDevProposalList);
     },
     async processData(myAccountData) {
       try {
@@ -127,7 +159,7 @@ export default {
     async refreshAppState() {
       let self = this;
       if (self.getWallet && self.isUIReady) {
-        console.log("Refreshing App state...");
+        // console.log("Refreshing App state...");
         let myHandle = this.getWallet.handle;
         let myAccountData = await utils.queryAccount(myHandle);
         let processedState = await this.processData(myAccountData);
@@ -172,6 +204,8 @@ export default {
             }
           }
         }
+        this.refreshProposalList();
+        this.refreshDevProposalList();
         setTimeout(this.refreshAppState, 10000);
       } else {
         setTimeout(this.refreshAppState, 5000);
@@ -183,7 +217,7 @@ export default {
       return txs[txs.length - 1];
     },
     getNewLastMessage() {
-      if (this.messageList.length > 0) {
+      if (this.messageList && this.messageList.length > 0) {
         let sortedMessageList = this.messageList.sort(
           (a, b) => b.timestamp - a.timestamp
         );

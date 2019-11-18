@@ -9,3 +9,20 @@ For millennia, money has existed in some form or another. Money has made it easy
 The Liberdus team believes a more democratic form of money can be achieved with the use of distributed ledger technologies and an on-chain governance system – so that every decision about the rules of the money is made by the people who use it. This is what the Liberdus project aims to achieve.
 
 For more info, please checkout our [Whitepaper](https://liberdus.com/Liberdus-Whitepaper-19.10.19.pdf)
+
+## Main Commands
+
+    vote *               2 sub-commands.
+    submit *             3 sub-commands.
+    stake *              1 sub-command.
+    spam *               1 sub-command.
+    init *               1 sub-command.
+    update *             1 sub-command.
+    snapshot *           1 sub-command.
+    wallet *             2 sub-commands.
+    tokens *             3 sub-commands.
+    register *           1 sub-command.
+    add *                1 sub-command.
+    remove *             1 sub-command.
+    toll *               1 sub-command.
+    message *            2 sub-commands.

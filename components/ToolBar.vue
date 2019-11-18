@@ -1,7 +1,12 @@
 <template>
   <v-ons-toolbar>
     <div class="left">
-      <v-ons-icon icon="ion-ios-arrow-back" size="lg" @click="redirect(option.backUrl || '/')" v-if="option.back"></v-ons-icon>
+      <v-ons-icon
+        icon="ion-ios-arrow-back"
+        size="lg"
+        @click="redirect(option.backUrl || '/')"
+        v-if="option.back"
+      ></v-ons-icon>
       <!-- {{ option }} -->
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
@@ -22,11 +27,11 @@
         <h1 class="setting-title">Settings</h1>
         <ul>
           <li>General</li>
-          <li @click="redirect('/proposal/new/change')">Propose a change</li>
-          <li @click="redirect('/proposal/new/feature')">Propose new feature</li>
+          <li @click="redirect('/proposal/new/change')">Change network parameter</li>
+          <li @click="redirect('/proposal/new/feature')">Propose develpment fund</li>
           <li @click="redirect('/setting/export')">Export Account</li>
           <li @click="redirect('/setting/network')">Network</li>
-          <li @click="redirect('/welcome')">Sign Out</li>
+          <li @click="onSignOut">Sign Out</li>
         </ul>
       </div>
     </v-ons-modal>
@@ -34,6 +39,7 @@
 </template>
 <script>
 import Title from "~/components/baisc/Title";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   components: { Title },
@@ -55,11 +61,22 @@ export default {
     };
   },
   methods: {
+    ...mapActions({
+      updateAppState: "chat/updateAppState",
+      removeWallet: "wallet/removeWallet"
+    }),
     redirect(url = "/") {
       this.$router.push(url);
     },
     toggleSetting() {
       this.settingVisible = !this.settingVisible;
+    },
+    onSignOut() {
+      this.updateAppState(null);
+      this.removeWallet();
+      localStorage.removeItem("account");
+      this.$router.push("/welcome");
+      window.location.reload(false)
     }
   }
 };

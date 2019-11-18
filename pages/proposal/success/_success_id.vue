@@ -3,7 +3,7 @@
     <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
     <div class="proposal-detail-container">
       <h2 class="title-2">Your Vote is submitted !</h2>
-      <p class="value">Thanks for voting for this proposal. Final result of this proposal will be decided on 14 Oct 2019</p>
+      <p class="value">Thanks for voting for this proposal</p>
 
       <ButtonOutline text="Back To Proposals" :onClick="onBackToHome" />
     </div>
@@ -41,6 +41,11 @@ export default {
     return {
       voteState: "select"
     };
+  },
+  computed: {
+    id: () => {
+      return this.$route.params.id;
+    }
   },
   methods: {
     onBackToHome() {

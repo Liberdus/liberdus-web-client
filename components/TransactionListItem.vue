@@ -104,6 +104,7 @@ export default {
   text-align: left;
   line-height: 18px;
   word-break: break-word;
+  width: 200px;
 }
 .wallet-view-container .list-item {
   background: #ffffff;

@@ -26,7 +26,7 @@ utils.isServerActive = async () => {
     let res = await axios.get(getAccountsUrl())
     let isActive = (res.status === 200 && res.data.accounts) ? true : false
     return isActive
-  } catch(e) {
+  } catch (e) {
     return false
   }
 }
@@ -147,6 +147,7 @@ async function getAddress(handle) {
     const { address, error } = data
     if (error) {
       console.error(error)
+      console.log(`http://${host}/address/${crypto.hash(handle)}`)
       console.log(`Error while getting address for ${handle}`)
     } else {
       return address
@@ -207,12 +208,12 @@ utils.listWallet = (name) => {
 }
 
 // handle create <handle> <source> | Creates a unique handle for the <source> account on the server
-utils.createHandle = async (handle, source) => {
+utils.registerAlias = async (handle, source) => {
   const tx = {
-    type: "register",
-    id: crypto.hash(handle),
-    handle: handle.toLowerCase(),
-    srcAcc: source.address,
+    type: 'register',
+    aliasHash: crypto.hash(handle),
+    from: source.address,
+    alias: handle,
     timestamp: Date.now()
   };
   crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey);
@@ -430,12 +431,104 @@ utils.queryAccount = async (handle) => {
   return accountData
 }
 
+// QUERY'S ALL NETWORK PROPOSALS
+utils.queryProposals = async function () {
+  const res = await axios.get(`http://${host}/proposals`)
+  return res.data.proposals
+}
+
+// QUERY'S ALL NETWORK DEV_PROPOSALS
+utils.queryDevProposals = async function () {
+  const res = await axios.get(`http://${host}/proposals/dev`)
+  return res.data.devProposals
+}
+
+// QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
+utils.queryLatestProposals = async function () {
+  const res = await axios.get(`http://${host}/proposals/latest`)
+  return res.data.proposals
+}
+
+// QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
+utils.queryLatestDevProposals = async function () {
+  const res = await axios.get(`http://${host}/proposals/dev/latest`)
+  return res.data.devProposals
+}
+
+// QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
+utils.getProposalCount = async function () {
+  const res = await axios.get(`http://${host}/proposals/count`)
+  return res.data.proposalCount
+}
+
+// QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
+utils.getDevProposalCount = async function () {
+  const res = await axios.get(`http://${host}/proposals/dev/count`)
+  return res.data.devProposalCount
+}
+
 function isIosSafari() {
   var ua = window.navigator.userAgent;
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
   var webkit = !!ua.match(/WebKit/i);
   var iOSSafari = iOS && webkit && !ua.match(/CriOS/i);
   return iOSSafari;
+}
+
+// QUERY'S THE CURRENT NETWORK PARAMETERS
+utils.queryParameters = async function () {
+  const res = await axios.get(`http://${host}/network/parameters`)
+  if (res.data.error) {
+    return res.data.error
+  } else {
+    return res.data.parameters
+  }
+}
+
+// QUERY'S THE CURRENT NETWORK PARAMETERS ON HOST NODE (TESTING)
+utils.queryNodeParameters = async function () {
+  const res = await axios.get(`http://${host}/network/parameters/node`)
+  if (res.data.error) {
+    return res.data.error
+  } else {
+    return res.data.parameters
+  }
+}
+
+// QUERY'S ALL NETWORK ISSUES
+utils.queryIssues = async function () {
+  const res = await axios.get(`http://${host}/issues`)
+  return res.data.issues
+}
+
+// QUERY'S ALL NETWORK DEV_ISSUES
+utils.queryDevIssues = async function () {
+  const res = await axios.get(`http://${host}/issues/dev`)
+  return res.data.devIssues
+}
+
+// QUERY'S THE MOST RECENT NETWORK ISSUE
+utils.queryLatestIssue = async function () {
+  const res = await axios.get(`http://${host}/issues/latest`)
+  return res.data.issue
+}
+
+// QUERY'S THE MOST RECENT NETWORK DEV_ISSUE
+utils.queryLatestDevIssue = async function () {
+  const res = await axios.get(`http://${host}/issues/dev/latest`)
+  return res.data.devIssue
+}
+
+// QUERY'S THE CURRENT NETWORK ISSUE COUNT
+utils.getIssueCount = async function () {
+  const res = await axios.get(`http://${host}/issues/count`)
+  return res.data.issueCount
+}
+
+// QUERY'S THE CURRENT NETWORK DEV_ISSUE COUNT
+utils.getDevIssueCount = async function () {
+  const res = await axios.get(`http://${host}/issues/dev/count`)
+  return res.data.devIssueCount
 }
 
 function iosCopyClipboard(str) {
@@ -461,6 +554,158 @@ function iosCopyClipboard(str) {
     document.getSelection().removeAllRanges();
     document.getSelection().addRange(selected);
   }
+}
+
+utils.createProposal = async function (sourceAcc, key, value) {
+  const source = sourceAcc.entry
+  const issue = await utils.getIssueCount()
+  const proposalCount = await utils.getProposalCount()
+  let currentParameter = await utils.queryParameters()
+  let newParameters = {
+    nodeRewardInterval: currentParameter.nodeRewardInterval,
+    nodeRewardAmount: currentParameter.nodeRewardAmount,
+    nodePenalty: currentParameter.nodePenalty,
+    transactionFee: currentParameter.transactionFee,
+    stakeRequired: currentParameter.stakeRequired,
+    maintenanceInterval: currentParameter.maintenanceInterval,
+    maintenanceFee: currentParameter.maintenanceFee,
+    proposalFee: currentParameter.proposalFee,
+    devProposalFee: currentParameter.devProposalFee,
+  }
+  newParameters[key] = value
+
+  let proposalTx = {
+    type: 'proposal',
+    from: source.address,
+    to: '0'.repeat(64),
+    proposal: crypto.hash(`issue-${issue}-proposal-${proposalCount + 1}`),
+    issue: crypto.hash(`issue-${issue}`),
+    parameters: newParameters,
+    description: '',
+    timestamp: Date.now()
+  }
+  crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey);
+  return proposalTx
+}
+utils.createDevProposal = async function (sourceAcc, proposal) {
+  console.log(proposal)
+  const source = sourceAcc.entry
+
+  if (proposal.paymentType === 'multiple') {
+    paymentCount = proposal.paymentCount
+    delay = proposal.delay
+  } else {
+    paymentCount = 1
+    delay = 0
+  }
+  console.log(proposal.paymentType, paymentCount, delay)
+
+
+  const latestIssue = await utils.getDevIssueCount()
+  const count = await utils.getDevProposalCount()
+  let paymentCount
+  let delay
+
+  const payments = new Array(paymentCount).fill(1).map((_, i) => ({
+    amount: (proposal.totalAmount / paymentCount),
+    delay: delay * i
+  }))
+  const tx = {
+    type: 'dev_proposal',
+    from: source.address,
+    devIssue: crypto.hash(`dev-issue-${latestIssue}`),
+    devProposal: crypto.hash(`dev-issue-${latestIssue}-dev-proposal-${count + 1}`),
+    totalAmount: proposal.totalAmount,
+    payments: payments,
+    description: proposal.title,
+    payAddress: source.address,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey);
+  return tx
+}
+
+utils.getDifferentParameter = function (newParameters, currentParameters) {
+  let obj = {}
+  let excludeKeys = ['hash', 'id', 'timestamp']
+  for (let key in newParameters) {
+    if (excludeKeys.indexOf(key) >= 0) continue
+    if (currentParameters[key] && currentParameters[key] !== newParameters[key]) {
+      obj[key] = newParameters[key]
+    }
+  }
+  return obj
+}
+
+let diff = utils.getDifferentParameter({
+  "devProposalFee": 20,
+  "hash": "afd968be6b0eb05ba02ef79746ea4a7dfbe1b55c454b400952193d5f846b46f8",
+  "id": "9cc61afb96a7e7c2091166f0533f96cffb024e7fb9cebb97e0fbfb41e508aecd",
+  "maintenanceFee": 0.0001,
+  "maintenanceInterval": 120000,
+  "nodePenalty": 100,
+  "nodeRewardAmount": 10,
+  "nodeRewardInterval": 60000,
+  "number": 1,
+  "power": 0,
+  "proposalFee": 500,
+  "stakeRequired": 500,
+  "timestamp": 1573806674148,
+  "totalVotes": 0,
+  "transactionFee": 0.001,
+  "winner": true
+}, {
+  "devProposalFee": 20,
+  "hash": "484308e848ea13f1b56c0246faf95305a419e471e2059250a2019e73b51058c9",
+  "id": "d9fc101091e77c5d0f17f02ea302a7660807f7aff923cc1986bfbb10471ab990",
+  "maintenanceFee": 0.0001,
+  "maintenanceInterval": 120000,
+  "nodePenalty": 100,
+  "nodeRewardAmount": 10,
+  "nodeRewardInterval": 60000,
+  "number": 1,
+  "power": 0,
+  "proposalFee": 800,
+  "stakeRequired": 500,
+  "timestamp": 1573806944149,
+  "totalVotes": 0,
+  "transactionFee": 0.001,
+  "winner": true
+})
+
+// console.log(diff)
+utils.submitProposl = function (tx) {
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res);
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    });
+  })
+}
+utils.createVote = async function (sourceAcc, proposalNumber = 1, amount = 50) {
+  const source = sourceAcc.entry
+  const latest = await utils.getIssueCount()
+  const proposalCount = await utils.getProposalCount()
+  const tx = {
+    type: 'vote',
+    from: source.address,
+    issue: crypto.hash(`issue-${latest}`),
+    proposal: crypto.hash(`issue-${latest}-proposal-${proposalNumber}`),
+    amount: amount,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey);
+  return tx
+}
+utils.submitVote = async function (tx) {
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res);
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    });
+  })
 }
 
 function fallbackCopyTextToClipboard(text) {
@@ -511,13 +756,11 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
   const targetAddress = await getAddress(tgtHandle);
   const tx = {
     type: "transfer",
-    srcAcc: keys.publicKey,
-    tgtAcc: targetAddress,
+    from: keys.publicKey,
+    to: targetAddress,
     amount: parseFloat(amount),
     timestamp: Date.now()
   };
-  console.log(keys)
-  console.log(tx)
   crypto.signObj(tx, keys.secretKey, keys.publicKey);
   return new Promise(resolve => {
     injectTx(tx).then(res => {

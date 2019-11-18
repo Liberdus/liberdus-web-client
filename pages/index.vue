@@ -132,19 +132,26 @@ export default {
     }
 
     // let checkServerStatus = setInterval(async () => {
-    //   let lastUpdatedTimestamp = this.getNetwork.timestamp;
-    //   let shouldUpdate = false;
-    //   let isServerActive = await utils.isServerActive()
-    //   if (!isServerActive) shouldUpdate = true;
-    //   if (lastUpdatedTimestamp < Date.now() - 120000) shouldUpdate = true;
-    //   // console.log(`Should update server: ${shouldUpdate}`)
-    //   if (shouldUpdate) {
-    //     let randomHost = await utils.getRandomHost();
-    //     console.log("Updating Network");
-    //     self.updateNetwork(randomHost);
-    //     utils.updateHost(`${randomHost.ip}:${randomHost.port}`);
+    //   try {
+    //     let shouldUpdate = false;
+    //     let isServerActive = await utils.isServerActive();
+    //     if (!isServerActive) shouldUpdate = true;
+    //     else {
+    //       let lastUpdatedTimestamp = this.getNetwork.timestamp;
+    //       if (lastUpdatedTimestamp < Date.now() - 120000) shouldUpdate = true;
+    //     }
+    //     console.log(`Should update server: ${shouldUpdate}`);
+
+    //     if (shouldUpdate) {
+    //       let randomHost = await utils.getRandomHost();
+    //       console.log("Updating Network");
+    //       self.updateNetwork(randomHost);
+    //       utils.updateHost(`${randomHost.ip}:${randomHost.port}`);
+    //     }
+    //   } catch (e) {
+    //     console.warn(e);
     //   }
-    // }, 10000);
+    // }, 120000);
   }
 };
 </script>
@@ -253,6 +260,7 @@ h1 {
 }
 .modal__content ul > li {
   cursor: pointer;
+  margin-bottom: 15px;
 }
 .select-input {
   width: 100%;

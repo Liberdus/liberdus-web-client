@@ -102,9 +102,6 @@ export default {
       addWallet: "wallet/addWallet"
     }),
     async onCreateAccount() {
-      // TODO:
-      this.$router.push("/");
-      return;
       let self = this;
       if (!this.username || this.username.length === 0) return;
       let entry = utils.createWallet(this.username);
@@ -114,7 +111,7 @@ export default {
       };
       utils.saveWallet(wallet);
       this.addWallet(wallet);
-      let isSubmitted = await utils.createHandle(wallet.handle, wallet.entry);
+      let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry);
       if (isSubmitted) {
         this.creatingHandle = true;
         let isCreated;
