@@ -2,8 +2,8 @@
   <v-ons-page>
     <notifications
       group="new-message"
-      position="bottom center"
-      width="100%"
+      position="top left"
+      width="80%"
       classes="my-notification-style"
     />
 

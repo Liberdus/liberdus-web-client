@@ -76,7 +76,7 @@
       <p
         class="coin-usage-warning"
         v-if="!allowProposal"
-      >Dev Proposal window is closed now. Next dev proposal window will start at {{ new Date(this.nextProposalWindow) }}</p>
+      >Dev Proposal window is closed now. Next dev proposal window will start at <strong>{{ new Date(this.nextProposalWindow) }}</strong></p>
       <p
         class="coin-usage-warning"
         v-else

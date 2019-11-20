@@ -25,10 +25,10 @@
       </div>
 
       <div>
-        <p class="label">Enter new value for choice A</p>
+        <p class="label">Enter proposed value</p>
         <input
           type="text"
-          placeholder="Choice A"
+          placeholder="Proposed value"
           v-model="newValue"
           class="text-input"
           autocorrect="off"
@@ -49,12 +49,9 @@
         />
       </div>-->
 
-      <button class="add-new-choice">
+      <!-- <button class="add-new-choice">
         <v-ons-icon icon="ion-ios-add" size="lg"></v-ons-icon>Add New Choice
-      </button>
-
-      <p>Allow: {{allowProposal}}</p>
-
+      </button> -->
       <p
         class="coin-usage-warning"
         v-if="!allowProposal"

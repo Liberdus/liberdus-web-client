@@ -328,6 +328,21 @@ utils.setToll = (toll, keys) => {
 }
 
 utils.sendMessage = async (text, sourceAcc, targetHandle) => {
+
+  // { type: 'message',
+  // from:
+  //  'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
+  // to:
+  //  '506e25334cbc536fd3e96adcfed207cfa4290c70124ff7281b231a20c8a5dde0',
+  // message:
+  //  '{"body":"hi there","handle":"d53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f","timestamp":1574228614992}',
+  // timestamp: 1574228614992,
+  // sign:
+  //  { owner:
+  //     'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
+  //    sig:
+  //     'ddac7d14966ee7e2d36e2d80e04027430f15426943de4deece6004339cb02ec274c1389fefc10afe2ad968c817bb201f731a4a4552c33ca6fe9d5dd47ccb610828f99d069099e7c49246c19969fc77789357e8b0d2414f4c899b2f2d9ba01d98' } }
+
   const source = sourceAcc.entry
   const targetAddress = await getAddress(targetHandle);
   if (targetAddress === undefined || targetAddress === null) {
@@ -348,8 +363,8 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
     getToll(targetAddress, source.address).then(toll => {
       const tx = {
         type: "message",
-        srcAcc: source.address,
-        tgtAcc: targetAddress,
+        from: source.address,
+        to: targetAddress,
         message: message,
         amount: toll,
         timestamp: Date.now()
@@ -403,11 +418,10 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 }
 
 utils.getHandle = async (publicKey) => {
-  // let { handle } = await getJSON(
-  //   `http://${host}/account/${publicKey}/handle`
-  // );
-  // return handle;
-  return null
+  let { handle } = await getJSON(
+    `http://${host}/account/${publicKey}/alias`
+  );
+  return handle;
 }
 
 // Poll Messages function

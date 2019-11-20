@@ -74,7 +74,13 @@
         />
       </div>
 
-      <Button text="Vote" :onClick="submitVote" />
+      {{this.votingWindow}}
+
+      <!-- <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at </p> -->
+      <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at <strong v-if="this.votingWindow">{{ new Date(this.votingWindow[0]) }}</strong></p>
+      <p class="coin-usage-warning" v-else>Voting window is open now.</p>
+
+      <Button text="Vote" :onClick="submitVote" :isDisabled="!allowVoting" />
     </div>
   </v-ons-page>
 </template>
@@ -112,7 +118,10 @@ export default {
   data: function() {
     return {
       text: "",
-      tokenToVote: 50
+      tokenToVote: 50,
+      votingWindowChecker: null,
+      allowVoting: false,
+      votingWindow: null
     };
   },
   computed: {
@@ -152,7 +161,6 @@ export default {
     },
     proposal() {
       let foundProposal;
-
       if (!foundProposal)
         foundProposal = this.getActiveProposals.find(p => p.id === this.id);
       if (!foundProposal)
@@ -163,13 +171,35 @@ export default {
         foundProposal = this.getCompletedDevProposals.find(
           p => p.id === this.id
         );
-        // console.log()
       return foundProposal;
     }
+  },
+  mounted: async function() {
+    if (this.proposal && this.status === "Active") this.votingWindowChecker = setInterval(async () => {
+      if(this.proposal) this.allowVoting = await this.isVotingWindowOpen(this.proposal.type);
+    }, 3000);
   },
   methods: {
     shortenAddress(address) {
       return address.slice(0, 6) + "..." + address.slice(58, 64);
+    },
+    async isVotingWindowOpen(type) {
+      let networkParameters = await utils.queryParameters();
+      let votingWindow = networkParameters.votingWindow;
+      let devVotingWindow = networkParameters.devVotingWindow;
+      let now = Date.now();
+      if (type === "proposal") {
+        this.votingWindow = votingWindow
+        if (now > votingWindow[0] && now < votingWindow[1]) {
+          return true;
+        }
+      } else if (type === "dev_proposal") {
+        this.votingWindow = devVotingWindow
+        if (now > devVotingWindow[0] && now < devVotingWindow[1]) {
+          return true;
+        }
+      }
+      return false;
     },
     async submitVote() {
       let myWallet = this.getWallet;

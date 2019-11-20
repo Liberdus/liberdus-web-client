@@ -82,20 +82,14 @@ export default {
     allCompletedProposalList() {
       let list = [];
       if (this.getCompletedDevProposals.length > 0) this.getCompletedDevProposals.forEach(p => {
-         console.log('adding completed DEV proposals')
         let obj = {...p}
-        console.log(obj)
         list.push(obj)
       });
       if (this.getCompletedProposals.length > 0) this.getCompletedProposals.forEach(p => {
-        console.log('adding completed proposals')
         let obj = {...p}
         list.push(obj)
       });
-      // list = list.sort((a, b) => b.timestamp - a.timestamp);
-      console.log(this.getCompletedDevProposals.length, this.getCompletedDevProposals)
-      console.log(this.getCompletedProposals.length, this.getCompletedProposals)
-      console.log(list)
+      list = list.sort((a, b) => b.timestamp - a.timestamp);
       return list;
     }
   }

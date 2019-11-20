@@ -34,25 +34,7 @@ export default {
     ToolBar
   },
   data: function() {
-    return {
-      messageList: [
-        // {
-        //   handle: "osyed",
-        //   timestamp: Date.now(),
-        //   lastMessage: "Hi, how is it going ?"
-        // },
-        // {
-        //   handle: "asyed",
-        //   timestamp: Date.now(),
-        //   lastMessage: "Sweet !"
-        // },
-        // {
-        //   handle: "andrewF",
-        //   timestamp: Date.now(),
-        //   lastMessage: "Awesome !"
-        // }
-      ]
-    };
+    return {};
   },
   computed: {
     ...mapGetters({
@@ -65,25 +47,25 @@ export default {
     shouldRender() {
       let should = this.isUIReady;
       return should;
+    },
+    messageList() {
+      if (this.getAppState && this.isUIReady) {
+        let chats = this.getAppState.data.chats;
+        let handles = Object.keys(chats);
+        let list = [];
+        for (let handle in chats) {
+          list.push({
+            handle,
+            timestamp: R.takeLast(1, chats[handle].messages)[0].timestamp,
+            lastMessage: R.takeLast(1, chats[handle].messages)[0].body
+          });
+        }
+        list = list.sort((a, b) => b.timestamp - a.timestamp);
+        return list;
+      } else {
+        return [];
+      }
     }
-    // messageList() {
-    //   if (this.getAppState && this.isUIReady) {
-    //     let chats = this.getAppState.data.chats;
-    //     let handles = Object.keys(chats);
-    //     let list = [];
-    //     for (let handle in chats) {
-    //       list.push({
-    //         handle,
-    //         timestamp: R.takeLast(1, chats[handle].messages)[0].timestamp,
-    //         lastMessage: R.takeLast(1, chats[handle].messages)[0].body
-    //       });
-    //     }
-    //     list = list.sort((a, b) => b.timestamp - a.timestamp);
-    //     return list;
-    //   } else {
-    //     return [];
-    //   }
-    // }
   },
   methods: {
     ...mapActions({
@@ -229,6 +211,12 @@ export default {
         titleString = `Receieved ${tx.amount} Coin from @${otherPersonHandle}`;
       } else if (tx.type === "send") {
         titleString = `Sent ${tx.amount} Coin to @${otherPersonHandle}`;
+      } else if (tx.type === "vote") {
+        titleString = `Your vote tx is submitted`;
+      } else if (tx.type === "proposal") {
+        titleString = `Your proposal tx is submitted`;
+      } else if (tx.type === "dev_proposal") {
+        titleString = `Your dev proposal tx is submitted`;
       }
       this.$notify({
         group: "new-message",
@@ -262,6 +250,9 @@ export default {
 .message-list {
   max-width: 600px;
   margin: 20px auto;
+  border: none;
+  background: transparent;
+  border: 0px solid blue;
 }
 .message-list .list-item {
   background: #ffffff;

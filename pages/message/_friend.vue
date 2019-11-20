@@ -1,6 +1,6 @@
 <template>
   <v-ons-page class="chat-history-view">
-    <tool-bar :option="{ menu: false, notification: false, back: true, title: 'osyed'}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, title: `@${friend}`}" />
 
     <div v-if="messages.length > 0" class="message-list-container">
       <chat-text v-for="(message, index) in messages" :message="message" :key="`chat${index}`" />
@@ -40,20 +40,7 @@ export default {
   },
   data: function() {
     return {
-      // TODO
-      // messages: [null],
-      messages: [
-        {
-          handle: 'osyed',
-          timestamp: Date.now(),
-          body: "how's is it going ?"
-        },
-        {
-          handle: 'thantsintoe',
-          timestamp: Date.now(),
-          body: "Things looks good"
-        }
-      ],
+      messages: [null],
       refresher: null,
       pendingMessage: null
     };
@@ -78,9 +65,7 @@ export default {
       updateLastMessage: "chat/updateLastMessage"
     }),
     async refreshChatHistory() {
-      // TODO
-      return
-      console.log("Refreshing chat history...");
+      // console.log("Refreshing chat history...");
       let self = this;
       let messages = await utils.getMessages(
         this.getWallet.entry,
@@ -145,7 +130,7 @@ export default {
   },
   mounted() {
     let self = this;
-    // this.refresher = setInterval(self.refreshChatHistory, 2000);
+    this.refresher = setInterval(self.refreshChatHistory, 2000);
   }
 };
 </script>

@@ -4,7 +4,6 @@
     <div class="proposal-detail-container">
       <h2 class="title-2">Your Vote is submitted !</h2>
       <p class="value">Thanks for voting for this proposal</p>
-
       <ButtonOutline text="Back To Proposals" :onClick="onBackToHome" />
     </div>
   </v-ons-page>

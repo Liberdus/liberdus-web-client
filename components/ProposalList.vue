@@ -117,6 +117,7 @@ export default {
     },
     async refreshDevProposalList() {
       let allDevProposals = await utils.queryDevProposals();
+      if (!allDevProposals) return
       allDevProposals = allDevProposals.map(proposal => {
         let obj = { ...proposal };
         obj.type = "dev_proposal";

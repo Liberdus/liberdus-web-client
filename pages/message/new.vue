@@ -6,16 +6,16 @@
         type="text"
         placeholder="Search a username"
         class="text-input"
-        v-model="username"
-        @keyup="searchHandle"
+        v-model="alias"
+        @keyup="searchAlias"
         autocorrect="off"
         autocomplete="off"
         autocapitalize="off"
       />
     </div>
-    <v-ons-list class="found-handle-list">
-      <v-ons-list-item v-for="handle in availableHandles" :key="handle">
-        <nuxt-link v-bind:to="`/message/${username}`" class="nuxt-link">@{{ handle }}</nuxt-link>
+    <v-ons-list class="found-alias-list">
+      <v-ons-list-item v-for="alias in availabeAlias" :key="alias">
+        <nuxt-link v-bind:to="`/message/${alias}`" class="nuxt-link">@{{ alias }}</nuxt-link>
       </v-ons-list-item>
     </v-ons-list>
 
@@ -24,27 +24,16 @@
       <!-- <v-ons-list v-if="getAppState"> -->
       <v-ons-list>
         <nuxt-link
-          v-for="handle in ['james', 'michael', 'david']"
-          :key="handle"
-          v-bind:to="`/message/${handle}`"
+          v-for="alias in getAppState.data.friends"
+          :key="alias"
+          v-bind:to="`/message/${alias}`"
           class="nuxt-link"
         >
           <v-ons-list-item>
-            <p class="body">@{{ handle }}</p>
-            <v-ons-icon icon="ion-ios-contact" size="lg"></v-ons-icon>
-          </v-ons-list-item>
-        </nuxt-link>
-        <!-- <nuxt-link
-          v-for="handle in getAppState.data.friends"
-          :key="handle"
-          v-bind:to="`/message/${handle}`"
-          class="nuxt-link"
-        >
-          <v-ons-list-item>
-            <p>@{{ handle }}</p>
+            <p>@{{ alias }}</p>
             <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon>
           </v-ons-list-item>
-        </nuxt-link>-->
+        </nuxt-link>
       </v-ons-list>
     </div>
   </v-ons-page>
@@ -80,8 +69,8 @@ export default {
   },
   data: function() {
     return {
-      username: "",
-      availableHandles: []
+      alias: "",
+      availabeAlias: []
     };
   },
   computed: {
@@ -96,15 +85,16 @@ export default {
   },
   mounted() {},
   methods: {
-    async searchHandle() {
-      // if (this.username) this.username = this.username.toLowerCase();
-      // let queryAccount = await utils.queryAccount(this.username);
-      // if (queryAccount.account)
-      //   this.availableHandles = [queryAccount.account.handle];
-      // else if (this.username.length === 0) this.availableHandles = [];
-      if (this.username)
-        this.availableHandles = ["osyed", "thant", "asyed", "kyle", "andrew"];
-      else this.availableHandles = [];
+    async searchAlias() {
+      if (this.alias) this.alias = this.alias.toLowerCase();
+      let queryAccount = await utils.queryAccount(this.alias);
+      console.log(queryAccount)
+      if (queryAccount.account)
+        this.availabeAlias = [queryAccount.account.alias];
+      else if (this.alias.length === 0) this.availabeAlias = [];
+      // if (this.alias)
+      //   this.availabeAlias = ["osyed", "thant", "asyed", "kyle", "andrew"];
+      // else this.availabeAlias = [];
     }
   }
 };
@@ -149,11 +139,11 @@ export default {
   display: flex;
   justify-content: space-between;
 }
-.found-handle-list {
+.found-alias-list {
   border: none;
   background: transparent;
 }
-.found-handle-list .list-item {
+.found-alias-list .list-item {
   background: #ffffff;
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
   border-radius: 5px;
