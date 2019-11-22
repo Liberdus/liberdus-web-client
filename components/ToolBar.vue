@@ -11,11 +11,14 @@
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
     <div class="right">
-      <button v-if="option.notification">
-        <v-ons-icon icon="ion-ios-notifications-outline" size="lg" @click="redirect()"></v-ons-icon>
+      <button v-if="option.notification" @click="redirect()">
+        <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
-      <button v-if="option.menu">
-        <v-ons-icon icon="ion-ios-menu" size="lg" @click="toggleSetting"></v-ons-icon>
+      <button v-if="option.menu"  @click="toggleSetting">
+        <v-ons-icon icon="ion-ios-menu" size="lg"></v-ons-icon>
+      </button>
+      <button v-if="option.addFriend" @click="onAddFriend" class="add-friend-button">
+        <v-ons-icon icon="ion-ios-add-circle" size="lg"></v-ons-icon>
       </button>
     </div>
 
@@ -30,6 +33,7 @@
           <li @click="redirect('/proposal/new/change')">Change network parameter</li>
           <li @click="redirect('/proposal/new/feature')">Propose develpment fund</li>
           <li @click="redirect('/setting/export')">Export Account</li>
+          <li @click="redirect('/setting/friends')">Friends</li>
           <li @click="redirect('/setting/network')">Network</li>
           <li @click="onSignOut">Sign Out</li>
         </ul>
@@ -40,6 +44,7 @@
 <script>
 import Title from "~/components/baisc/Title";
 import { mapGetters, mapActions } from "vuex";
+import utils from '../assets/utils';
 
 export default {
   components: { Title },
@@ -51,7 +56,8 @@ export default {
         profile: false,
         back: false,
         menu: false,
-        backUrl: "/"
+        backUrl: "/",
+        addFriend: null
       }
     }
   },
@@ -59,6 +65,13 @@ export default {
     return {
       settingVisible: false
     };
+  },
+  computed: {
+    ...mapGetters({
+      getWallet: "wallet/getWallet",
+      getAppState: "chat/getAppState",
+      isUIReady: "chat/isUIReady"
+    })
   },
   methods: {
     ...mapActions({
@@ -76,7 +89,19 @@ export default {
       this.removeWallet();
       localStorage.removeItem("account");
       this.$router.push("/welcome");
-      window.location.reload(false)
+      window.location.reload(false);
+    },
+    onAddFriend() {
+      let handle = this.option.addFriend;
+      console.log(handle)
+      if (!handle) return
+      this.$ons.notification
+        .confirm(`Confirm to add @${handle} to friend list ?`)
+        .then(result => {
+          if (result === 1) {
+            utils.addFriend(handle, this.getWallet.entry.keys);
+          }
+        });
     }
   }
 };
@@ -104,6 +129,13 @@ export default {
   border-radius: 20px;
   border: none;
   outline: none;
+}
+
+.toolbar__right .add-friend-button {
+  background: transparent;
+    box-shadow: none;
+    font-size: 18px;
+    color: #1f3771;
 }
 .toolbar__right .ion-ios-notifications-outline:before {
   font-size: 30px;

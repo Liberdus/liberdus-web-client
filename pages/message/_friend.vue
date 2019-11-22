@@ -1,6 +1,6 @@
 <template>
   <v-ons-page class="chat-history-view">
-    <tool-bar :option="{ menu: false, notification: false, back: true, title: `@${friend}`}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, title: `@${friend}`, addFriend: isFriend ? null : friend}" />
 
     <div v-if="messages.length > 0" class="message-list-container">
       <chat-text v-for="(message, index) in messages" :message="message" :key="`chat${index}`" />

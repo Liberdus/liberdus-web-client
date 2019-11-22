@@ -232,6 +232,7 @@ utils.registerAlias = async (handle, source) => {
 
 // Add Friend Function
 utils.addFriend = async (tgt, keys) => {
+  console.log(tgt)
   const targetAddress = await getAddress(tgt);
   if (targetAddress === undefined || targetAddress === null) {
     console.log("Target account doesn't exist for: ", tgt);
@@ -239,9 +240,9 @@ utils.addFriend = async (tgt, keys) => {
   }
   const tx = {
     type: "friend",
-    handle: tgt,
-    srcAcc: keys.publicKey,
-    tgtAcc: targetAddress,
+    alias: tgt,
+    from: keys.publicKey,
+    to: targetAddress,
     amount: 1,
     timestamp: Date.now()
   };

@@ -1,61 +1,56 @@
-<template id="home">
+<template>
   <v-ons-page>
-    <v-ons-toolbar>
-      <div class="left">
-        <v-ons-icon icon="ion-ios-arrow-back" size="lg" @click="redirect('/', {tab: 'setting'})"></v-ons-icon>
-      </div>
-      <div class="center">Friend Setting</div>
-      <div class="right">
-        <v-ons-toolbar-button icon="ion-navicon"></v-ons-toolbar-button>
-      </div>
-    </v-ons-toolbar>
+    <tool-bar :option="{ menu: false, notification: false, back: true, title: `Friend Setting`}" />
 
-    <div class="friend-name-input-container">
-      <p>
-        <strong>Search:</strong>
-      </p>
-      <input
-        type="text"
-        placeholder="Username"
-        v-model="queryHandle"
-        @keyup="searchAccount"
-        class="friend-name-input"
-      />
-    </div>
-    <div class="search-result-container">
-      <v-ons-card v-if="foundAccount">
-        <v-ons-list>
-          <v-ons-list-item>
-            <div class="found-account">
-              <p class="found-handle">@{{ foundAccount.handle }}</p>
-              <p class="required-toll">
-                <em>Toll: {{ foundAccount.data.toll }} Coin</em>
-              </p>
-            </div>
-            <v-ons-icon v-if="isFriend" icon="ion-ios-person" size="lg"></v-ons-icon>
+    <div class="friend-setting-container">
+      <div class="new-message-input-container">
+        <input
+          type="text"
+          placeholder="Search a friend"
+          class="text-input"
+          v-model="queryHandle"
+          @keyup="searchAccount"
+          autocorrect="off"
+          autocomplete="off"
+          autocapitalize="off"
+        />
+      </div>
+
+      <div class="search-result-container">
+        <v-ons-card v-if="foundAccount">
+          <v-ons-list>
+            <v-ons-list-item>
+              <div class="found-account">
+                <p class="found-handle">@{{ foundAccount.alias }}</p>
+                <p class="required-toll">
+                  <em>Toll: {{ foundAccount.data.toll }} Coin</em>
+                </p>
+              </div>
+              <v-ons-icon v-if="isFriend" icon="ion-ios-person" size="lg"></v-ons-icon>
+              <v-ons-icon
+                v-else
+                icon="ion-ios-add-circle"
+                size="lg"
+                @click="onClickAddFriend(foundAccount.alias)"
+              ></v-ons-icon>
+            </v-ons-list-item>
+          </v-ons-list>
+        </v-ons-card>
+      </div>
+      <div class="current-friend-list">
+        <h2 class="title-2">My Friend List</h2>
+        <v-ons-list v-if="getAppState">
+          <v-ons-list-item v-for="alias in getAppState.data.friends" :key="alias">
+            <p>@{{ alias }}</p>
+            <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
             <v-ons-icon
-              v-else
-              icon="ion-ios-add-circle"
+              icon="ion-ios-close-circle-outline"
               size="lg"
-              @click="onClickAddFriend(foundAccount.handle)"
+              @click="onClickRemoveFriend(alias)"
             ></v-ons-icon>
           </v-ons-list-item>
         </v-ons-list>
-      </v-ons-card>
-    </div>
-    <div class="current-friend-list">
-      <h4>My Friend List</h4>
-      <v-ons-list v-if="getAppState">
-        <v-ons-list-item v-for="handle in getAppState.data.friends" :key="handle">
-          <p>@{{ handle }}</p>
-          <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
-          <v-ons-icon
-            icon="ion-ios-close-circle-outline"
-            size="lg"
-            @click="onClickRemoveFriend(handle)"
-          ></v-ons-icon>
-        </v-ons-list-item>
-      </v-ons-list>
+      </div>
     </div>
   </v-ons-page>
 </template>
@@ -70,11 +65,19 @@ import ChatText from "~/components/ChatText";
 import ChatInput from "~/components/ChatInput";
 import { mapGetters } from "vuex";
 import utils from "../../assets/utils";
+import ToolBar from "~/components/ToolBar";
+import Title from "~/components/baisc/Title";
+import Button from "~/components/baisc/Button";
 
 Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 
 export default {
+  components: {
+    ChatText,
+    ChatInput,
+    ToolBar
+  },
   data: function() {
     return {
       queryHandle: "",
@@ -90,7 +93,7 @@ export default {
     isFriend() {
       if (!this.foundAccount || !this.getAppState) return false;
       return (
-        this.getAppState.data.friends.indexOf(this.foundAccount.handle) >= 0
+        this.getAppState.data.friends.indexOf(this.foundAccount.alias) >= 0
       );
     }
   },
@@ -102,7 +105,7 @@ export default {
     },
 
     async searchAccount() {
-      if(this.queryHandle) this.queryHandle = this.queryHandle.toLowerCase()
+      if (this.queryHandle) this.queryHandle = this.queryHandle.toLowerCase();
       let queryAccount = await utils.queryAccount(this.queryHandle);
       if (queryAccount.account) {
         console.log(queryAccount.account);
@@ -112,23 +115,26 @@ export default {
     onClickAddFriend(handle) {
       let self = this;
       this.$ons.notification
-        .confirm(`Confirm to add @${this.foundAccount.handle} to friend list ?`)
+        .confirm(`Confirm to add @${this.foundAccount.alias} to friend list ?`)
         .then(result => {
           if (result === 1) {
-            utils.addFriend(this.foundAccount.handle, this.getWallet.entry.keys);
-            this.queryHandle = ""
-            this.foundAccount = null
+            utils.addFriend(this.foundAccount.alias, this.getWallet.entry.keys);
+            this.queryHandle = "";
+            this.foundAccount = null;
           }
         });
     },
-    async onClickRemoveFriend(handle) {
+    async onClickRemoveFriend(alias) {
       let self = this;
       this.$ons.notification
-        .confirm(`Confirm to remove @${handle} from friend list ?`)
+        .confirm(`Confirm to remove @${alias} from friend list ?`)
         .then(async result => {
           if (result === 1) {
-            let isSubmitted = await utils.removeFriend(handle, this.getWallet.entry.keys);
-            if (isSubmitted) this.notify('Remove friend tx is submitted.')
+            let isSubmitted = await utils.removeFriend(
+              alias,
+              this.getWallet.entry.keys
+            );
+            if (isSubmitted) this.notify("Remove friend tx is submitted.");
           }
         });
     },
@@ -140,6 +146,11 @@ export default {
 </script>
 
 <style>
+.friend-setting-container {
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
+}
 .friend-name-input-container {
   height: 70px;
   max-width: 600px;
@@ -154,16 +165,25 @@ export default {
 .friend-name-input {
   height: 40px;
   width: 80%;
-  padding: 5px 10px;
+  padding: 0px 10px;
   background: #fff;
   border: 1px solid #dddddd;
-  border-radius: 5px;
-  font-size: 16px!important;
+  border-radius: 15px;
+  font-size: 16px !important;
 }
 .current-friend-list {
   max-width: 600px;
   margin: 0 auto;
   margin-top: 30px;
+}
+.current-friend-list .list-item {
+  height: 60px;
+      border: none !important;
+    background: #fbfbfb;
+}
+.current-friend-list .list-item p {
+  font-size: 18px;
+  font-family: 'Poppins';
 }
 .current-friend-list h4 {
   margin-left: 20px;
@@ -175,7 +195,8 @@ export default {
   margin: 0 auto;
 }
 .search-result-container .card {
-  width: 80%;
+  width: 100%;
+  padding: 5px 10px;
 }
 .search-result-container .card .list {
   background: none;
@@ -198,6 +219,8 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  font-family: Poppins;
+  font-size: 16px;
 }
 .search-result-container .found-account .found-handle {
   font-weight: bold;
