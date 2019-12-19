@@ -1,6 +1,6 @@
 export default {
   server: {
-    // ip: 'chatseed.shardus.com',
+    // ip: 'app.liberdus.com',
     ip: 'localhost',
     port: 4000
   }

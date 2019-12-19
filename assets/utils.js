@@ -31,10 +31,10 @@ utils.isServerActive = async () => {
   }
 }
 utils.getRandomHost = async () => {
-  let res = await axios.get(`http://${seedNodeHost}/api/seednodes`)
-  let seedNodes = res.data.seedNodes
-  let randIndex = Math.floor(Math.random() * seedNodes.length)
-  let randHost = seedNodes[randIndex]
+  let res = await axios.get(`http://${seedNodeHost}/nodelist`)
+  let nodeList = res.data.nodeList
+  let randIndex = Math.floor(Math.random() * nodeList.length)
+  let randHost = nodeList[randIndex]
   if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
   console.log(randHost)
   return randHost

@@ -51,11 +51,13 @@
 
       <!-- <button class="add-new-choice">
         <v-ons-icon icon="ion-ios-add" size="lg"></v-ons-icon>Add New Choice
-      </button> -->
-      <p
-        class="coin-usage-warning"
-        v-if="!allowProposal"
-      >Proposal window is closed now. Next proposal window will start at {{ new Date(this.nextProposalWindow) }}</p>
+      </button>-->
+      <p class="coin-usage-warning" v-if="!allowProposal">
+        Proposal window is closed now. Next proposal window will start at
+        <strong
+          v-if="nextProposalStart"
+        >{{ new Date(nextProposalStart) }}</strong>
+      </p>
       <p
         class="coin-usage-warning"
         v-else
@@ -139,7 +141,7 @@ export default {
       ],
       newValue: "",
       description: "",
-      nextProposalWindow: null,
+      nextProposalStart: null,
       currentProposalWindow: null,
       proposalWindowChecker: null
     };
@@ -156,7 +158,7 @@ export default {
     }, 3000);
   },
   beforeDestroy: function() {
-    console.log('Clearing proposal window checker...')
+    console.log("Clearing proposal window checker...");
     clearInterval(this.proposalWindowChecker);
   },
   methods: {
@@ -184,18 +186,29 @@ export default {
       this.$router.push(url);
     },
     async isProposalWindowOpen() {
-      let networkParameters = await utils.queryParameters();
-      let proposalWindow = networkParameters.proposalWindow;
-      let applyWindow = networkParameters.applyWindow;
-
-      this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
-      this.currentProposalWindow = proposalWindow;
-
-      let now = Date.now();
-      if (now > proposalWindow[0] && now < proposalWindow[1]) {
-        return true;
+      try {
+        let networkParameters = await utils.queryParameters();
+        console.log(networkParameters);
+        let proposalWindow = networkParameters["WINDOWS"].proposalWindow;
+        let applyWindow = networkParameters["WINDOWS"].applyWindow;
+        this.currentProposalWindow = proposalWindow;
+        console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
+        if (networkParameters["NEXT_WINDOWS"].proposalWindow) {
+          this.nextProposalStart =
+            networkParameters["NEXT_WINDOWS"].proposalWindow[0];
+        } else {
+          this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4;
+        }
+        console.log("next window", this.nextProposalStart);
+        let now = Date.now();
+        if (now > proposalWindow[0] && now < proposalWindow[1]) {
+          return true;
+        }
+        return false;
+      } catch (e) {
+        console.warn(e);
+        return false;
       }
-      return false;
     }
   }
 };

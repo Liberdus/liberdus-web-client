@@ -73,10 +73,10 @@
         />
       </div>
 
-      <p
-        class="coin-usage-warning"
-        v-if="!allowProposal"
-      >Dev Proposal window is closed now. Next dev proposal window will start at <strong>{{ new Date(this.nextProposalWindow) }}</strong></p>
+      <p class="coin-usage-warning" v-if="!allowProposal">
+        Dev Proposal window is closed now. Next dev proposal window will start at
+        <strong>{{ new Date(this.nextProposalWindow) }}</strong>
+      </p>
       <p
         class="coin-usage-warning"
         v-else
@@ -155,11 +155,16 @@ export default {
   methods: {
     async isDevProposalWindowOpen() {
       let networkParameters = await utils.queryParameters();
-      let proposalWindow = networkParameters.devProposalWindow;
-      let applyWindow = networkParameters.devApplyWindow;
-      this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
+      let proposalWindow = networkParameters["DEV_WINDOWS"].devProposalWindow;
+      let applyWindow = networkParameters["DEV_WINDOWS"].devApplyWindow;
       this.currentProposalWindow = proposalWindow;
-
+      if (networkParameters["NEXT_DEV_WINDOWS"].devProposalWindow) {
+        this.nextProposalWindow =
+          networkParameters["NEXT_DEV_WINDOWS"].devProposalWindow[0];
+      } else {
+        this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
+      }
+      console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
       let now = Date.now();
       if (now > proposalWindow[0] && now < proposalWindow[1]) {
         return true;

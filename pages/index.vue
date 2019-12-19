@@ -98,22 +98,31 @@ export default {
   },
   methods: {
     ...mapActions({
+      updateAppState: "chat/updateAppState",
+      updateLastMessage: "chat/updateLastMessage",
+      updateLastTx: "chat/updateLastTx",
+      setUIReady: "chat/setUIReady",
       addWallet: "wallet/addWallet",
-      updateNetwork: "chat/updateNetwork",
-      setUIReady: "chat/setUIReady"
+      updateActiveProposals: "proposal/updateActiveProposals",
+      updateCompletedProposals: "proposal/updateCompletedProposals",
+      updateActiveDevProposals: "proposal/updateActiveDevProposals",
+      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
     }),
     md() {
       return this.$ons.platform.isAndroid();
-    },
-    hello() {
-      console.log("hello");
     }
   },
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
+      getAppState: "chat/getAppState",
+      getLastMessage: "chat/getLastMessage",
+      getLastTx: "chat/getLastTx",
       isUIReady: "chat/isUIReady",
-      getNetwork: "chat/getNetwork"
+      getActiveProposals: "proposal/getActiveProposals",
+      getCompletedProposals: "proposal/getCompletedProposals",
+      getActiveDevProposals: "proposal/getActiveDevProposals",
+      getCompletedDevProposals: "proposal/getCompletedDevProposals"
     }),
     title() {
       return this.tabs[this.activeIndex].label;
@@ -122,7 +131,6 @@ export default {
   async mounted() {
     let self = this;
     if (!this.isUIReady) this.$router.push("/loading");
-    self.setUIReady();
     if (!this.getWallet) {
       const wallet = utils.loadWallet();
       if (wallet) {

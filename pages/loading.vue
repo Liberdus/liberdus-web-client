@@ -43,22 +43,25 @@ export default {
   async mounted() {
     let self = this;
     console.log("initiating...");
-    // let randomHost = await utils.getRandomHost()
-    // this.host = `${randomHost.ip}:${randomHost.port}`
-    // this.updateNetwork({
-    //   ip: randomHost.ip,
-    //   port: randomHost.port
-    // });
+    let randomHost = await utils.getRandomHost();
+    this.host = `${randomHost.ip}:${randomHost.port}`;
+    this.updateNetwork({
+      ip: randomHost.ip,
+      port: randomHost.port
+    });
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`);
       console.log(hash);
       self.setUIReady();
-      //   self.$router.push("/");
+      self.$router.push("/");
     });
-    setTimeout(() => {
+    setTimeout(async () => {
       if (self.isUIReady) {
-        if (this.getWallet) self.$router.push("/?tabIndex=0");
-        else self.$router.push("/welcome");
+        if (this.getWallet) {
+          let accountExist = await utils.getAddress(this.getWallet.handle);
+          if (accountExist) self.$router.push("/?tabIndex=0");
+          else self.$router.push("/welcome");
+        }
       }
     }, 2000);
     setTimeout(() => {
