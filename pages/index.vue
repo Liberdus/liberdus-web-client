@@ -60,14 +60,14 @@ export default {
         },
         {
           icon: this.md() ? null : "ion-ios-filing",
-          label: "Proposals",
+          label: "Active Proposals",
           page: ProposalList,
           // badge: 0,
           key: "proposal"
         },
         {
           icon: this.md() ? null : "ion-ios-people",
-          label: "Vote",
+          label: "Completed Proposals",
           page: MyVoteList,
           key: "vote"
         },
@@ -254,6 +254,8 @@ h1 {
 }
 .toolbar + .page__background + .page__content {
   top: 75px;
+  width: 100vw;
+  overflow-x: hidden;
 }
 .modal__content {
   background: #fff;

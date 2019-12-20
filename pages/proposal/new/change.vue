@@ -3,66 +3,53 @@
     <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
     <div class="proposal-create-container">
       <h2 class="title-2">Propose new network parameter</h2>
-      <div>
-        <p class="label">Select a parameter to change</p>
-        <div class="drop-down-container">
-          <v-ons-select style="width: 40%" v-model="selectedParameter">
-            <option v-for="item in parameters" :value="item.value" :key="item.id">{{ item.text }}</option>
-          </v-ons-select>
-          <v-ons-icon icon="ion-ios-arrow-down" size="lg" class="drop-down-icon"></v-ons-icon>
+      <div v-if="!currentProposalWindow">Unable to get proposal window from server.</div>
+      <div v-else>
+        <div>
+          <p class="label">Select a parameter to change</p>
+          <div class="drop-down-container">
+            <v-ons-select style="width: 40%" v-model="selectedParameter">
+              <option v-for="item in parameters" :value="item.value" :key="item.id">{{ item.text }}</option>
+            </v-ons-select>
+            <v-ons-icon icon="ion-ios-arrow-down" size="lg" class="drop-down-icon"></v-ons-icon>
+          </div>
         </div>
+
+        <div>
+          <p class="label">Description</p>
+          <textarea
+            name="description-input"
+            class="description-input"
+            v-model="description"
+            cols="30"
+            rows="5"
+          ></textarea>
+        </div>
+
+        <div>
+          <p class="label">Enter proposed value</p>
+          <input
+            type="text"
+            placeholder="Proposed value"
+            v-model="newValue"
+            class="text-input"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+        </div>
+        <p class="coin-usage-warning" v-if="!allowProposal">
+          Proposal window is closed now. Next proposal window will start at
+          <strong
+            v-if="nextProposalStart"
+          >{{ new Date(nextProposalStart) }}</strong>
+        </p>
+        <p
+          class="coin-usage-warning"
+          v-else
+        >Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
+        <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
       </div>
-
-      <div>
-        <p class="label">Description</p>
-        <textarea
-          name="description-input"
-          class="description-input"
-          v-model="description"
-          cols="30"
-          rows="5"
-        ></textarea>
-      </div>
-
-      <div>
-        <p class="label">Enter proposed value</p>
-        <input
-          type="text"
-          placeholder="Proposed value"
-          v-model="newValue"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
-        />
-      </div>
-
-      <!-- <div>
-        <p class="label">Enter new value for choice B</p>
-        <input
-          type="text"
-          placeholder="Choice B"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
-        />
-      </div>-->
-
-      <!-- <button class="add-new-choice">
-        <v-ons-icon icon="ion-ios-add" size="lg"></v-ons-icon>Add New Choice
-      </button>-->
-      <p class="coin-usage-warning" v-if="!allowProposal">
-        Proposal window is closed now. Next proposal window will start at
-        <strong
-          v-if="nextProposalStart"
-        >{{ new Date(nextProposalStart) }}</strong>
-      </p>
-      <p
-        class="coin-usage-warning"
-        v-else
-      >Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
-      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
     </div>
   </v-ons-page>
 </template>
@@ -201,7 +188,9 @@ export default {
         } else {
           this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4;
         }
+
         let now = Date.now();
+        if (proposalWindow[0] > now) this.nextProposalStart = proposalWindow[0];
         if (now > proposalWindow[0] && now < proposalWindow[1]) {
           return true;
         }

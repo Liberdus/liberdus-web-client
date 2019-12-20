@@ -182,6 +182,9 @@ export default {
 .create-account-container .create-account-content {
   max-width: 600px;
 }
+.create-account-container .create-account-content h3 {
+  font-family: "Poppins";
+}
 .create-username-input-container {
   margin: 20px auto;
   max-width: 600px;

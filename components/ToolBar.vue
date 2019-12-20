@@ -14,7 +14,7 @@
       <button v-if="option.notification" @click="redirect()">
         <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
-      <button v-if="option.menu"  @click="toggleSetting">
+      <button v-if="option.menu" @click="toggleSetting">
         <v-ons-icon icon="ion-ios-menu" size="lg"></v-ons-icon>
       </button>
       <button v-if="option.addFriend" @click="onAddFriend" class="add-friend-button">
@@ -44,7 +44,7 @@
 <script>
 import Title from "~/components/baisc/Title";
 import { mapGetters, mapActions } from "vuex";
-import utils from '../assets/utils';
+import utils from "../assets/utils";
 
 export default {
   components: { Title },
@@ -93,8 +93,8 @@ export default {
     },
     onAddFriend() {
       let handle = this.option.addFriend;
-      console.log(handle)
-      if (!handle) return
+      console.log(handle);
+      if (!handle) return;
       this.$ons.notification
         .confirm(`Confirm to add @${handle} to friend list ?`)
         .then(result => {
@@ -133,9 +133,9 @@ export default {
 
 .toolbar__right .add-friend-button {
   background: transparent;
-    box-shadow: none;
-    font-size: 18px;
-    color: #1f3771;
+  box-shadow: none;
+  font-size: 18px;
+  color: #1f3771;
 }
 .toolbar__right .ion-ios-notifications-outline:before {
   font-size: 30px;

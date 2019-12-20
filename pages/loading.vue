@@ -42,7 +42,7 @@ export default {
   },
   async mounted() {
     let self = this;
-    console.log("initiating...");
+    console.log("GETTING RANDOM HOST...");
     let randomHost = await utils.getRandomHost();
     this.host = `${randomHost.ip}:${randomHost.port}`;
     this.updateNetwork({
@@ -51,23 +51,20 @@ export default {
     });
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`);
-      console.log(hash);
       self.setUIReady();
-      self.$router.push("/");
     });
     setTimeout(async () => {
+      console.log("checking UI ready...");
       if (self.isUIReady) {
         if (this.getWallet) {
           let accountExist = await utils.getAddress(this.getWallet.handle);
           if (accountExist) self.$router.push("/?tabIndex=0");
           else self.$router.push("/welcome");
+        } else {
+          self.$router.push("/welcome");
         }
       }
-    }, 2000);
-    setTimeout(() => {
-      if (this.getWallet) self.$router.push("/?tabIndex=0");
-      else self.$router.push("/welcome");
-    }, 5000);
+    }, 1000);
   }
 };
 </script>

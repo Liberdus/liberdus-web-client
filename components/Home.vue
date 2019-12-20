@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <!-- {{ getAppState.data.transactions }} -->
+    <!-- {{ getAppState }} -->
     <!-- <div v-if="!getAppState">Loading...</div> -->
     <!-- <div class="home-tab-container" v-else> -->
     <tool-bar :option="{ menu: true, notification: true, back: false}" />

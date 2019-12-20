@@ -81,7 +81,7 @@
         class="coin-usage-warning"
         v-else
       >Dev Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
-      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
+      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="false" />
     </div>
   </v-ons-page>
 </template>
@@ -178,7 +178,7 @@ export default {
       let myWallet = this.getWallet;
       let proposal = {
         description: this.description,
-        totalAmount: this.amount,
+        totalAmount: parseFloat(this.amount),
         paymentCount: parseInt(this.paymentCount),
         delay: this.delay * 60 * 1000,
         paymentType: this.selectedPaymentType,
