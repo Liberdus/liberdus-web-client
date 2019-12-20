@@ -176,10 +176,13 @@ export default {
       );
       console.log(proposalTx);
       let isSubmitted = await utils.submitProposl(proposalTx);
+      console.log("isSubmitted", isSubmitted);
       if (isSubmitted) {
         this.$ons.notification.alert("Your proposal is submitted.");
         this.newValue = "";
         this.redirect("/");
+      } else {
+        this.$ons.notification.alert("Failed to submit proposal");
       }
     },
     redirect(url) {
@@ -188,7 +191,6 @@ export default {
     async isProposalWindowOpen() {
       try {
         let networkParameters = await utils.queryParameters();
-        console.log(networkParameters);
         let proposalWindow = networkParameters["WINDOWS"].proposalWindow;
         let applyWindow = networkParameters["WINDOWS"].applyWindow;
         this.currentProposalWindow = proposalWindow;
@@ -199,7 +201,6 @@ export default {
         } else {
           this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4;
         }
-        console.log("next window", this.nextProposalStart);
         let now = Date.now();
         if (now > proposalWindow[0] && now < proposalWindow[1]) {
           return true;

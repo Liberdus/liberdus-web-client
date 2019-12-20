@@ -592,7 +592,6 @@ utils.createProposal = async function (sourceAcc, key, value) {
   let proposalTx = {
     type: 'proposal',
     from: source.address,
-    to: '0'.repeat(64),
     proposal: crypto.hash(`issue-${issue}-proposal-${proposalCount + 1}`),
     issue: crypto.hash(`issue-${issue}`),
     parameters: newParameters,
