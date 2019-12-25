@@ -206,7 +206,7 @@ export default {
         return processed;
       } catch (e) {
         console.warn(`Unable to process account state data...`);
-        // console.log(myAccountData);
+        console.log(myAccountData);
       }
     },
     async refreshAppState() {

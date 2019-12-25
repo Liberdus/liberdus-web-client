@@ -81,7 +81,7 @@
         class="coin-usage-warning"
         v-else
       >Dev Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
-      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="false" />
+      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
     </div>
   </v-ons-page>
 </template>
