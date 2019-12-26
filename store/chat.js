@@ -1,8 +1,12 @@
 export const state = () => ({
   appState: null,
   network: null,
-  lastMessage: null,
-  lastTx: null,
+  lastMessage: {
+    message: null
+  },
+  lastTx: {
+    txId: null
+  },
   isUIReady: false
 })
 
@@ -27,9 +31,11 @@ export const mutations = {
   },
   updateLastMessage (state, payload) {
     state.lastMessage = payload
+    localStorage.setItem('lastMessage', JSON.stringify(state.lastMessage))
   },
   updateLastTx (state, payload) {
     state.lastTx = payload
+    localStorage.setItem('lastTx', JSON.stringify(state.lastTx))
   }
 }
 

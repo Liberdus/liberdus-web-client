@@ -49,20 +49,21 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 export default {
-  
   methods: {
-        ...mapActions({
+    ...mapActions({
       updateAppState: "chat/updateAppState",
-      removeWallet: "wallet/removeWallet",
+      removeWallet: "wallet/removeWallet"
     }),
     onSignOut() {
-      this.updateAppState(null)
-      this.removeWallet()
-      localStorage.removeItem('account')
-      this.$router.push('/welcome')
+      this.updateAppState(null);
+      this.removeWallet();
+      localStorage.removeItem("account");
+      localStorage.removeItem("lastMessage");
+      localStorage.removeItem("lastTx");
+      this.$router.push("/welcome");
     }
   }
-}
+};
 </script>
 
 <style>

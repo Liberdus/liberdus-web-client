@@ -68,6 +68,22 @@ utils.loadWallet = () => {
     return null
   }
 }
+utils.loadLastMessage = () => {
+  try {
+    let loadedEntries = localStorage.getItem('lastMessage')
+    return JSON.parse(loadedEntries)
+  } catch (e) {
+    return null
+  }
+}
+utils.loadLastTx = () => {
+  try {
+    let loadedEntries = localStorage.getItem('lastTx')
+    return JSON.parse(loadedEntries)
+  } catch (e) {
+    return null
+  }
+}
 
 utils.createAccountAndStoreInWallet = (name, id) => {
   const account = utils.createAccount()
@@ -155,7 +171,7 @@ async function getAddress (handle) {
       return address
     }
   } catch (e) {
-    console.error(e.message)
+    // console.error(e.message)
     console.log(`Error while getting address for ${handle}`)
   }
 }

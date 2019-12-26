@@ -37,7 +37,9 @@ export default {
     ...mapActions({
       addWallet: "wallet/addWallet",
       setUIReady: "chat/setUIReady",
-      updateNetwork: "chat/updateNetwork"
+      updateNetwork: "chat/updateNetwork",
+      updateAppState: "chat/updateAppState",
+      removeWallet: "wallet/removeWallet"
     })
   },
   async mounted() {
@@ -59,7 +61,15 @@ export default {
         if (this.getWallet) {
           let accountExist = await utils.getAddress(this.getWallet.handle);
           if (accountExist) self.$router.push("/?tabIndex=0");
-          else self.$router.push("/welcome");
+          else {
+            this.updateAppState(null);
+            this.removeWallet();
+            // TODO: to reconsider about removing account info.
+            localStorage.removeItem("account");
+            localStorage.removeItem("lastMessage");
+            localStorage.removeItem("lastTx");
+            self.$router.push("/welcome");
+          }
         } else {
           self.$router.push("/welcome");
         }

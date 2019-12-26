@@ -12,7 +12,12 @@
         @click="onClickQRScanner"
       >Close QR Scanner</v-ons-button>
       <div class="send-username-input-container">
-        <input type="text" placeholder="Username" v-model="username" class="send-username-input text-input" />
+        <input
+          type="text"
+          placeholder="Username"
+          v-model="username"
+          class="send-username-input text-input"
+        />
         <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
           <img src="../../assets/qrcode.png" alt="qr-code" />
         </v-ons-button>
@@ -30,12 +35,7 @@
           v-if="$v.amount.required && !$v.amount.between"
         >Invalid amount</p>
       </div>
-      <!-- <v-ons-button
-        :disabled="!isFormValid"
-        class="create-user-btn default-btn"
-        @click="onSend"
-      >Send</v-ons-button> -->
-      <Button text="Send" :onClick="onSend" />
+      <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
     </div>
   </v-ons-page>
 </template>
@@ -118,6 +118,11 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onSend() {
+      let receiverAddress = await utils.getAddress(this.username.toLowerCase());
+      if (!receiverAddress) {
+        this.$ons.notification.alert("Failed. Invalid Username");
+        return;
+      }
       let isSubmitted = await utils.transferTokens(
         this.username,
         this.amount,

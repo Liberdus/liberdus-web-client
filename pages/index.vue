@@ -130,12 +130,25 @@ export default {
   },
   async mounted() {
     let self = this;
-    if (!this.isUIReady) this.$router.push("/loading");
+    if (!this.isUIReady) {
+      this.$router.push("/loading");
+      // return;
+    }
     if (!this.getWallet) {
       const wallet = utils.loadWallet();
+      const lastMessage = utils.loadLastMessage();
+      const lastTx = utils.loadLastTx();
       if (wallet) {
         this.addWallet(wallet);
         console.log("Wallet added to vuex store.");
+      }
+      if (lastMessage) {
+        console.log("Last message added to vuex store.");
+        this.updateLastMessage(lastMessage);
+      }
+      if (lastTx) {
+        console.log("Last tx added to vuex store.");
+        this.updateLastTx(lastTx);
       }
     }
 
