@@ -182,7 +182,12 @@ export default {
         let myAccountData = await utils.queryAccount(myHandle);
         let processedState = await this.processData(myAccountData);
         self.updateAppState(processedState);
-        this.lastMessage = this.getLatestMessageFromServer(processedState);
+        let lastMessageFromServer = this.getLatestMessageFromServer(
+          processedState
+        );
+        console.log(lastMessageFromServer);
+        if (lastMessageFromServer.body)
+          this.lastMessage = lastMessageFromServer;
         let lastTxFromAPI = this.getLastTxFromAPI();
         if (lastTxFromAPI) {
           this.lastTx = lastTxFromAPI;

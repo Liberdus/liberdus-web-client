@@ -118,6 +118,8 @@ export default {
       this.updateAppState(null);
       this.removeWallet();
       localStorage.removeItem("account");
+      localStorage.removeItem("lastMessage");
+      localStorage.removeItem("lastTx");
       this.$router.push("/welcome");
       window.location.reload(false);
     },
