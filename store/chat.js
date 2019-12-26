@@ -7,7 +7,8 @@ export const state = () => ({
   lastTx: {
     txId: null
   },
-  isUIReady: false
+  isUIReady: false,
+  notificationQueue: []
 })
 
 export const getters = {
@@ -15,6 +16,7 @@ export const getters = {
   getNetwork: state => state.network,
   getLastMessage: state => state.lastMessage,
   getLastTx: state => state.lastTx,
+  getNotificationQueue: state => state.notificationQueue,
   isUIReady: state => state.isUIReady
 }
 
@@ -36,6 +38,12 @@ export const mutations = {
   updateLastTx (state, payload) {
     state.lastTx = payload
     localStorage.setItem('lastTx', JSON.stringify(state.lastTx))
+  },
+  addNotificationQueue (state, payload) {
+    state.notificationQueue.push(payload)
+  },
+  clearNotificationQueue (state) {
+    state.notificationQueue = []
   }
 }
 
@@ -54,5 +62,11 @@ export const actions = {
   },
   async updateLastTx (store, payload) {
     store.commit('updateLastTx', payload)
+  },
+  async addNotificationQueue (store, payload) {
+    store.commit('addNotificationQueue', payload)
+  },
+  async clearNotificationQueue (store) {
+    store.commit('clearNotificationQueue')
   }
 }

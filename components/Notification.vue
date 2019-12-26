@@ -1,5 +1,8 @@
 <template>
-  <div></div>
+  <div style="display: none">
+    {{ lastMessage }}
+    {{ lastTx }}
+  </div>
 </template>
 
 <script>
@@ -35,7 +38,8 @@ export default {
     ...mapActions({
       updateAppState: "chat/updateAppState",
       updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx"
+      updateLastTx: "chat/updateLastTx",
+      addNotificationQueue: "chat/addNotificationQueue"
     }),
     async processTx(tx) {
       let myAddress = this.getWallet.entry.address;
@@ -71,6 +75,12 @@ export default {
         text: message,
         duration: 5000
       });
+      this.addNotificationQueue({
+        title: `New Message from @${handle}`,
+        text: message,
+        id: handle + Date.now(),
+        timestamp: Date.now()
+      });
     },
     async notifyNewTx(tx) {
       let textBody;
@@ -85,6 +95,12 @@ export default {
         title: `New Transaction`,
         text: textBody,
         duration: 5000
+      });
+      this.addNotificationQueue({
+        title: `New Transaction`,
+        text: textBody,
+        id: tx.otherPersonAlias + Date.now(),
+        timestamp: Date.now()
       });
     },
     checkMessage() {

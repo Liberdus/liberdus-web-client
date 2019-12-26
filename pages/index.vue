@@ -75,7 +75,7 @@ export default {
           icon: this.md() ? null : "ion-ios-chatboxes",
           label: "Message",
           page: Message,
-          badge: 2,
+          // badge: 2,
           key: "message"
         }
       ]

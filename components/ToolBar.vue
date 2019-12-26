@@ -11,7 +11,7 @@
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
     <div class="right">
-      <button v-if="option.notification" @click="redirect()">
+      <button v-if="option.notification" @click="toggleNotification">
         <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
       <button v-if="option.menu" @click="toggleSetting">
@@ -39,11 +39,29 @@
         </ul>
       </div>
     </v-ons-modal>
+    <v-ons-modal :visible="notificationVisible">
+      <button class="close-setting-button">
+        <v-ons-icon icon="ion-ios-close" size="lg" @click="toggleNotification" v-if="option.menu"></v-ons-icon>
+      </button>
+      <div class="setting-container">
+        <h1 class="setting-title">Notifications</h1>
+        <ul>
+          <li v-for="noti in notificationQueue" :key="noti.id">
+            <div class="notification-item">
+              <p class="time">{{ formatTimestamp(noti.timestamp) }}</p>
+              <h6 class="title">{{ noti.title}}</h6>
+              <p class="text">{{ noti.text }}</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </v-ons-modal>
   </v-ons-toolbar>
 </template>
 <script>
 import Title from "~/components/baisc/Title";
 import { mapGetters, mapActions } from "vuex";
+import moment from "moment";
 import utils from "../assets/utils";
 
 export default {
@@ -63,26 +81,38 @@ export default {
   },
   data: function() {
     return {
-      settingVisible: false
+      settingVisible: false,
+      notificationVisible: false
     };
   },
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
       getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
-    })
+      isUIReady: "chat/isUIReady",
+      getNotificationQueue: "chat/getNotificationQueue"
+    }),
+    notificationQueue() {
+      let queue = [...this.getNotificationQueue];
+      return queue.sort((a, b) => b.timestamp - a.timestamp);
+    }
   },
   methods: {
     ...mapActions({
       updateAppState: "chat/updateAppState",
       removeWallet: "wallet/removeWallet"
     }),
+    formatTimestamp(ts) {
+      return moment(ts).calendar();
+    },
     redirect(url = "/") {
       this.$router.push(url);
     },
     toggleSetting() {
       this.settingVisible = !this.settingVisible;
+    },
+    toggleNotification() {
+      this.notificationVisible = !this.notificationVisible;
     },
     onSignOut() {
       this.updateAppState(null);
@@ -109,7 +139,7 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style scoped lang="scss">
 .toolbar__title {
   font-family: Poppins;
   font-size: 20px;
@@ -156,6 +186,7 @@ export default {
 .setting-container {
   position: absolute;
   top: 100px;
+  width: 90%;
 }
 .setting-title {
   font-family: Poppins;
@@ -173,5 +204,24 @@ export default {
   background: #ffffff;
   box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
   height: 40px;
+}
+.notification-item {
+  box-shadow: 0px 2px 5px #d3d3d3;
+  padding: 10px;
+  width: 90%;
+  border-radius: 10px;
+  .time {
+    font-size: 11px;
+    margin-bottom: 10px;
+    color: #3178c5;
+  }
+  .title {
+    font-size: 14px;
+    font-weight: lighter;
+  }
+  .text {
+    font-size: 13px;
+    font-weight: bolder;
+  }
 }
 </style>
