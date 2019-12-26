@@ -49,8 +49,8 @@ export default {
       isUIReady: "chat/isUIReady"
     }),
     secretKey() {
-      // return this.getWallet.entry.keys.secretKey
-      return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
+      return this.getWallet.entry.keys.secretKey.toLowerCase();
+      // return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
     }
   },
   methods: {
@@ -75,13 +75,16 @@ export default {
   letter-spacing: -0.21px;
   text-align: center;
   line-height: 27px;
-  width: 310px;
+  width: 300px;
 }
 #secret-key > strong {
-user-select: text;
+  user-select: text;
 }
 .qr-code {
-  margin: 20px auto;
+  margin: 30px auto;
+  width: 200px;
+  display: block;
+  position: relative;
 }
 .import-account-container .secret-key-warning {
   font-family: Poppins;

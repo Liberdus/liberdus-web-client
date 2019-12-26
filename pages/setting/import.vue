@@ -81,10 +81,9 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onImportAccount() {
-      this.redirect('/')
-      return
-      // TODO:
-      let { handle, entry } = await utils.importWallet(this.secretKey);
+      let { handle, entry } = await utils.importWallet(
+        this.secretKey.toLowerCase()
+      );
       let wallet = {
         handle: handle,
         entry: entry
@@ -106,7 +105,6 @@ export default {
   height: auto;
   text-align: center;
   padding: 20px;
-
 }
 .secret-key-input {
   margin-right: 5px;

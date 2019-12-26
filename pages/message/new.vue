@@ -88,13 +88,14 @@ export default {
     async searchAlias() {
       if (this.alias) this.alias = this.alias.toLowerCase();
       let queryAccount = await utils.queryAccount(this.alias);
-      console.log(queryAccount)
-      if (queryAccount.account)
+      if (
+        queryAccount.account &&
+        queryAccount.account.alias !== this.getWallet.handle
+      ) {
         this.availabeAlias = [queryAccount.account.alias];
-      else if (this.alias.length === 0) this.availabeAlias = [];
-      // if (this.alias)
-      //   this.availabeAlias = ["osyed", "thant", "asyed", "kyle", "andrew"];
-      // else this.availabeAlias = [];
+      } else if (this.alias.length === 0) {
+        this.availabeAlias = [];
+      }
     }
   }
 };
@@ -142,6 +143,7 @@ export default {
 .found-alias-list {
   border: none;
   background: transparent;
+  width: 90%;
 }
 .found-alias-list .list-item {
   background: #ffffff;

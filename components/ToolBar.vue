@@ -93,15 +93,18 @@ export default {
     },
     onAddFriend() {
       let handle = this.option.addFriend;
-      console.log(handle);
       if (!handle) return;
-      this.$ons.notification
-        .confirm(`Confirm to add @${handle} to friend list ?`)
-        .then(result => {
-          if (result === 1) {
-            utils.addFriend(handle, this.getWallet.entry.keys);
-          }
-        });
+      if (handle === this.getWallet.handle) {
+        this.$ons.notification.alert("You cannot add yourself as friend.");
+      } else {
+        this.$ons.notification
+          .confirm(`Confirm to add @${handle} to friend list ?`)
+          .then(result => {
+            if (result === 1) {
+              utils.addFriend(handle, this.getWallet.entry.keys);
+            }
+          });
+      }
     }
   }
 };
@@ -129,6 +132,7 @@ export default {
   border-radius: 20px;
   border: none;
   outline: none;
+  cursor: pointer;
 }
 
 .toolbar__right .add-friend-button {

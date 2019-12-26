@@ -109,20 +109,31 @@ export default {
       let queryAccount = await utils.queryAccount(this.queryHandle);
       if (queryAccount.account) {
         console.log(queryAccount.account);
-        this.foundAccount = queryAccount.account;
-      } else if (this.queryHandle.length === 0) this.foundAccount = null;
+        if (queryAccount.account.alias !== this.getWallet.handle) {
+          this.foundAccount = queryAccount.account;
+          return;
+        }
+      }
+      this.foundAccount = null;
     },
     onClickAddFriend(handle) {
       let self = this;
-      this.$ons.notification
-        .confirm(`Confirm to add @${this.foundAccount.alias} to friend list ?`)
-        .then(result => {
-          if (result === 1) {
-            utils.addFriend(this.foundAccount.alias, this.getWallet.entry.keys);
-            this.queryHandle = "";
-            this.foundAccount = null;
-          }
-        });
+      if (handle && handle !== this.getWallet.handle) {
+        this.$ons.notification
+          .confirm(
+            `Confirm to add @${this.foundAccount.alias} to friend list ?`
+          )
+          .then(result => {
+            if (result === 1) {
+              utils.addFriend(
+                this.foundAccount.alias,
+                this.getWallet.entry.keys
+              );
+              this.queryHandle = "";
+              this.foundAccount = null;
+            }
+          });
+      }
     },
     async onClickRemoveFriend(alias) {
       let self = this;
@@ -178,12 +189,12 @@ export default {
 }
 .current-friend-list .list-item {
   height: 60px;
-      border: none !important;
-    background: #fbfbfb;
+  border: none !important;
+  background: #fbfbfb;
 }
 .current-friend-list .list-item p {
   font-size: 18px;
-  font-family: 'Poppins';
+  font-family: "Poppins";
 }
 .current-friend-list h4 {
   margin-left: 20px;
