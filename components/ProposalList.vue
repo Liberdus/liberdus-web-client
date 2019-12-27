@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: false}" />
+    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <Title text="Active Proposals" />
     <!-- {{ getActiveDevProposals }}
     {{ getCompletedDevProposals }}

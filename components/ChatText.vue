@@ -24,9 +24,7 @@ export default {
       isUIReady: "chat/isUIReady"
     }),
     isUser() {
-      // TODO:
-      // return this.message.handle === this.getWallet.handle;
-      return this.message.handle === "thantsintoe";
+      return this.message.handle === this.getWallet.handle;
     },
     isFriend() {
       return !this.isUser;

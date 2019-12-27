@@ -1,6 +1,8 @@
 <template>
   <v-ons-page class="chat-history-view">
-    <tool-bar :option="{ menu: false, notification: false, back: true, title: `@${friend}`, addFriend: isFriend ? null : friend}" />
+    <tool-bar
+      :option="{ menu: false, notification: false, back: true, title: `@${friend}`, addFriend: isFriend ? null : friend}"
+    />
 
     <div v-if="messages.length > 0" class="message-list-container">
       <chat-text v-for="(message, index) in messages" :message="message" :key="`chat${index}`" />
@@ -80,7 +82,7 @@ export default {
         this.messages = messages.map(m => JSON.parse(m));
         let lastMessage = this.messages[this.messages.length - 1];
         if (lastMessage.handle !== this.getWallet.handle)
-          this.updateLastMessage({ text: lastMessage.body, read: true });
+          this.updateLastMessage({ body: lastMessage.body, read: true });
         if (this.pendingMessage) {
           if (
             this.pendingMessage.handle === lastMessage.handle &&

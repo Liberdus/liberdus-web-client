@@ -17,12 +17,24 @@
           placeholder="Username"
           v-model="username"
           class="send-username-input text-input"
+          @focusout="checkUsername"
+          @focusin="onUsernameFocus"
         />
         <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
           <img src="../../assets/qrcode.png" alt="qr-code" />
         </v-ons-button>
       </div>
-      <p class="body">Enter amount to send</p>
+      <div class="username-warning">
+        <p v-if="isOwnName" class="invalid-username">You cannot send coins to yourself.</p>
+        <p
+          v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && !isUsernameExist"
+          class="invalid-username"
+        >The username provided does not exist.</p>
+        <p
+          v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && isUsernameExist"
+          class="valid-username"
+        >The username is valid.</p>
+      </div>
       <div class="send-amount-input-container">
         <input
           type="text"
@@ -72,7 +84,10 @@ export default {
       username: "",
       amount: "",
       previousUrl: "/",
-      showScanner: false
+      showScanner: false,
+      isUsernameExist: true,
+      checkingUsername: false,
+      hasUsernameFocus: false
     };
   },
   validations: {
@@ -91,11 +106,18 @@ export default {
       getAppState: "chat/getAppState",
       isUIReady: "chat/isUIReady"
     }),
+    isOwnName() {
+      if (this.username.toLowerCase() === this.getWallet.handle) return true;
+      else return false;
+    },
     isFormValid() {
       if (
         !this.$v.username.required ||
         !this.$v.amount.required ||
-        !this.$v.amount.between
+        !this.$v.amount.between ||
+        !this.isUsernameExist ||
+        this.isOwnName ||
+        this.hasUsernameFocus
       )
         return false;
       return true;
@@ -110,6 +132,23 @@ export default {
     redirect(url, option) {
       this.$router.push(url);
     },
+    async checkUsername() {
+      this.hasUsernameFocus = false;
+      this.checkingUsername = true;
+      try {
+        const address = await utils.getAddress(this.username);
+        if (address) this.isUsernameExist = true;
+        else this.isUsernameExist = false;
+      } catch (e) {
+        console.log(e);
+        this.isUsernameExist = false;
+      }
+      this.checkingUsername = false;
+      this.showWarning = true;
+    },
+    onUsernameFocus() {
+      this.hasUsernameFocus = true;
+    },
     onDetectUsername(name) {
       this.username = name;
       this.showScanner = false;
@@ -118,11 +157,7 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onSend() {
-      let receiverAddress = await utils.getAddress(this.username.toLowerCase());
-      if (!receiverAddress) {
-        this.$ons.notification.alert("Failed. Invalid Username");
-        return;
-      }
+      if (!this.isUsernameExist) return;
       let isSubmitted = await utils.transferTokens(
         this.username,
         this.amount,
@@ -139,16 +174,28 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .send-coins-container {
   text-align: center;
   margin-top: 30px;
   width: 90%;
   max-width: 600px;
   margin: 30px auto;
-}
-.send-coins-container p {
-  text-align: left;
+  p {
+    text-align: left;
+  }
+  .username-warning {
+    margin: 0px auto;
+    margin-bottom: 15px;
+    height: 10px;
+    padding-left: 10px;
+    .valid-username {
+      color: #21b72a;
+    }
+    .invalid-username {
+      color: #de4747;
+    }
+  }
 }
 .secret-key-input {
   margin-right: 5px;
@@ -161,8 +208,8 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
-  margin-bottom: 10px;
+  height: 60px;
+  margin-bottom: 0px;
 }
 .send-amount-input-container {
   display: flex;

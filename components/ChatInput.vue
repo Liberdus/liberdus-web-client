@@ -4,7 +4,14 @@
       class="required-toll not-enough-toll"
       v-if="!isFriend && notEnoughCoin"
     >Not Enough coin to pay toll</p>
-    <p class="required-toll" v-else-if="!isFriend">Required Toll: {{ requiredToll }} coin</p>
+    <p class="required-toll" v-else-if="!isFriend">
+      <strong>Total Cost</strong>
+      : {{ requiredToll }} coin (Toll) + {{ requiredFee }} coin (Tx Fee)
+    </p>
+    <p class="required-toll" v-else-if="isFriend">
+      <strong>Total Cost</strong>
+      : {{ requiredFee }} coin (Tx Fee)
+    </p>
     <input
       type="text"
       placeholder="Type your message"
@@ -24,7 +31,8 @@ export default {
   data: function() {
     return {
       message: "",
-      requiredToll: null
+      requiredToll: null,
+      requiredFee: 0.0
     };
   },
   computed: {
@@ -57,12 +65,12 @@ export default {
     }
   },
   async mounted() {
-    // TODO
-    // const targetAddress = await utils.getAddress(this.friend);
-    // this.requiredToll = await utils.getToll(
-    //   targetAddress,
-    //   this.getWallet.entry.address
-    // );
+    const to = await utils.getAddress(this.friend);
+    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address);
+    const network = await utils.queryParameters();
+    if (network.CURRENT.transactionFee) {
+      this.requiredFee = network.CURRENT.transactionFee;
+    }
   }
 };
 </script>

@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: false}" />
+    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <Title text="Completed Proposal" />
     <div class="proposal-list-container">
       <ProposalListItem
@@ -81,14 +81,16 @@ export default {
     }),
     allCompletedProposalList() {
       let list = [];
-      if (this.getCompletedDevProposals.length > 0) this.getCompletedDevProposals.forEach(p => {
-        let obj = {...p}
-        list.push(obj)
-      });
-      if (this.getCompletedProposals.length > 0) this.getCompletedProposals.forEach(p => {
-        let obj = {...p}
-        list.push(obj)
-      });
+      if (this.getCompletedDevProposals.length > 0)
+        this.getCompletedDevProposals.forEach(p => {
+          let obj = { ...p };
+          list.push(obj);
+        });
+      if (this.getCompletedProposals.length > 0)
+        this.getCompletedProposals.forEach(p => {
+          let obj = { ...p };
+          list.push(obj);
+        });
       list = list.sort((a, b) => b.timestamp - a.timestamp);
       return list;
     }

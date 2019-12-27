@@ -3,7 +3,7 @@
     <!-- {{ getAppState }} -->
     <!-- <div v-if="!getAppState">Loading...</div> -->
     <!-- <div class="home-tab-container" v-else> -->
-    <tool-bar :option="{ menu: true, notification: true, back: false}" />
+    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <div class="home-tab-container">
       <!-- {{ getAppState }} -->
@@ -185,7 +185,6 @@ export default {
         let lastMessageFromServer = this.getLatestMessageFromServer(
           processedState
         );
-        console.log(lastMessageFromServer);
         if (lastMessageFromServer.body)
           this.lastMessage = lastMessageFromServer;
         let lastTxFromAPI = this.getLastTxFromAPI();

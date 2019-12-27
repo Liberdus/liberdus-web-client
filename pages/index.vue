@@ -6,14 +6,8 @@
       width="80%"
       classes="my-notification-style"
     />
-
-    <v-ons-tabbar
-      swipeable
-      position="bottom"
-      :tabs="tabs"
-      :visible="true"
-      :index.sync="activeIndex"
-    ></v-ons-tabbar>
+    <tool-bar :option="{ menu: true, notification: true, back: false}" />
+    <v-ons-tabbar swipeable position="top" :tabs="tabs" :visible="true" :index.sync="activeIndex"></v-ons-tabbar>
   </v-ons-page>
 </template>
 
@@ -24,6 +18,7 @@ import "onsenui/css/onsen-css-components.css";
 import VueOnsen from "vue-onsenui/esm";
 import OnsenComponents from "~/components/Onsen";
 import Message from "~/components/Message";
+import ToolBar from "~/components/ToolBar";
 import Home from "~/components/Home";
 import ProposalList from "~/components/ProposalList";
 import MyVoteList from "~/components/MyVoteList";
@@ -45,7 +40,8 @@ export default {
     Home,
     Setting,
     ProposalList,
-    MyVoteList
+    MyVoteList,
+    ToolBar
   },
   data() {
     return {
@@ -177,7 +173,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 #main {
   height: 100vh;
 }
@@ -258,9 +254,24 @@ h1 {
   min-width: 300px;
   margin: 10px auto;
 }
+.tabbar--top__content {
+  top: 100px;
+}
 .tabbar {
   background: #ffffff;
-  box-shadow: 0 -2px 4px 0 rgba(227, 227, 227, 0.5);
+  height: 64px;
+  border: none;
+  border-bottom: 1px solid #e8e8e8;
+  border-top: 1px solid #e8e8e8;
+  margin-bottom: 20px;
+  .tabbar__item {
+    height: 64px;
+
+    .tabbar__button {
+      height: 64px;
+      cursor: pointer;
+    }
+  }
 }
 .toolbar + .page__background {
   top: 75px;

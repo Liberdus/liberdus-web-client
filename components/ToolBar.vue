@@ -1,16 +1,14 @@
 <template>
   <v-ons-toolbar>
     <div class="left">
-      <v-ons-icon
-        icon="ion-ios-arrow-back"
-        size="lg"
-        @click="redirect(option.backUrl || '/')"
-        v-if="option.back"
-      ></v-ons-icon>
-      <!-- {{ option }} -->
+      <button v-if="option.back" @click="redirect(option.backUrl || '/')">
+        <v-ons-icon icon="ion-ios-arrow-back" size="lg"></v-ons-icon>
+      </button>
+      <img v-else src="../assets/images/loading-logo.png" width="150px" heigh="150px" />
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
     <div class="right">
+      <div class="user-alias" v-if="option.notification">@{{ getWallet.handle }}</div>
       <button v-if="option.notification" @click="toggleNotification">
         <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
@@ -155,30 +153,61 @@ export default {
   height: 75px;
   align-items: center;
 }
+.toolbar__left {
+  button {
+    background: #ffffff;
+    box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: 43px;
+    height: 43px;
+    padding: 10px;
+    .ons-icon {
+      font-size: 22px;
+    }
+  }
+  img {
+    position: relative;
+    top: 7px;
+  }
+}
 .toolbar__right {
   margin-right: 20px;
-}
-.toolbar__right button {
-  background: #ffffff;
-  box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
-  border-radius: 20px;
-  border: none;
-  outline: none;
-  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  width: 50%;
+  .user-alias {
+    color: #0a2463;
+    font-family: "Poppins";
+    font-size: 14px;
+  }
+  button {
+    background: #ffffff;
+    box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
+    border-radius: 20px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin: 0px 5px;
+    width: 43px;
+    height: 43px;
+  }
+  .add-friend-button {
+    background: transparent;
+    box-shadow: none;
+    font-size: 18px;
+    color: #1f3771;
+  }
+  .ion-ios-notifications-outline:before {
+    font-size: 30px;
+  }
+  .ion-ios-menu:before {
+    font-size: 30px;
+  }
 }
 
-.toolbar__right .add-friend-button {
-  background: transparent;
-  box-shadow: none;
-  font-size: 18px;
-  color: #1f3771;
-}
-.toolbar__right .ion-ios-notifications-outline:before {
-  font-size: 30px;
-}
-.toolbar__right .ion-ios-menu:before {
-  font-size: 30px;
-}
 .ion-ios-close:before {
   font-size: 30px;
 }

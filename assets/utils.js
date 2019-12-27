@@ -439,7 +439,6 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 utils.getHandle = async publicKey => {
   let { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
   console.log(`http://${host}/account/${publicKey}/alias`)
-  console.log(`Handle is ${handle}`)
   return handle
 }
 
