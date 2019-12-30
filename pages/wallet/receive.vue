@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <!-- TODO: -->
     <div class="import-account-container">
       <Title text="Receive Coins" />
@@ -79,9 +79,9 @@ export default {
   margin-right: 5px;
 }
 .qr-code-btn {
-height: 48px;
-    padding: 5px;
-    width: 52px !important;
+  height: 48px;
+  padding: 5px;
+  width: 52px !important;
   padding: 5px;
   border-radius: 40px;
   background: #f5f5f5;
@@ -91,8 +91,8 @@ height: 48px;
   align-items: center;
 }
 .qr-code-btn img {
-    width: 25px;
-    height: 25px;
+  width: 25px;
+  height: 25px;
 }
 .secret-input-container {
   display: flex;
@@ -116,7 +116,7 @@ height: 48px;
   margin: 20px auto;
 }
 #username > strong {
-user-select: text;
+  user-select: text;
 }
 .qr-code {
   margin-bottom: 20px;

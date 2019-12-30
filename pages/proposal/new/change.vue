@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
     <div class="proposal-create-container">
       <h2 class="title-2">Propose new network parameter</h2>
       <div v-if="!currentProposalWindow">Unable to get proposal window from server.</div>

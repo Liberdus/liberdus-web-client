@@ -329,12 +329,12 @@ utils.claimTokens = keys => {
 utils.setToll = (toll, keys) => {
   const tx = {
     type: 'toll',
-    srcAcc: keys.publicKey,
-    toll: toll,
-    amount: 1,
+    from: keys.publicKey,
+    toll: parseFloat(toll),
     timestamp: Date.now()
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)

@@ -4,11 +4,11 @@
       <button v-if="option.back" @click="redirect(option.backUrl || '/')">
         <v-ons-icon icon="ion-ios-arrow-back" size="lg"></v-ons-icon>
       </button>
-      <img v-else src="../assets/images/loading-logo.png" width="150px" heigh="150px" />
+      <img v-else src="../assets/images/loading-logo.png" class="main-logo" />
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
     <div class="right">
-      <div class="user-alias" v-if="option.notification">@{{ getWallet.handle }}</div>
+      <div v-if="option.notification && getWallet" class="user-alias">@{{ getWallet.handle }}</div>
       <button v-if="option.notification" @click="toggleNotification">
         <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
@@ -31,6 +31,7 @@
           <li @click="redirect('/proposal/new/change')">Change network parameter</li>
           <li @click="redirect('/proposal/new/feature')">Propose develpment fund</li>
           <li @click="redirect('/setting/export')">Export Account</li>
+          <li @click="redirect('/setting/toll')">Toll</li>
           <li @click="redirect('/setting/friends')">Friends</li>
           <li @click="redirect('/setting/network')">Network</li>
           <li @click="onSignOut">Sign Out</li>
@@ -47,7 +48,7 @@
           <li v-for="noti in notificationQueue" :key="noti.id">
             <div class="notification-item">
               <p class="time">{{ formatTimestamp(noti.timestamp) }}</p>
-              <h6 class="title">{{ noti.title}}</h6>
+              <h6 class="title">{{ noti.title }}</h6>
               <p class="text">{{ noti.text }}</p>
             </div>
           </li>
@@ -154,6 +155,9 @@ export default {
   align-items: center;
 }
 .toolbar__left {
+  .main-logo {
+    height: 40px;
+  }
   button {
     background: #ffffff;
     box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
@@ -253,6 +257,11 @@ export default {
   .text {
     font-size: 13px;
     font-weight: bolder;
+  }
+}
+@media screen and (max-width: 400px) {
+  .toolbar__left .main-logo {
+    height: 25px;
   }
 }
 </style>

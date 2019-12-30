@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-ons-page>
     <div id="loading-container">
       <img id="loading-logo" src="../assets/images/loading-logo.png" alt />
@@ -59,8 +59,9 @@ export default {
       console.log("checking UI ready...");
       if (self.isUIReady) {
         if (this.getWallet) {
-          let accountExist = await utils.getAddress(this.getWallet.handle);
-          if (accountExist) self.$router.push("/?tabIndex=0");
+          let address = await utils.getAddress(this.getWallet.handle);
+          if (address && address.toLowerCase() === this.getWallet.entry.address)
+            self.$router.push("/?tabIndex=0");
           else {
             this.updateAppState(null);
             this.removeWallet();

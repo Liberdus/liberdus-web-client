@@ -1,53 +1,61 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <div class="send-coins-container">
       <Title text="Send Coins" />
-      <p class="body">Enter username to send coins</p>
-      <q-reader :onDetectQR="onDetectUsername" :scanning="showScanner" />
-      <v-ons-button
-        v-if="showScanner"
-        class="new-message-btn"
-        modifier="quiet"
-        @click="onClickQRScanner"
-      >Close QR Scanner</v-ons-button>
-      <div class="send-username-input-container">
-        <input
-          type="text"
-          placeholder="Username"
-          v-model="username"
-          class="send-username-input text-input"
-          @focusout="checkUsername"
-          @focusin="onUsernameFocus"
-        />
-        <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
-          <img src="../../assets/qrcode.png" alt="qr-code" />
-        </v-ons-button>
-      </div>
-      <div class="username-warning">
-        <p v-if="isOwnName" class="invalid-username">You cannot send coins to yourself.</p>
+      <div v-if="requiredTxFee">
+        <p class="body">Enter username</p>
+        <q-reader :onDetectQR="onDetectUsername" :scanning="showScanner" />
+        <v-ons-button
+          v-if="showScanner"
+          class="new-message-btn"
+          modifier="quiet"
+          @click="onClickQRScanner"
+        >Close QR Scanner</v-ons-button>
+        <div class="send-username-input-container">
+          <input
+            type="text"
+            placeholder="Username"
+            v-model="username"
+            class="send-username-input text-input"
+            @focusout="checkUsername"
+            @focusin="onUsernameFocus"
+          />
+          <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
+            <img src="../../assets/qrcode.png" alt="qr-code" />
+          </v-ons-button>
+        </div>
+        <div class="username-warning">
+          <p v-if="isOwnName" class="invalid-username">You cannot send coins to yourself.</p>
+          <p
+            v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && !isUsernameExist"
+            class="invalid-username"
+          >The username provided does not exist.</p>
+          <p
+            v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && isUsernameExist"
+            class="valid-username"
+          >The username is valid.</p>
+        </div>
+        <div class="send-amount-input-container">
+          <p class="body">Enter amount to send</p>
+          <input
+            type="text"
+            placeholder="Amount"
+            v-model="amount"
+            class="send-username-input send-amount-input text-input"
+          />
+          <p
+            class="input-error-message"
+            v-if="$v.amount.required && !$v.amount.between"
+          >Invalid amount</p>
+        </div>
         <p
-          v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && !isUsernameExist"
-          class="invalid-username"
-        >The username provided does not exist.</p>
-        <p
-          v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && isUsernameExist"
-          class="valid-username"
-        >The username is valid.</p>
+          class="required-tx-fee"
+        >Tx Fee {{ requiredTxFee }} coins will be deducted from your account.</p>
+        <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
       </div>
-      <div class="send-amount-input-container">
-        <input
-          type="text"
-          placeholder="Amount"
-          v-model="amount"
-          class="send-username-input send-amount-input text-input"
-        />
-        <p
-          class="input-error-message"
-          v-if="$v.amount.required && !$v.amount.between"
-        >Invalid amount</p>
-      </div>
-      <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
+
+      <div v-else>Getting required tx fee...</div>
     </div>
   </v-ons-page>
 </template>
@@ -87,7 +95,8 @@ export default {
       showScanner: false,
       isUsernameExist: true,
       checkingUsername: false,
-      hasUsernameFocus: false
+      hasUsernameFocus: false,
+      requiredTxFee: null
     };
   },
   validations: {
@@ -127,6 +136,12 @@ export default {
     next(vm => {
       vm.previousUrl = from.path;
     });
+  },
+  mounted: async function() {
+    const network = await utils.queryParameters();
+    if (network.CURRENT.transactionFee) {
+      this.requiredTxFee = network.CURRENT.transactionFee;
+    }
   },
   methods: {
     redirect(url, option) {
@@ -230,5 +245,15 @@ export default {
 .input-error-message {
   color: red;
   font-weight: normal !important;
+}
+.required-tx-fee {
+  display: block;
+  text-align: left;
+  width: 100%;
+  margin-bottom: 10px;
+  padding-left: 5px;
+  color: #d79341;
+  max-width: 600px;
+  font-weight: bold;
 }
 </style>

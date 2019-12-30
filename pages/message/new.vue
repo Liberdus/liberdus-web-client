@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <div class="new-message-input-container">
       <input
         type="text"

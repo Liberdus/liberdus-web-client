@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
     <div class="proposal-detail-container">
       <h2 class="proposal-title">{{ proposalTitle }}</h2>
       <h4 class="proposal-type" v-if="proposal.type === 'proposal'">Parameter Proposal</h4>
@@ -75,9 +75,11 @@
       </div>
 
       {{this.votingWindow}}
-
       <!-- <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at </p> -->
-      <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at <strong v-if="this.votingWindow">{{ new Date(this.votingWindow[0]) }}</strong></p>
+      <p class="coin-usage-warning" v-if="!allowVoting">
+        Voting window will start at
+        <strong v-if="this.votingWindow">{{ new Date(this.votingWindow[0]) }}</strong>
+      </p>
       <p class="coin-usage-warning" v-else>Voting window is open now.</p>
 
       <Button text="Vote" :onClick="submitVote" :isDisabled="!allowVoting" />
@@ -175,9 +177,11 @@ export default {
     }
   },
   mounted: async function() {
-    if (this.proposal && this.status === "Active") this.votingWindowChecker = setInterval(async () => {
-      if(this.proposal) this.allowVoting = await this.isVotingWindowOpen(this.proposal.type);
-    }, 3000);
+    if (this.proposal && this.status === "Active")
+      this.votingWindowChecker = setInterval(async () => {
+        if (this.proposal)
+          this.allowVoting = await this.isVotingWindowOpen(this.proposal.type);
+      }, 3000);
   },
   methods: {
     shortenAddress(address) {
@@ -189,12 +193,12 @@ export default {
       let devVotingWindow = networkParameters.devVotingWindow;
       let now = Date.now();
       if (type === "proposal") {
-        this.votingWindow = votingWindow
+        this.votingWindow = votingWindow;
         if (now > votingWindow[0] && now < votingWindow[1]) {
           return true;
         }
       } else if (type === "dev_proposal") {
-        this.votingWindow = devVotingWindow
+        this.votingWindow = devVotingWindow;
         if (now > devVotingWindow[0] && now < devVotingWindow[1]) {
           return true;
         }

@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
     <div class="proposal-detail-container">
       <h2 class="title-2">Your Vote is submitted !</h2>
       <p class="value">Thanks for voting for this proposal</p>

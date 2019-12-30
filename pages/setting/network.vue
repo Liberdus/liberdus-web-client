@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true }" />
     <div class="network-container">
       <p v-if="seedNode">
         Current Seed Node IP:
@@ -111,33 +111,34 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .network-container {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
   text-align: center;
+  p {
+    text-align: left;
+    margin-bottom: 10px;
+    font-family: Poppins;
+    font-size: 14px;
+    color: #333333;
+    letter-spacing: -0.16px;
+    text-align: left;
+  }
+  .sub-head {
+    font-family: Poppins;
+    font-size: 15px;
+    color: #0a2463;
+    letter-spacing: 0;
+  }
+  p span {
+    font-family: Inconsolata;
+    font-size: 18px;
+    color: #333333;
+  }
 }
-.network-container p {
-  text-align: left;
-  margin-bottom: 10px;
-  font-family: Poppins;
-  font-size: 14px;
-  color: #333333;
-  letter-spacing: -0.16px;
-  text-align: left;
-}
-.network-container .sub-head {
-  font-family: Poppins;
-  font-size: 15px;
-  color: #0a2463;
-  letter-spacing: 0;
-}
-.network-container p span {
-  font-family: Inconsolata;
-  font-size: 18px;
-  color: #333333;
-}
+
 .network-form {
   margin-top: 15px;
   padding-top: 15px;

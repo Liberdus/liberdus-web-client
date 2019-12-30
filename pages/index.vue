@@ -58,7 +58,6 @@ export default {
           icon: this.md() ? null : "ion-ios-filing",
           label: "Active Proposals",
           page: ProposalList,
-          // badge: 0,
           key: "proposal"
         },
         {
@@ -71,7 +70,6 @@ export default {
           icon: this.md() ? null : "ion-ios-chatboxes",
           label: "Message",
           page: Message,
-          // badge: 2,
           key: "message"
         }
       ]
