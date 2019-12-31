@@ -48,11 +48,16 @@ export default {
       activeIndex: 0,
       tabs: [
         {
-          icon: this.md() ? null : "ion-ios-home",
-          label: "Home",
+          icon: this.md() ? null : "ion-ios-wallet",
+          label: "Wallet",
           page: Home,
-
           key: "home"
+        },
+        {
+          icon: this.md() ? null : "ion-ios-chatboxes",
+          label: "Message",
+          page: Message,
+          key: "message"
         },
         {
           icon: this.md() ? null : "ion-ios-filing",
@@ -65,12 +70,6 @@ export default {
           label: "Economy",
           page: ProposalList,
           key: "economy"
-        },
-        {
-          icon: this.md() ? null : "ion-ios-chatboxes",
-          label: "Message",
-          page: Message,
-          key: "message"
         }
       ]
     };
@@ -83,9 +82,9 @@ export default {
       if (to && to.query.tabIndex) {
         vm.activeIndex = parseInt(to.query.tabIndex);
       } else if (from.name.split("-")[0] === "proposal") {
-        vm.activeIndex = 1;
+        vm.activeIndex = 2;
       } else if (from.name.split("-")[0] === "message") {
-        vm.activeIndex = 3;
+        vm.activeIndex = 1;
       } else if (from.name.split("-")[0] === "wallet") {
         vm.activeIndex = 0;
       }
