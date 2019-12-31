@@ -1,7 +1,10 @@
 <template>
   <v-ons-page>
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
-    <Title text="Completed Proposal" />
+    <!-- <Title text="Funding" /> -->
+    <button class="white-button new-message-button" @click="$router.push('/proposal/new/funding')">
+      <v-ons-icon icon="ion-ios-wallet" size="lg"></v-ons-icon>New Funding
+    </button>
     <div class="proposal-list-container">
       <ProposalListItem
         v-for="proposal in allCompletedProposalList"
@@ -20,7 +23,7 @@ import utils from "../assets/utils";
 import * as R from "ramda";
 import newMessageSoundFile from "../assets/new_message_sound.mp3";
 import ToolBar from "~/components/ToolBar";
-import MyVoteListItem from "~/components/MyVoteListItem";
+import FundingItem from "~/components/FundingItem";
 import Title from "~/components/baisc/Title";
 import Button from "~/components/baisc/Button";
 import ProposalListItem from "~/components/ProposalListItem";
@@ -31,7 +34,7 @@ export default {
     Title,
     ToolBar,
     Button,
-    MyVoteListItem,
+    FundingItem,
     ProposalListItem
   },
   data: function() {

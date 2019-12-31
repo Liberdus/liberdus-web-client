@@ -1,10 +1,13 @@
 <template>
   <v-ons-page>
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
-    <Title text="Active Proposals" />
+    <!-- <Title text="Economy Proposals" /> -->
     <!-- {{ getActiveDevProposals }}
     {{ getCompletedDevProposals }}
     {{ allActiveProposalList }}-->
+    <button class="white-button new-message-button" @click="$router.push('/proposal/new/economy')">
+      <v-ons-icon icon="ion-ios-paper" size="lg"></v-ons-icon>New Proposal
+    </button>
     <div class="proposal-list-container">
       <ProposalListItem
         v-for="proposal in allActiveProposalList"

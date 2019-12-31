@@ -73,7 +73,7 @@ export default {
         group: "new-message",
         title: `@${handle}`,
         text: message,
-        duration: 5000
+        duration: 15000
       });
       this.addNotificationQueue({
         title: `New Message from @${handle}`,
@@ -88,6 +88,8 @@ export default {
         textBody = `Receieved ${tx.amount} Coin from @${tx.otherPersonAlias}`;
       } else if (tx.type === "send") {
         textBody = `Sent ${tx.amount} Coin to @${tx.otherPersonAlias}`;
+      } else {
+        return;
       }
       console.log(textBody);
       this.$notify({

@@ -32,7 +32,7 @@
           </button>
         </div>
       </div>
-      <v-ons-list>
+      <v-ons-list id="transaction-list">
         <v-ons-list-item
           v-for="transaction in transactions"
           :key="transaction.type + transaction.amount + transaction.timestamp"
@@ -82,7 +82,7 @@ export default {
       if (!this.getWallet || !this.getAppState) return [];
       let myAddress = this.getWallet.entry.address;
       let txs = this.getAppState.data.transactions;
-      return txs
+      let transferTxs = txs
         .filter(tx => tx.type === "transfer")
         .map(tx => {
           let type;
@@ -106,6 +106,40 @@ export default {
             amount: tx.amount
           };
         });
+      let messageTxs = txs
+        .filter(tx => tx.type === "message")
+        .map(tx => {
+          let type;
+          let otherPersonAddress;
+          if (tx.from == myAddress) {
+            type = "send_message";
+            otherPersonAddress = tx.to;
+          } else if (tx.to == myAddress) {
+            type = "receive_message";
+            otherPersonAddress = tx.from;
+          }
+          return {
+            type,
+            otherPersonAddress,
+            timestamp: tx.timestamp,
+            amount: tx.amount
+          };
+        });
+      console.log("messageTxs", messageTxs);
+
+      let registerTx = txs
+        .filter(tx => tx.type === "register")
+        .map(tx => ({
+          type: "register",
+          alias: tx.alias,
+          timestamp: tx.timestamp,
+          // TODO:
+          amount: 0.001
+        }));
+      return transferTxs
+        .concat(messageTxs)
+        .concat(registerTx)
+        .sort((a, b) => b.timestamp - a.timestamp);
     }
   },
   mounted: function() {
@@ -251,6 +285,9 @@ export default {
   flex-direction: column;
   justify-content: center;
   color: #0076ff;
+}
+#transaction-list {
+  margin-bottom: 20px;
 }
 .wallet-action ons-icon {
   text-align: center;

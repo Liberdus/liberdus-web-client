@@ -2,9 +2,9 @@
   <v-ons-page>
     <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
     <div class="proposal-create-container">
-      <h2 class="title-2">Propose development fund</h2>
+      <h2 class="title-2">Propose new funding</h2>
       <div>
-        <p class="label">Title of new feature</p>
+        <p class="label">Title</p>
         <input
           type="text"
           v-model="title"
@@ -74,7 +74,7 @@
       </div>
 
       <p class="coin-usage-warning" v-if="!allowProposal">
-        Dev Proposal window is closed now. Next dev proposal window will start at
+        Will begin on
         <strong>{{ new Date(this.nextProposalWindow) }}</strong>
       </p>
       <p
@@ -164,7 +164,7 @@ export default {
       } else {
         this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
       }
-      console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
+      // console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
       let now = Date.now();
       if (now > proposalWindow[0] && now < proposalWindow[1]) {
         return true;
@@ -185,7 +185,7 @@ export default {
         title: this.title
       };
       let proposalTx = await utils.createDevProposal(myWallet, proposal);
-      console.log(proposalTx);
+      // console.log(proposalTx);
       let isSubmitted = await utils.submitProposl(proposalTx);
       if (isSubmitted) {
         this.$ons.notification.alert("Dev Proposal is submitted.");

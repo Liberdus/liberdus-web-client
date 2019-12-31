@@ -2,8 +2,8 @@
   <v-ons-page>
     <notifications
       group="new-message"
-      position="top left"
-      width="80%"
+      position="bottom left"
+      width="100%"
       classes="my-notification-style"
     />
     <tool-bar :option="{ menu: true, notification: true, back: false}" />
@@ -21,7 +21,7 @@ import Message from "~/components/Message";
 import ToolBar from "~/components/ToolBar";
 import Home from "~/components/Home";
 import ProposalList from "~/components/ProposalList";
-import MyVoteList from "~/components/MyVoteList";
+import Funding from "~/components/Funding";
 import Setting from "~/components/Setting";
 import utils from "../assets/utils";
 import { mapGetters, mapActions } from "vuex";
@@ -40,7 +40,7 @@ export default {
     Home,
     Setting,
     ProposalList,
-    MyVoteList,
+    Funding,
     ToolBar
   },
   data() {
@@ -56,15 +56,15 @@ export default {
         },
         {
           icon: this.md() ? null : "ion-ios-filing",
-          label: "Active Proposals",
-          page: ProposalList,
-          key: "proposal"
+          label: "Funding",
+          page: Funding,
+          key: "funding"
         },
         {
           icon: this.md() ? null : "ion-ios-people",
-          label: "Completed Proposals",
-          page: MyVoteList,
-          key: "vote"
+          label: "Economy",
+          page: ProposalList,
+          key: "economy"
         },
         {
           icon: this.md() ? null : "ion-ios-chatboxes",
@@ -79,6 +79,7 @@ export default {
     next(vm => {
       if (!from || !from.name) return;
       vm.prevRoute = from;
+      console.log(from);
       if (to && to.query.tabIndex) {
         vm.activeIndex = parseInt(to.query.tabIndex);
       } else if (from.name.split("-")[0] === "proposal") {
@@ -262,6 +263,7 @@ h1 {
   border-bottom: 1px solid #e8e8e8;
   border-top: 1px solid #e8e8e8;
   margin-bottom: 20px;
+  box-shadow: none;
   .tabbar__item {
     height: 64px;
 
@@ -282,7 +284,7 @@ h1 {
 .modal__content {
   background: #fff;
   font-family: Poppins;
-  font-size: 22px;
+  font-size: 20px;
   color: #0a2463;
   letter-spacing: 0;
   text-align: left;

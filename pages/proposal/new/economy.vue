@@ -39,15 +39,13 @@
           />
         </div>
         <p class="coin-usage-warning" v-if="!allowProposal">
-          Proposal window is closed now. Next proposal window will start at
-          <strong
-            v-if="nextProposalStart"
-          >{{ new Date(nextProposalStart) }}</strong>
+          Will start on
+          <strong v-if="nextProposalStart">{{ new Date(nextProposalStart) }}</strong>
         </p>
-        <p
-          class="coin-usage-warning"
-          v-else
-        >Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
+        <p class="coin-usage-warning" v-else>
+          Started on
+          <strong>{{ new Date(currentProposalWindow[0])}}</strong>.
+        </p>
         <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
       </div>
     </div>

@@ -2,7 +2,7 @@
   <v-ons-page>
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <div class="message-tab-container">
-      <Title text="Messages" />
+      <!-- <Title text="Messages" /> -->
       <button class="white-button new-message-button" @click="$router.push('/message/new')">
         <v-ons-icon icon="ion-ios-chatboxes" size="lg"></v-ons-icon>New Message
       </button>

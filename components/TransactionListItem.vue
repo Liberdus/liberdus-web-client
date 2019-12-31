@@ -1,20 +1,45 @@
 <template>
   <div class="transaction-list-item">
+    <!-- {{ transaction }} -->
     <div class="type-plus-address">
-      <div class="transaction-type" v-if="transaction.type === 'receive'">Received from</div>
-      <div class="transaction-type" v-else-if="transaction.type === 'send'">Sent to</div>
-      <p class="other-person-address">{{ transaction.otherPersonAddress }}</p>
+      <div class="transaction-type" v-if="transaction.type === 'receive'">Received coins from</div>
+      <div class="transaction-type" v-else-if="transaction.type === 'send'">Sent coins to</div>
+      <div class="transaction-type" v-else-if="transaction.type === 'send_message'">Sent message to</div>
+      <div
+        class="transaction-type"
+        v-else-if="transaction.type === 'receive_message'"
+      >Receive message from</div>
+      <div class="transaction-type" v-else-if="transaction.type === 'register'">Register as</div>
+
+      <p
+        v-if="transaction.type === 'register'"
+        class="other-person-address"
+      >@{{ transaction.alias }}</p>
+      <p v-else-if="otherPersonHandle" class="other-person-address">@{{ otherPersonHandle }}</p>
+      <p v-else class="other-person-address">{{ transaction.otherPersonAddress }}</p>
     </div>
     <div class="timestamp-plus-amount">
       <div class="timestamp">{{ timestamp }}</div>
       <div
         v-if="transaction.type === 'receive'"
         class="transaction-amount receive-amount"
-      >+ {{ transaction.amount }}</div>
+      >+ {{ transaction.amount.toFixed(3) }}</div>
       <div
         v-else-if="transaction.type === 'send'"
         class="transaction-amount send-amount"
-      >- {{ transaction.amount }}</div>
+      >- {{ transaction.amount + 0.001 }}</div>
+      <div
+        v-else-if="transaction.type === 'send_message'"
+        class="transaction-amount send-amount"
+      >- {{ transaction.amount + 0.001 }}</div>
+      <div
+        v-else-if="transaction.type === 'receive_message'"
+        class="transaction-amount receive-amount"
+      >+ {{ transaction.amount.toFixed(3) }}</div>
+      <div
+        v-else-if="transaction.type === 'register'"
+        class="transaction-amount send-amount"
+      >- {{ transaction.amount.toFixed(3) }}</div>
     </div>
   </div>
 </template>
@@ -35,7 +60,10 @@ export default {
     }
   },
   async mounted() {
-    // if(this.transaction) this.otherPersonHandle = await utils.getHandle(this.transaction.otherPersonAddress)
+    if (this.transaction)
+      this.otherPersonHandle = await utils.getHandle(
+        this.transaction.otherPersonAddress
+      );
   }
 };
 </script>
@@ -49,7 +77,7 @@ export default {
   align-items: flex-start;
 }
 .transaction-list-item .type-plus-address {
-  width: 135px;
+  width: 140px;
 }
 .transaction-list-item .timestamp-plus-amount {
   width: 50%;
@@ -98,7 +126,7 @@ export default {
 }
 .other-person-address {
   font-family: Inconsolata;
-  font-size: 12px;
+  font-size: 14px;
   color: #0a2463;
   letter-spacing: 0.24px;
   text-align: left;
