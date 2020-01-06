@@ -114,15 +114,8 @@ export default {
   computed: {
     derivedWindow () {
       if (this.window.proposalWindow) {
-        console.log(this.window)
         return Object.assign({}, this.window)
       } else if (this.window.devProposalWindow) {
-        console.log({
-          proposalWindow: this.window.devProposalWindow,
-          votingWindow: this.window.devVotingWindow,
-          graceWindow: this.window.devGraceWindow,
-          applyWindow: this.window.devApplyWindow
-        })
         return {
           proposalWindow: this.window.devProposalWindow,
           votingWindow: this.window.devVotingWindow,

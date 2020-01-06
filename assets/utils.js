@@ -610,25 +610,12 @@ function iosCopyClipboard (str) {
   }
 }
 
-utils.createProposal = async function (sourceAcc, key, value) {
+utils.createProposal = async function (sourceAcc, newParameters) {
   const source = sourceAcc.entry
   const issue = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
-  let currentParameter = await utils.queryParameters()
-  let newParameters = {
-    nodeRewardInterval: currentParameter.nodeRewardInterval,
-    nodeRewardAmount: currentParameter.nodeRewardAmount,
-    nodePenalty: currentParameter.nodePenalty,
-    transactionFee: currentParameter.transactionFee,
-    stakeRequired: currentParameter.stakeRequired,
-    maintenanceInterval: currentParameter.maintenanceInterval,
-    maintenanceFee: currentParameter.maintenanceFee,
-    proposalFee: currentParameter.proposalFee,
-    devProposalFee: currentParameter.devProposalFee
-  }
-  newParameters[key] = value
 
-  let proposalTx = {
+  const proposalTx = {
     type: 'proposal',
     from: source.address,
     proposal: crypto.hash(`issue-${issue}-proposal-${proposalCount + 1}`),

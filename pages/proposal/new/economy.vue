@@ -8,7 +8,7 @@
         redirectUrl: '/'
       }"
     />
-    <div class="proposal-create-container">
+    <form class="proposal-create-container" @submit="onSubmitProposal">
       <h2 class="title-2">New Change Proposal</h2>
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate></v-ons-progress-circular>
@@ -24,7 +24,108 @@
           :currentWindowName="currentWindowName"
         />
 
-        <div>
+        <table id="network-table">
+          <thead>
+            <tr>
+              <td>Parameter</td>
+              <td>Current</td>
+              <td>New</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="parameter-name">Funding Proposal Fee</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.devProposalFee }}
+              </td>
+              <td class="new-value">
+                <input v-model="form.devProposalFee" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Min. Maintenance Fee</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.maintenanceFee }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.maintenanceFee" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Maintenance Interval</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.maintenanceInterval }}
+              </td>
+              <td class="new-value">
+                <input
+                  type="number"
+                  v-model="form.maintenanceInterval"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Node Penalty</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.nodePenalty }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.nodePenalty" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Node Reward Amount</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.nodeRewardAmount }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.nodeRewardAmount" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Node Reward Interval</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.nodeRewardInterval }}
+              </td>
+              <td class="new-value">
+                <input
+                  type="number"
+                  v-model="form.nodeRewardInterval"
+                  required
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Proposal Fee</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.proposalFee }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.proposalFee" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Stake Required</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.stakeRequired }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.stakeRequired" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Transaction Fee</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.transactionFee }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.transactionFee" required />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- <div>
           <p class="label">Select a parameter to change</p>
           <div class="drop-down-container">
             <v-ons-select style="width: 40%" v-model="selectedParameter">
@@ -41,23 +142,23 @@
               class="drop-down-icon"
             ></v-ons-icon>
           </div>
-        </div>
+        </div> -->
 
         <div>
           <p class="label">Description</p>
           <textarea
             name="description-input"
             class="description-input"
-            v-model="description"
+            v-model="form.description"
             cols="30"
             rows="5"
           ></textarea>
         </div>
 
-        <div>
+        <!-- <div>
           <p class="label">Enter proposed value</p>
           <input
-            type="text"
+            "
             placeholder="Proposed value"
             v-model="newValue"
             class="text-input"
@@ -65,7 +166,7 @@
             autocomplete="off"
             autocapitalize="off"
           />
-        </div>
+        </div> -->
         <p class="coin-usage-warning" v-if="!allowProposal">
           Proposal window will start on
           <strong v-if="nextProposalStart">{{
@@ -79,11 +180,12 @@
         </p>
         <Button
           text="Submit Proposal"
+          type="submit"
           :onClick="onSubmitProposal"
           :isDisabled="!allowProposal"
         />
       </div>
-    </div>
+    </form>
   </v-ons-page>
 </template>
 
@@ -164,11 +266,23 @@ export default {
         }
       ],
       newValue: '',
-      description: '',
+
       nextProposalStart: null,
       proposalWindowChecker: null,
       window: null,
-      loading: true
+      loading: true,
+      form: {
+        devProposalFee: '',
+        maintenanceFee: '',
+        maintenanceInterval: '',
+        nodePenalty: '',
+        nodeRewardAmount: '',
+        nodeRewardInterval: '',
+        proposalFee: '',
+        stakeRequired: '',
+        transactionFee: '',
+        description: ''
+      }
     }
   },
   computed: {
@@ -215,18 +329,15 @@ export default {
     formatDate (ts) {
       return moment(ts)
     },
-    async onSubmitProposal () {
+    async onSubmitProposal (e) {
+      e.preventDefault()
       let myWallet = this.getWallet
-      let proposal = {
-        parameters: {}
+      let newParameters = {}
+      for (let key in this.form) {
+        newParameters[key] = parseFloat(this.form[key])
       }
-      proposal.parameters[this.selectedParameter] = parseInt(this.newValue)
-      proposal.description = this.description
-      let proposalTx = await utils.createProposal(
-        myWallet,
-        this.selectedParameter,
-        parseFloat(this.newValue)
-      )
+      console.log(newParameters)
+      let proposalTx = await utils.createProposal(myWallet, newParameters)
       console.log(proposalTx)
       let isSubmitted = await utils.submitProposl(proposalTx)
       if (isSubmitted) {
@@ -244,8 +355,12 @@ export default {
     async isProposalWindowOpen () {
       try {
         // this.loading = true;
-        const networkParameters = await utils.queryParameters()
-        this.window = networkParameters['WINDOWS']
+        let newNetworkParameters = await utils.queryParameters()
+        if (!this.networkParameters) {
+          this.networkParameters = newNetworkParameters
+          this.form = Object.assign({}, this.networkParameters.CURRENT)
+        }
+        this.window = newNetworkParameters['WINDOWS']
         const proposalWindow = this.window.proposalWindow
         this.loading = false
         // console.log(formatDate(proposalWindow[0]), formatDate(proposalWindow[1]));
@@ -284,6 +399,37 @@ export default {
   }
   p {
     text-align: left;
+  }
+  table {
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    margin-bottom: 20px;
+    tr {
+      height: 40px;
+      td {
+        text-align: center;
+        input {
+          padding: 10px;
+          display: block;
+          height: 30px;
+          max-width: 80px;
+          margin: 0 auto;
+          border-radius: 5px;
+          box-shadow: none;
+          border: 1px solid #d5d5d5;
+        }
+      }
+      td:nth-of-type(1) {
+        text-align: left;
+      }
+    }
+    thead {
+      tr {
+        font-weight: bold;
+      }
+    }
   }
 }
 
