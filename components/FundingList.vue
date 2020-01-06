@@ -1,9 +1,7 @@
 <template>
   <v-ons-page>
-    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
-    <!-- <Title text="Funding" /> -->
-    <button class="white-button new-message-button" @click="$router.push('/proposal/new/funding')">
-      <v-ons-icon icon="ion-ios-wallet" size="lg"></v-ons-icon>New Funding
+    <button class="white-button new-funding-button" @click="$router.push('/proposal/new/funding')">
+      <v-ons-icon icon="ion-ios-wallet" size="lg"></v-ons-icon>New Funding Proposal
     </button>
     <div class="proposal-list-container">
       <ProposalListItem
@@ -19,8 +17,8 @@
 <script>
 import MessageListItem from "~/components/MessageListItem";
 import { mapGetters, mapActions } from "vuex";
+import { concat } from "lodash";
 import utils from "../assets/utils";
-import * as R from "ramda";
 import newMessageSoundFile from "../assets/new_message_sound.mp3";
 import ToolBar from "~/components/ToolBar";
 import FundingItem from "~/components/FundingItem";
@@ -38,37 +36,7 @@ export default {
     ProposalListItem
   },
   data: function() {
-    return {
-      votes: [
-        {
-          title: "Daily coins paid to node runners",
-          selectedVote: {
-            tag: "A",
-            value: 20
-          },
-          votePercents: {
-            A: 20,
-            B: 50,
-            C: 32
-          },
-          voteCount: 1200,
-          closeTimestamp: Date.now() + 1000 * 60 * 24
-        },
-        {
-          title: "Remove Staking Requirement",
-          selectedVote: {
-            tag: "B",
-            value: "No"
-          },
-          votePercents: {
-            A: 34,
-            B: 66
-          },
-          voteCount: 324,
-          closeTimestamp: Date.now() + 1000 * 60 * 24 * 3
-        }
-      ]
-    };
+    return {};
   },
   computed: {
     ...mapGetters({
@@ -83,28 +51,28 @@ export default {
       getCompletedDevProposals: "proposal/getCompletedDevProposals"
     }),
     allCompletedProposalList() {
-      let list = [];
-      if (this.getCompletedDevProposals.length > 0)
-        this.getCompletedDevProposals.forEach(p => {
-          let obj = { ...p };
-          list.push(obj);
-        });
-      if (this.getCompletedProposals.length > 0)
-        this.getCompletedProposals.forEach(p => {
-          let obj = { ...p };
-          list.push(obj);
-        });
-      list = list.sort((a, b) => b.timestamp - a.timestamp);
-      return list;
+      const combinedDevProposals = concat(
+        this.getActiveDevProposals,
+        this.getCompletedDevProposals
+      );
+      return utils.sortByTimestamp(combinedDevProposals, "desc");
     }
   }
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .my-vote-list-container {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
+}
+.new-funding-button {
+  width: auto;
+  padding: 0px 20px;
+  display: block;
+  position: relative;
+  margin: 20px auto;
+  // font-size: 13px;
 }
 </style>

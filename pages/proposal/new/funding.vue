@@ -1,181 +1,251 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
-    <div class="proposal-create-container">
-      <h2 class="title-2">Propose new funding</h2>
-      <div>
-        <p class="label">Title</p>
-        <input
-          type="text"
-          v-model="title"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
+    <tool-bar
+      :option="{
+        menu: false,
+        notification: false,
+        back: true,
+        redirectUrl: '/'
+      }"
+    />
+    <div class="funding-create-container">
+      <h2 class="title-2">New Funding Proposal</h2>
+      <div v-if="loading" class="loading-status">
+        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      </div>
+      <div class="loading-status" v-else-if="!loading && !window">
+        Unable to get proposal window from server
+      </div>
+      <div v-else>
+        <p class="body">Submit new proposal when proposal window is active.</p>
+        <window-info
+          v-if="window"
+          :window="window"
+          :currentWindowName="currentWindowName"
         />
-      </div>
-
-      <div>
-        <p class="label">Description</p>
-        <textarea
-          name="description-input"
-          class="description-input"
-          v-model="description"
-          cols="30"
-          rows="5"
-        ></textarea>
-      </div>
-
-      <div>
-        <p class="label">Proposed Amount</p>
-        <input
-          type="text"
-          v-model="amount"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
-        />
-      </div>
-      <div>
-        <p class="label">Payment Plan</p>
-        <div class="drop-down-container">
-          <v-ons-select style="width: 40%" v-model="selectedPaymentType">
-            <option v-for="item in paymentType" :value="item.value" :key="item.id">{{ item.text }}</option>
-          </v-ons-select>
-          <v-ons-icon icon="ion-ios-arrow-down" size="lg" class="drop-down-icon"></v-ons-icon>
+        <div>
+          <p class="label">Title</p>
+          <input
+            type="text"
+            v-model="title"
+            class="text-input"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
         </div>
-      </div>
 
-      <div v-if="selectedPaymentType === 'multiple'">
-        <p class="label">Payment Count</p>
-        <input
-          type="text"
-          placeholder="5"
-          v-model="paymentCount"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
+        <div>
+          <p class="label">Description</p>
+          <textarea
+            name="description-input"
+            class="description-input"
+            v-model="description"
+            cols="30"
+            rows="5"
+          ></textarea>
+        </div>
+
+        <div>
+          <p class="label">Proposed Amount</p>
+          <input
+            type="text"
+            v-model="amount"
+            class="text-input"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+        </div>
+        <div>
+          <p class="label">Payment Plan</p>
+          <div class="drop-down-container">
+            <v-ons-select style="width: 40%" v-model="selectedPaymentType">
+              <option
+                v-for="item in paymentType"
+                :value="item.value"
+                :key="item.id"
+                >{{ item.text }}</option
+              >
+            </v-ons-select>
+            <v-ons-icon
+              icon="ion-ios-arrow-down"
+              size="lg"
+              class="drop-down-icon"
+            ></v-ons-icon>
+          </div>
+        </div>
+
+        <div v-if="selectedPaymentType === 'multiple'">
+          <p class="label">Payment Count</p>
+          <input
+            type="text"
+            placeholder="5"
+            v-model="paymentCount"
+            class="text-input"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+        </div>
+
+        <div v-if="selectedPaymentType === 'multiple'">
+          <p class="label">Delay between payments (in minutes)</p>
+          <input
+            type="text"
+            placeholder="0"
+            v-model="delay"
+            class="text-input"
+            autocorrect="off"
+            autocomplete="off"
+            autocapitalize="off"
+          />
+        </div>
+
+        <p class="coin-usage-warning" v-if="!allowProposal">
+          Will begin on
+          <strong>{{ new Date(this.nextProposalWindow) }}</strong>
+        </p>
+        <p class="coin-usage-warning" v-else>
+          Dev Proposal window is open until
+          {{ new Date(window.devProposalWindow[1]) }}.
+        </p>
+        <Button
+          text="Submit Proposal"
+          :onClick="onSubmitProposal"
+          :isDisabled="!allowProposal"
         />
       </div>
-
-      <div v-if="selectedPaymentType === 'multiple'">
-        <p class="label">Delay between payments (in minutes)</p>
-        <input
-          type="text"
-          placeholder="0"
-          v-model="delay"
-          class="text-input"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
-        />
-      </div>
-
-      <p class="coin-usage-warning" v-if="!allowProposal">
-        Will begin on
-        <strong>{{ new Date(this.nextProposalWindow) }}</strong>
-      </p>
-      <p
-        class="coin-usage-warning"
-        v-else
-      >Dev Proposal window is open until {{ new Date(currentProposalWindow[1])}}.</p>
-      <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import ProposalListItem from "~/components/ProposalListItem";
-import Choice from "~/components/Choice";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import WindowInfo from '~/components/WindowInfo'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import ProposalListItem from '~/components/ProposalListItem'
+import Choice from '~/components/Choice'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
     ToolBar,
     Button,
+    WindowInfo,
     Title,
     Choice
   },
-  data: function() {
+  data: function () {
     return {
-      selectedPaymentType: "single",
+      selectedPaymentType: 'single',
       amount: 10000,
-      title: "",
-      description: "",
+      title: '',
+      description: '',
       paymentType: [
         {
           id: 1,
-          text: "Single",
-          value: "single"
+          text: 'Single',
+          value: 'single'
         },
         {
           id: 2,
-          text: "Multiple",
-          value: "multiple"
+          text: 'Multiple',
+          value: 'multiple'
         }
       ],
       paymentCount: 1,
       delay: 0,
       allowProposal: false,
       nextProposalWindow: null,
-      currentProposalWindow: null,
-      proposalWindowChecker: null
-    };
+      proposalWindowChecker: null,
+      loading: true,
+      window: null
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState"
-    })
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState'
+    }),
+    currentWindowName () {
+      if (!this.window) return
+      const now = Date.now()
+      if (
+        now >= this.window.devProposalWindow[0] &&
+        now < this.window.devProposalWindow[1]
+      ) {
+        return 'PROPOSAL'
+      } else if (
+        now >= this.window.devVotingWindow[0] &&
+        now < this.window.devVotingWindow[1]
+      ) {
+        return 'VOTING'
+      } else if (
+        now >= this.window.devGraceWindow[0] &&
+        now < this.window.devGraceWindow[1]
+      ) {
+        return 'GRACE'
+      } else if (
+        now >= this.window.devApplyWindow[0] &&
+        now < this.window.devApplyWindow[1]
+      ) {
+        return 'APPLY'
+      }
+    }
   },
-  mounted: async function() {
+  mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
-      this.allowProposal = await this.isDevProposalWindowOpen();
-    }, 3000);
+      this.allowProposal = await this.isDevProposalWindowOpen()
+    }, 3000)
   },
-  beforeDestroy: function() {
-    clearInterval(this.proposalWindowChecker);
+  beforeDestroy: function () {
+    clearInterval(this.proposalWindowChecker)
   },
   methods: {
-    async isDevProposalWindowOpen() {
-      let networkParameters = await utils.queryParameters();
-      let proposalWindow = networkParameters["DEV_WINDOWS"].devProposalWindow;
-      let applyWindow = networkParameters["DEV_WINDOWS"].devApplyWindow;
-      this.currentProposalWindow = proposalWindow;
-      if (networkParameters["NEXT_DEV_WINDOWS"].devProposalWindow) {
-        this.nextProposalWindow =
-          networkParameters["NEXT_DEV_WINDOWS"].devProposalWindow[0];
-      } else {
-        this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4;
+    async isDevProposalWindowOpen () {
+      try {
+        // this.loading = true
+        let networkParameters = await utils.queryParameters()
+        this.window = networkParameters['DEV_WINDOWS']
+        console.log(this.window)
+        let proposalWindow = this.window.devProposalWindow
+        let applyWindow = this.window.devApplyWindow
+        this.loading = false
+        if (proposalWindow) {
+          this.nextProposalWindow =
+            networkParameters['NEXT_DEV_WINDOWS'].devProposalWindow[0]
+        } else {
+          this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4
+        }
+        // console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
+        let now = Date.now()
+        if (now > proposalWindow[0] && now < proposalWindow[1]) {
+          return true
+        }
+        return false
+      } catch (e) {
+        this.loading = false
+        return false
       }
-      // console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
-      let now = Date.now();
-      if (now > proposalWindow[0] && now < proposalWindow[1]) {
-        return true;
-      }
-      return false;
     },
-    redirect(url) {
-      this.$router.push(url);
+    redirect (url) {
+      this.$router.push(url)
     },
-    async onSubmitProposal() {
-      let myWallet = this.getWallet;
+    async onSubmitProposal () {
+      let myWallet = this.getWallet
       let proposal = {
         description: this.description,
         totalAmount: parseFloat(this.amount),
@@ -183,35 +253,41 @@ export default {
         delay: this.delay * 60 * 1000,
         paymentType: this.selectedPaymentType,
         title: this.title
-      };
-      let proposalTx = await utils.createDevProposal(myWallet, proposal);
+      }
+      let proposalTx = await utils.createDevProposal(myWallet, proposal)
       // console.log(proposalTx);
-      let isSubmitted = await utils.submitProposl(proposalTx);
+      let isSubmitted = await utils.submitProposl(proposalTx)
       if (isSubmitted) {
-        this.$ons.notification.alert("Dev Proposal is submitted.");
-        this.amount = "";
-        this.selectedPaymentType = "single";
-        this.delay = 0;
-        this.paymentCount = 1;
-        this.title = "";
-        this.description = "";
-        this.redirect("/");
+        this.$ons.notification.alert('Dev Proposal is submitted.')
+        this.amount = ''
+        this.selectedPaymentType = 'single'
+        this.delay = 0
+        this.paymentCount = 1
+        this.title = ''
+        this.description = ''
+        this.redirect('/')
       }
     }
   }
-};
+}
 </script>
 
-<style>
-.proposal-create-container {
+<style lang="scss">
+.funding-create-container {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
+  .loading-status {
+    text-align: center;
+    margin: 20px auto;
+    position: relative;
+    top: 100px;
+  }
+  p {
+    text-align: left;
+  }
 }
-.proposal-create-container p {
-  text-align: left;
-}
-.proposal-create-container > div {
+.funding-create-container > div {
   margin: 10px auto;
   width: 100%;
 }
@@ -269,5 +345,3 @@ export default {
   line-height: 20px;
 }
 </style>
-
-

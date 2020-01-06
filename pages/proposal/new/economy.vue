@@ -1,17 +1,45 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
+    <tool-bar
+      :option="{
+        menu: false,
+        notification: false,
+        back: true,
+        redirectUrl: '/'
+      }"
+    />
     <div class="proposal-create-container">
-      <h2 class="title-2">Propose new network parameter</h2>
-      <div v-if="!currentProposalWindow">Unable to get proposal window from server.</div>
+      <h2 class="title-2">New Change Proposal</h2>
+      <div v-if="loading" class="loading-status">
+        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      </div>
+      <div class="loading-status" v-else-if="!loading && !window">
+        Unable to get proposal window from server
+      </div>
       <div v-else>
+        <p class="body">Submit new proposal when proposal window is active.</p>
+        <window-info
+          v-if="window"
+          :window="window"
+          :currentWindowName="currentWindowName"
+        />
+
         <div>
           <p class="label">Select a parameter to change</p>
           <div class="drop-down-container">
             <v-ons-select style="width: 40%" v-model="selectedParameter">
-              <option v-for="item in parameters" :value="item.value" :key="item.id">{{ item.text }}</option>
+              <option
+                v-for="item in parameters"
+                :value="item.value"
+                :key="item.id"
+                >{{ item.text }}</option
+              >
             </v-ons-select>
-            <v-ons-icon icon="ion-ios-arrow-down" size="lg" class="drop-down-icon"></v-ons-icon>
+            <v-ons-icon
+              icon="ion-ios-arrow-down"
+              size="lg"
+              class="drop-down-icon"
+            ></v-ons-icon>
           </div>
         </div>
 
@@ -39,177 +67,226 @@
           />
         </div>
         <p class="coin-usage-warning" v-if="!allowProposal">
-          Will start on
-          <strong v-if="nextProposalStart">{{ new Date(nextProposalStart) }}</strong>
+          Proposal window will start on
+          <strong v-if="nextProposalStart">{{
+            formatDate(nextProposalStart)
+          }}</strong>
         </p>
         <p class="coin-usage-warning" v-else>
           Started on
-          <strong>{{ new Date(currentProposalWindow[0])}}</strong>.
+          <strong>{{ formatDate(window.proposalWindow[0]) }}</strong
+          >.
         </p>
-        <Button text="Submit Proposal" :onClick="onSubmitProposal" :isDisabled="!allowProposal" />
+        <Button
+          text="Submit Proposal"
+          :onClick="onSubmitProposal"
+          :isDisabled="!allowProposal"
+        />
       </div>
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import ProposalListItem from "~/components/ProposalListItem";
-import Choice from "~/components/Choice";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue'
+import moment from 'moment'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import ProposalListItem from '~/components/ProposalListItem'
+import WindowInfo from '~/components/WindowInfo'
+import Choice from '~/components/Choice'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
     ToolBar,
+    WindowInfo,
     Button,
     Title,
     Choice
   },
-  data: function() {
+  data: function () {
     return {
-      selectedParameter: "transactionFee",
+      networkParameters: null,
+      selectedParameter: 'transactionFee',
       allowProposal: false,
       parameters: [
         {
           id: 1,
-          text: "Maintenance Fee",
-          value: "maintenanceFee"
+          text: 'Maintenance Fee',
+          value: 'maintenanceFee'
         },
         {
           id: 2,
-          text: "Maintenance Interval",
-          value: "maintenanceInterval"
+          text: 'Maintenance Interval',
+          value: 'maintenanceInterval'
         },
         {
           id: 3,
-          text: "Node Reward Amount",
-          value: "nodeRewardAmount"
+          text: 'Node Reward Amount',
+          value: 'nodeRewardAmount'
         },
         {
           id: 4,
-          text: "Node Reward Interval",
-          value: "nodeRewardInterval"
+          text: 'Node Reward Interval',
+          value: 'nodeRewardInterval'
         },
         {
           id: 5,
-          text: "Transaction Fee",
-          value: "transactionFee"
+          text: 'Transaction Fee',
+          value: 'transactionFee'
         },
         {
           id: 6,
-          text: "Proposal Fee",
-          value: "proposalFee"
+          text: 'Proposal Fee',
+          value: 'proposalFee'
         },
         {
           id: 7,
-          text: "Stake Required",
-          value: "stakeRequired"
+          text: 'Stake Required',
+          value: 'stakeRequired'
         },
         {
           id: 8,
-          text: "Node Penalty",
-          value: "nodePenalty"
+          text: 'Node Penalty',
+          value: 'nodePenalty'
         }
       ],
-      newValue: "",
-      description: "",
+      newValue: '',
+      description: '',
       nextProposalStart: null,
-      currentProposalWindow: null,
-      proposalWindowChecker: null
-    };
+      proposalWindowChecker: null,
+      window: null,
+      loading: true
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState"
-    })
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState'
+    }),
+    currentWindowName () {
+      if (!this.window) return
+      const now = Date.now()
+      if (
+        now >= this.window.proposalWindow[0] &&
+        now < this.window.proposalWindow[1]
+      ) {
+        return 'PROPOSAL'
+      } else if (
+        now >= this.window.votingWindow[0] &&
+        now < this.window.votingWindow[1]
+      ) {
+        return 'VOTING'
+      } else if (
+        now >= this.window.graceWindow[0] &&
+        now < this.window.graceWindow[1]
+      ) {
+        return 'GRACE'
+      } else if (
+        now >= this.window.applyWindow[0] &&
+        now < this.window.applyWindow[1]
+      ) {
+        return 'APPLY'
+      }
+    }
   },
-  mounted: async function() {
+  mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
-      this.allowProposal = await this.isProposalWindowOpen();
-    }, 3000);
+      this.allowProposal = await this.isProposalWindowOpen()
+    }, 3000)
   },
-  beforeDestroy: function() {
-    console.log("Clearing proposal window checker...");
-    clearInterval(this.proposalWindowChecker);
+  beforeDestroy: function () {
+    console.log('Clearing proposal window checker...')
+    clearInterval(this.proposalWindowChecker)
   },
   methods: {
-    async onSubmitProposal() {
-      let myWallet = this.getWallet;
+    formatDate (ts) {
+      return moment(ts)
+    },
+    async onSubmitProposal () {
+      let myWallet = this.getWallet
       let proposal = {
         parameters: {}
-      };
-      proposal.parameters[this.selectedParameter] = parseInt(this.newValue);
-      proposal.description = this.description;
+      }
+      proposal.parameters[this.selectedParameter] = parseInt(this.newValue)
+      proposal.description = this.description
       let proposalTx = await utils.createProposal(
         myWallet,
         this.selectedParameter,
         parseFloat(this.newValue)
-      );
-      console.log(proposalTx);
-      let isSubmitted = await utils.submitProposl(proposalTx);
-      console.log("isSubmitted", isSubmitted);
+      )
+      console.log(proposalTx)
+      let isSubmitted = await utils.submitProposl(proposalTx)
       if (isSubmitted) {
-        this.$ons.notification.alert("Your proposal is submitted.");
-        this.newValue = "";
-        this.redirect("/");
+        this.$ons.notification.alert('Your proposal is submitted.')
+        this.newValue = ''
+        this.redirect('/')
       } else {
-        this.$ons.notification.alert("Failed to submit proposal");
+        this.$ons.notification.alert('Failed to submit proposal')
       }
     },
-    redirect(url) {
-      this.$router.push(url);
+    redirect (url) {
+      this.$router.push(url)
     },
-    async isProposalWindowOpen() {
+    decideCurrentWindow () {},
+    async isProposalWindowOpen () {
       try {
-        let networkParameters = await utils.queryParameters();
-        let proposalWindow = networkParameters["WINDOWS"].proposalWindow;
-        let applyWindow = networkParameters["WINDOWS"].applyWindow;
-        this.currentProposalWindow = proposalWindow;
-        console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
-        if (networkParameters["NEXT_WINDOWS"].proposalWindow) {
-          this.nextProposalStart =
-            networkParameters["NEXT_WINDOWS"].proposalWindow[0];
+        // this.loading = true;
+        const networkParameters = await utils.queryParameters()
+        this.window = networkParameters['WINDOWS']
+        const proposalWindow = this.window.proposalWindow
+        this.loading = false
+        // console.log(formatDate(proposalWindow[0]), formatDate(proposalWindow[1]));
+
+        if (this.window.proposalWindow) {
+          this.nextProposalStart = this.window.proposalWindow[0]
         } else {
-          this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4;
+          this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4
         }
 
-        let now = Date.now();
-        if (proposalWindow[0] > now) this.nextProposalStart = proposalWindow[0];
+        let now = Date.now()
+        if (proposalWindow[0] > now) this.nextProposalStart = proposalWindow[0]
         if (now > proposalWindow[0] && now < proposalWindow[1]) {
-          return true;
+          return true
         }
-        return false;
+        return false
       } catch (e) {
-        console.warn(e);
-        return false;
+        console.warn(e)
+        this.loading = false
+        return false
       }
     }
   }
-};
+}
 </script>
-<style>
+<style lang="scss">
 .proposal-create-container {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
+  .loading-status {
+    text-align: center;
+    margin: 20px auto;
+    position: relative;
+    top: 100px;
+  }
+  p {
+    text-align: left;
+  }
 }
-.proposal-create-container p {
-  text-align: left;
-}
+
 .proposal-create-container > div {
   margin: 10px auto;
   width: 100%;
@@ -268,4 +345,3 @@ export default {
   line-height: 20px;
 }
 </style>
-

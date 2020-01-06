@@ -3,7 +3,10 @@
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <div class="message-tab-container">
       <!-- <Title text="Messages" /> -->
-      <button class="white-button new-message-button" @click="$router.push('/message/new')">
+      <button
+        class="white-button new-message-button"
+        @click="$router.push('/message/new')"
+      >
         <v-ons-icon icon="ion-ios-chatboxes" size="lg"></v-ons-icon>New Message
       </button>
       <v-ons-list class="message-list">
@@ -20,8 +23,8 @@
 <script>
 import MessageListItem from "~/components/MessageListItem";
 import { mapGetters, mapActions } from "vuex";
+import { last } from "lodash";
 import utils from "../assets/utils";
-import * as R from "ramda";
 import newMessageSoundFile from "../assets/new_message_sound.mp3";
 import ToolBar from "~/components/ToolBar";
 import Title from "~/components/baisc/Title";
@@ -56,8 +59,8 @@ export default {
         for (let handle in chats) {
           list.push({
             handle,
-            timestamp: R.takeLast(1, chats[handle].messages)[0].timestamp,
-            lastMessage: R.takeLast(1, chats[handle].messages)[0].body
+            timestamp: last(chats[handle].messages).timestamp,
+            lastMessage: last(chats[handle].messages).body
           });
         }
         list = list.sort((a, b) => b.timestamp - a.timestamp);

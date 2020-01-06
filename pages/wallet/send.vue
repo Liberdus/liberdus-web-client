@@ -3,7 +3,14 @@
     <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <div class="send-coins-container">
       <Title text="Send Coins" />
-      <div v-if="requiredTxFee">
+      <div v-if="loading" class="loading-status">
+        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      </div>
+      <div
+        class="loading-status"
+        v-else-if="!loading && !requiredTxFee"
+      >Unable to get transaction fee from server</div>
+      <div v-else>
         <p class="body">Enter username</p>
         <q-reader :onDetectQR="onDetectUsername" :scanning="showScanner" />
         <v-ons-button
@@ -54,8 +61,6 @@
         >Tx Fee {{ requiredTxFee }} coins will be deducted from your account.</p>
         <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
       </div>
-
-      <div v-else>Getting required tx fee...</div>
     </div>
   </v-ons-page>
 </template>
@@ -96,7 +101,8 @@ export default {
       isUsernameExist: true,
       checkingUsername: false,
       hasUsernameFocus: false,
-      requiredTxFee: null
+      requiredTxFee: null,
+      loading: true
     };
   },
   validations: {
@@ -142,6 +148,7 @@ export default {
     if (network.CURRENT.transactionFee) {
       this.requiredTxFee = network.CURRENT.transactionFee;
     }
+    this.loading = false;
   },
   methods: {
     redirect(url, option) {

@@ -1,4 +1,4 @@
-<template >
+<template>
   <v-ons-page>
     <notifications
       group="new-message"
@@ -6,33 +6,39 @@
       width="100%"
       classes="my-notification-style"
     />
-    <tool-bar :option="{ menu: true, notification: true, back: false}" />
-    <v-ons-tabbar swipeable position="top" :tabs="tabs" :visible="true" :index.sync="activeIndex"></v-ons-tabbar>
+    <tool-bar :option="{ menu: true, notification: true, back: false }" />
+    <v-ons-tabbar
+      swipeable
+      position="top"
+      :tabs="tabs"
+      :visible="true"
+      :index.sync="activeIndex"
+    ></v-ons-tabbar>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import Message from "~/components/Message";
-import ToolBar from "~/components/ToolBar";
-import Home from "~/components/Home";
-import ProposalList from "~/components/ProposalList";
-import Funding from "~/components/Funding";
-import Setting from "~/components/Setting";
-import utils from "../assets/utils";
-import { mapGetters, mapActions } from "vuex";
-import Vuelidate from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
-import Notifications from "vue-notification";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import Message from '~/components/Message'
+import ToolBar from '~/components/ToolBar'
+import Home from '~/components/Home'
+import ProposalList from '~/components/ProposalList'
+import FundingList from '~/components/FundingList'
+import Setting from '~/components/Setting'
+import utils from '../assets/utils'
+import { mapGetters, mapActions } from 'vuex'
+import Vuelidate from 'vuelidate'
+import { required, minLength, between } from 'vuelidate/lib/validators'
+import Notifications from 'vue-notification'
 
-Vue.use(Vuelidate);
-Vue.use(VueOnsen);
-Vue.use(Notifications);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(Vuelidate)
+Vue.use(VueOnsen)
+Vue.use(Notifications)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -40,109 +46,113 @@ export default {
     Home,
     Setting,
     ProposalList,
-    Funding,
+    FundingList,
     ToolBar
   },
-  data() {
+  data () {
     return {
       activeIndex: 0,
       tabs: [
         {
-          icon: this.md() ? null : "ion-ios-wallet",
-          label: "Wallet",
+          icon: this.md() ? null : 'ion-ios-wallet',
+          label: 'Wallet',
           page: Home,
-          key: "home"
+          key: 'home'
         },
         {
-          icon: this.md() ? null : "ion-ios-chatboxes",
-          label: "Message",
+          icon: this.md() ? null : 'ion-ios-chatboxes',
+          label: 'Message',
           page: Message,
-          key: "message"
+          key: 'message'
         },
         {
-          icon: this.md() ? null : "ion-ios-filing",
-          label: "Funding",
-          page: Funding,
-          key: "funding"
+          icon: this.md() ? null : 'ion-ios-filing',
+          label: 'Funding',
+          page: FundingList,
+          key: 'funding'
         },
         {
-          icon: this.md() ? null : "ion-ios-people",
-          label: "Economy",
+          icon: this.md() ? null : 'ion-ios-people',
+          label: 'Economy',
           page: ProposalList,
-          key: "economy"
+          key: 'economy'
         }
       ]
-    };
+    }
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter (to, from, next) {
     next(vm => {
-      if (!from || !from.name) return;
-      vm.prevRoute = from;
-      console.log(from);
+      if (!from || !from.name) return
+      vm.prevRoute = from
+      console.log(from)
       if (to && to.query.tabIndex) {
-        vm.activeIndex = parseInt(to.query.tabIndex);
-      } else if (from.name.split("-")[0] === "proposal") {
-        vm.activeIndex = 2;
-      } else if (from.name.split("-")[0] === "message") {
-        vm.activeIndex = 1;
-      } else if (from.name.split("-")[0] === "wallet") {
-        vm.activeIndex = 0;
+        vm.activeIndex = parseInt(to.query.tabIndex)
+      } else if (from.name.split('-')[0] === 'proposal') {
+        if (from.name.split('-')[2] === 'funding') {
+          vm.activeIndex = 2
+        } else {
+          vm.activeIndex = 3
+        }
+      } else if (from.name.split('-')[0] === 'message') {
+        vm.activeIndex = 1
+      } else if (from.name.split('-')[0] === 'wallet') {
+        vm.activeIndex = 0
       }
-    });
+    })
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx",
-      setUIReady: "chat/setUIReady",
-      addWallet: "wallet/addWallet",
-      updateActiveProposals: "proposal/updateActiveProposals",
-      updateCompletedProposals: "proposal/updateCompletedProposals",
-      updateActiveDevProposals: "proposal/updateActiveDevProposals",
-      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
+      updateAppState: 'chat/updateAppState',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx',
+      setUIReady: 'chat/setUIReady',
+      addWallet: 'wallet/addWallet',
+      updateActiveProposals: 'proposal/updateActiveProposals',
+      updateCompletedProposals: 'proposal/updateCompletedProposals',
+      updateActiveDevProposals: 'proposal/updateActiveDevProposals',
+      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
     }),
-    md() {
-      return this.$ons.platform.isAndroid();
+    md () {
+      return this.$ons.platform.isAndroid()
     }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getLastMessage: "chat/getLastMessage",
-      getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady",
-      getActiveProposals: "proposal/getActiveProposals",
-      getCompletedProposals: "proposal/getCompletedProposals",
-      getActiveDevProposals: "proposal/getActiveDevProposals",
-      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getLastMessage: 'chat/getLastMessage',
+      getLastTx: 'chat/getLastTx',
+      isUIReady: 'chat/isUIReady',
+      getActiveProposals: 'proposal/getActiveProposals',
+      getCompletedProposals: 'proposal/getCompletedProposals',
+      getActiveDevProposals: 'proposal/getActiveDevProposals',
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
     }),
-    title() {
-      return this.tabs[this.activeIndex].label;
+    title () {
+      return this.tabs[this.activeIndex].label
     }
   },
-  async mounted() {
-    let self = this;
+  async mounted () {
+    let self = this
     if (!this.isUIReady) {
-      this.$router.push("/loading");
+      this.$router.push('/loading')
       // return;
     }
     if (!this.getWallet) {
-      const wallet = utils.loadWallet();
-      const lastMessage = utils.loadLastMessage();
-      const lastTx = utils.loadLastTx();
+      const wallet = utils.loadWallet()
+      const lastMessage = utils.loadLastMessage()
+      const lastTx = utils.loadLastTx()
       if (wallet) {
-        this.addWallet(wallet);
-        console.log("Wallet added to vuex store.");
+        this.addWallet(wallet)
+        console.log('Wallet added to vuex store.')
       }
       if (lastMessage) {
-        console.log("Last message added to vuex store.");
-        this.updateLastMessage(lastMessage);
+        console.log('Last message added to vuex store.')
+        this.updateLastMessage(lastMessage)
       }
       if (lastTx) {
-        console.log("Last tx added to vuex store.");
-        this.updateLastTx(lastTx);
+        console.log('Last tx added to vuex store.')
+        this.updateLastTx(lastTx)
       }
     }
 
@@ -168,7 +178,7 @@ export default {
     //   }
     // }, 120000);
   }
-};
+}
 </script>
 
 <style lang="scss">

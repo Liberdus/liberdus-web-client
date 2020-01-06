@@ -3,6 +3,7 @@ import axios from 'axios'
 import CONFIG from '../config'
 import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
+import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 let host
 let seedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
 let utils = {}
@@ -497,6 +498,27 @@ utils.getProposalCount = async function () {
 utils.getDevProposalCount = async function () {
   const res = await axios.get(`http://${host}/proposals/dev/count`)
   return res.data.devProposalCount
+}
+
+utils.isTransferTx = tx => tx.type === 'transfer'
+utils.isMessageTx = tx => tx.type === 'message'
+utils.isRegisterTx = tx => tx.type === 'register'
+utils.isSender = (tx, myAddress) => tx.from === myAddress
+utils.getTransferType = (tx, myAddress) =>
+  utils.isSender(tx, myAddress) ? 'send' : 'receive'
+utils.getMessageType = (tx, myAddress) =>
+  utils.isSender(tx, myAddress) ? 'send_message' : 'receive_message'
+utils.filterByTxType = (txList, type) => {
+  if (type === 'transfer') return filter(txList, utils.isTransferTx)
+  else if (type === 'message') return filter(txList, utils.isMessageTx)
+  else if (type === 'register') return filter(txList, utils.isRegisterTx)
+}
+utils.sortByTimestamp = (list, direction) => {
+  if (direction === 'desc') {
+    return orderBy(list, ['timestamp'], ['desc'])
+  } else {
+    return orderBy(list, ['timestamp'], ['asc'])
+  }
 }
 
 function isIosSafari () {

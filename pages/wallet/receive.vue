@@ -2,7 +2,7 @@
   <v-ons-page>
     <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <!-- TODO: -->
-    <div class="import-account-container">
+    <div class="receive-container">
       <Title text="Receive Coins" />
       <p>Share your username to your senders</p>
       <!-- TODO
@@ -70,10 +70,12 @@ export default {
 </script>
 
 <style>
-.import-account-container {
+.receive-container {
   text-align: center;
-  margin-top: 30px;
+  margin: 30px auto;
   height: auto;
+  width: 90%;
+  max-width: 600px;
 }
 .username-input {
   margin-right: 5px;
@@ -99,7 +101,7 @@ export default {
   justify-content: center;
   align-items: center;
 }
-.import-account-container p {
+.receive-container p {
   font-family: Poppins;
   font-size: 13px;
   color: #636363;

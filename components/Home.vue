@@ -1,12 +1,7 @@
 <template>
   <v-ons-page>
-    <!-- {{ getAppState }} -->
-    <!-- <div v-if="!getAppState">Loading...</div> -->
-    <!-- <div class="home-tab-container" v-else> -->
-    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <div class="home-tab-container">
-      <!-- {{ getAppState }} -->
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance">
           {{ getAppState.data.balance.toFixed(3) }}
@@ -47,6 +42,8 @@
 <script>
 import TransactionListItem from "~/components/TransactionListItem";
 import { mapGetters, mapActions } from "vuex";
+import { map, filter, concat, flow, chain } from "lodash";
+import * as _ from "lodash";
 import utils from "../assets/utils";
 import ToolBar from "~/components/ToolBar";
 import Title from "~/components/baisc/Title";
@@ -82,64 +79,42 @@ export default {
       if (!this.getWallet || !this.getAppState) return [];
       let myAddress = this.getWallet.entry.address;
       let txs = this.getAppState.data.transactions;
-      let transferTxs = txs
-        .filter(tx => tx.type === "transfer")
-        .map(tx => {
-          let type;
-          let otherPersonAddress;
-          if (tx.type === "transfer") {
-            if (tx.from == myAddress && tx.to == myAddress) type = "self";
-            else if (tx.from == myAddress) {
-              type = "send";
-              otherPersonAddress = tx.to;
-            } else if (tx.to == myAddress) {
-              type = "receive";
-              otherPersonAddress = tx.from;
-            } else type = "claim";
-          } else {
-            type = tx.type;
-          }
+      const RawTransferTxs = utils.filterByTxType(txs, "transfer");
+      const RawMessageTxs = utils.filterByTxType(txs, "message");
+      const RawRegisterTxs = utils.filterByTxType(txs, "register");
+      const processRawTransferTxs = txList =>
+        map(txList, tx => {
           return {
-            type,
-            otherPersonAddress,
+            type: utils.getTransferType(tx, myAddress),
+            otherPersonAddress: tx.to,
             timestamp: tx.timestamp,
             amount: tx.amount
           };
         });
-      let messageTxs = txs
-        .filter(tx => tx.type === "message")
-        .map(tx => {
-          let type;
-          let otherPersonAddress;
-          if (tx.from == myAddress) {
-            type = "send_message";
-            otherPersonAddress = tx.to;
-          } else if (tx.to == myAddress) {
-            type = "receive_message";
-            otherPersonAddress = tx.from;
-          }
+      const processRawMessageTxs = txList =>
+        map(txList, tx => {
           return {
-            type,
-            otherPersonAddress,
+            type: utils.getMessageType(tx, myAddress),
+            otherPersonAddress: tx.to,
             timestamp: tx.timestamp,
             amount: tx.amount
           };
         });
-      console.log("messageTxs", messageTxs);
-
-      let registerTx = txs
-        .filter(tx => tx.type === "register")
-        .map(tx => ({
-          type: "register",
-          alias: tx.alias,
-          timestamp: tx.timestamp,
-          // TODO:
-          amount: 0.001
-        }));
-      return transferTxs
-        .concat(messageTxs)
-        .concat(registerTx)
-        .sort((a, b) => b.timestamp - a.timestamp);
+      const processRegisterTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: "register",
+            alias: tx.alias,
+            timestamp: tx.timestamp,
+            // TODO:
+            amount: 0.001
+          };
+        });
+      const transferTxs = processRawTransferTxs(RawTransferTxs);
+      const messageeTxs = processRawMessageTxs(RawMessageTxs);
+      const registerTx = processRegisterTxs(RawRegisterTxs);
+      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx);
+      return utils.sortByTimestamp(allProcessedTxs, "desc");
     }
   },
   mounted: function() {

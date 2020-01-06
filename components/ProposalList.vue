@@ -1,12 +1,7 @@
 <template>
   <v-ons-page>
-    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
-    <!-- <Title text="Economy Proposals" /> -->
-    <!-- {{ getActiveDevProposals }}
-    {{ getCompletedDevProposals }}
-    {{ allActiveProposalList }}-->
-    <button class="white-button new-message-button" @click="$router.push('/proposal/new/economy')">
-      <v-ons-icon icon="ion-ios-paper" size="lg"></v-ons-icon>New Proposal
+    <button class="white-button new-proposal-button" @click="$router.push('/proposal/new/economy')">
+      <v-ons-icon icon="ion-ios-paper" size="lg"></v-ons-icon>New Change Proposal
     </button>
     <div class="proposal-list-container">
       <ProposalListItem
@@ -23,7 +18,6 @@
 import MessageListItem from "~/components/MessageListItem";
 import { mapGetters, mapActions } from "vuex";
 import utils from "../assets/utils";
-import * as R from "ramda";
 import newMessageSoundFile from "../assets/new_message_sound.mp3";
 import ToolBar from "~/components/ToolBar";
 import ProposalListItem from "~/components/ProposalListItem";
@@ -160,19 +154,17 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .nuxt-link {
   width: 100%;
 }
-.new-message-btn {
+.new-proposal-button {
+  width: auto;
+  padding: 0px 20px;
+  display: block;
+  position: relative;
   margin: 20px auto;
-  width: 100%;
-  text-align: center;
-  font-size: 13px;
-}
-.message-list {
-  max-width: 600px;
-  margin: 20px auto;
+  // font-size: 13px;
 }
 .proposal-list-container {
   width: 90%;
