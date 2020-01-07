@@ -1,15 +1,14 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true }" />
     <div class="send-coins-container">
       <Title text="Send Coins" />
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate></v-ons-progress-circular>
       </div>
-      <div
-        class="loading-status"
-        v-else-if="!loading && !requiredTxFee"
-      >Unable to get transaction fee from server</div>
+      <div class="loading-status" v-else-if="!loading && !requiredTxFee">
+        Unable to get transaction fee from server
+      </div>
       <div v-else>
         <p class="body">Enter username</p>
         <q-reader :onDetectQR="onDetectUsername" :scanning="showScanner" />
@@ -18,7 +17,8 @@
           class="new-message-btn"
           modifier="quiet"
           @click="onClickQRScanner"
-        >Close QR Scanner</v-ons-button>
+          >Close QR Scanner</v-ons-button
+        >
         <div class="send-username-input-container">
           <input
             type="text"
@@ -28,20 +28,40 @@
             @focusout="checkUsername"
             @focusin="onUsernameFocus"
           />
-          <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
+          <v-ons-button
+            modifier="quiet"
+            @click="onClickQRScanner"
+            class="qr-code-btn"
+          >
             <img src="../../assets/qrcode.png" alt="qr-code" />
           </v-ons-button>
         </div>
         <div class="username-warning">
-          <p v-if="isOwnName" class="invalid-username">You cannot send coins to yourself.</p>
+          <p v-if="isOwnName" class="invalid-username">
+            You cannot send coins to yourself.
+          </p>
           <p
-            v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && !isUsernameExist"
+            v-else-if="
+              username.length > 0 &&
+                !hasUsernameFocus &&
+                !checkingUsername &&
+                !isUsernameExist
+            "
             class="invalid-username"
-          >The username provided does not exist.</p>
+          >
+            The username provided does not exist.
+          </p>
           <p
-            v-else-if="username.length > 0 && !hasUsernameFocus && !checkingUsername && isUsernameExist"
+            v-else-if="
+              username.length > 0 &&
+                !hasUsernameFocus &&
+                !checkingUsername &&
+                isUsernameExist
+            "
             class="valid-username"
-          >The username is valid.</p>
+          >
+            The username is valid.
+          </p>
         </div>
         <div class="send-amount-input-container">
           <p class="body">Enter amount to send</p>
@@ -54,11 +74,13 @@
           <p
             class="input-error-message"
             v-if="$v.amount.required && !$v.amount.between"
-          >Invalid amount</p>
+          >
+            Invalid amount
+          </p>
         </div>
-        <p
-          class="required-tx-fee"
-        >Tx Fee {{ requiredTxFee }} coins will be deducted from your account.</p>
+        <p class="required-tx-fee">
+          Tx Fee {{ requiredTxFee }} coins will be deducted from your account.
+        </p>
         <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
       </div>
     </div>
@@ -66,24 +88,24 @@
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import QReader from "~/components/QReader";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../assets/utils";
-import Vuelidate from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-Vue.use(VueOnsen);
-Vue.use(Vuelidate);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import QReader from '~/components/QReader'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../assets/utils'
+import Vuelidate from 'vuelidate'
+import { required, minLength, between } from 'vuelidate/lib/validators'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+Vue.use(VueOnsen)
+Vue.use(Vuelidate)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -92,18 +114,18 @@ export default {
     Button,
     ToolBar
   },
-  data: function() {
+  data: function () {
     return {
-      username: "",
-      amount: "",
-      previousUrl: "/",
+      username: '',
+      amount: '',
+      previousUrl: '/',
       showScanner: false,
       isUsernameExist: true,
       checkingUsername: false,
       hasUsernameFocus: false,
       requiredTxFee: null,
       loading: true
-    };
+    }
   },
   validations: {
     username: {
@@ -117,15 +139,15 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady'
     }),
-    isOwnName() {
-      if (this.username.toLowerCase() === this.getWallet.handle) return true;
-      else return false;
+    isOwnName () {
+      if (this.username.toLowerCase() === this.getWallet.handle) return true
+      else return false
     },
-    isFormValid() {
+    isFormValid () {
       if (
         !this.$v.username.required ||
         !this.$v.amount.required ||
@@ -134,66 +156,66 @@ export default {
         this.isOwnName ||
         this.hasUsernameFocus
       )
-        return false;
-      return true;
+        return false
+      return true
     }
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter (to, from, next) {
     next(vm => {
-      vm.previousUrl = from.path;
-    });
+      vm.previousUrl = from.path
+    })
   },
-  mounted: async function() {
-    const network = await utils.queryParameters();
+  mounted: async function () {
+    const network = await utils.queryParameters()
     if (network.CURRENT.transactionFee) {
-      this.requiredTxFee = network.CURRENT.transactionFee;
+      this.requiredTxFee = network.CURRENT.transactionFee
     }
-    this.loading = false;
+    this.loading = false
   },
   methods: {
-    redirect(url, option) {
-      this.$router.push(url);
+    redirect (url, option) {
+      this.$router.push(url)
     },
-    async checkUsername() {
-      this.hasUsernameFocus = false;
-      this.checkingUsername = true;
+    async checkUsername () {
+      this.hasUsernameFocus = false
+      this.checkingUsername = true
       try {
-        const address = await utils.getAddress(this.username);
-        if (address) this.isUsernameExist = true;
-        else this.isUsernameExist = false;
+        const address = await utils.getAddress(this.username)
+        if (address) this.isUsernameExist = true
+        else this.isUsernameExist = false
       } catch (e) {
-        console.log(e);
-        this.isUsernameExist = false;
+        console.log(e)
+        this.isUsernameExist = false
       }
-      this.checkingUsername = false;
-      this.showWarning = true;
+      this.checkingUsername = false
+      this.showWarning = true
     },
-    onUsernameFocus() {
-      this.hasUsernameFocus = true;
+    onUsernameFocus () {
+      this.hasUsernameFocus = true
     },
-    onDetectUsername(name) {
-      this.username = name;
-      this.showScanner = false;
+    onDetectUsername (name) {
+      this.username = name
+      this.showScanner = false
     },
-    onClickQRScanner() {
-      this.showScanner = !this.showScanner;
+    onClickQRScanner () {
+      this.showScanner = !this.showScanner
     },
-    async onSend() {
-      if (!this.isUsernameExist) return;
+    async onSend () {
+      if (!this.isUsernameExist) return
       let isSubmitted = await utils.transferTokens(
         this.username,
         this.amount,
         this.getWallet.entry.keys
-      );
+      )
       if (isSubmitted) {
-        this.$ons.notification.alert("Transfer tx is submitted.");
-        this.username = "";
-        this.amount = "";
-        this.redirect("/");
+        this.$ons.notification.alert('Transfer tx is submitted.')
+        this.username = ''
+        this.amount = ''
+        this.redirect('/')
       }
     }
   }
-};
+}
 </script>
 
 <style lang="scss">

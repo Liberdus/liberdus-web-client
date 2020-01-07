@@ -101,14 +101,14 @@
             autocapitalize="off"
           />
         </div>
-
         <p class="coin-usage-warning" v-if="!allowProposal">
-          Will begin on
-          <strong>{{ new Date(this.nextProposalWindow) }}</strong>
+          Proposal window will start in
+          <strong v-if="nextDevProposalStart">{{ secondsToDhms }}</strong>
         </p>
         <p class="coin-usage-warning" v-else>
-          Dev Proposal window is open until
-          {{ new Date(window.devProposalWindow[1]) }}.
+          Proposal window will expire in
+          <strong>{{ secondsToDhms }}</strong
+          >.
         </p>
         <Button
           text="Submit Proposal"
@@ -169,8 +169,10 @@ export default {
       paymentCount: 1,
       delay: 0,
       allowProposal: false,
-      nextProposalWindow: null,
+      nextDevProposalStart: null,
       proposalWindowChecker: null,
+      proposalWindowTimer: null,
+      remainingSecondToProposalWindow: null,
       loading: true,
       window: null
     }
@@ -180,6 +182,20 @@ export default {
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState'
     }),
+    secondsToDhms () {
+      let seconds = this.remainingSecondToProposalWindow
+      seconds = Number(seconds)
+      let d = Math.floor(seconds / (3600 * 24))
+      let h = Math.floor((seconds % (3600 * 24)) / 3600)
+      let m = Math.floor((seconds % 3600) / 60)
+      let s = Math.floor(seconds % 60)
+
+      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : ''
+      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : ''
+      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : ''
+      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
+      return dDisplay + hDisplay + mDisplay + sDisplay
+    },
     currentWindowName () {
       if (!this.window) return
       const now = Date.now()
@@ -210,9 +226,15 @@ export default {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isDevProposalWindowOpen()
     }, 3000)
+
+    this.proposalWindowTimer = setInterval(
+      this.getRemainingSecondToProposal,
+      1000
+    )
   },
   beforeDestroy: function () {
     clearInterval(this.proposalWindowChecker)
+    clearInterval(this.proposalWindowTimer)
   },
   methods: {
     async isDevProposalWindowOpen () {
@@ -220,15 +242,16 @@ export default {
         // this.loading = true
         let networkParameters = await utils.queryParameters()
         this.window = networkParameters['DEV_WINDOWS']
-        console.log(this.window)
         let proposalWindow = this.window.devProposalWindow
         let applyWindow = this.window.devApplyWindow
         this.loading = false
-        if (proposalWindow) {
-          this.nextProposalWindow =
-            networkParameters['NEXT_DEV_WINDOWS'].devProposalWindow[0]
+        if (
+          this.window.devProposalWindow &&
+          this.window.devProposalWindow >= Date.now()
+        ) {
+          this.nextDevProposalStart = this.window.devProposalWindow[0]
         } else {
-          this.nextProposalWindow = proposalWindow[1] + 1000 * 60 * 4
+          this.nextDevProposalStart = proposalWindow[1] + 1000 * 60 * 4
         }
         // console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
         let now = Date.now()
@@ -266,6 +289,32 @@ export default {
         this.title = ''
         this.description = ''
         this.redirect('/')
+      }
+    },
+    getRemainingSecondToProposal () {
+      if (this.window) {
+        let now = Date.now()
+        if (!this.allowProposal) {
+          if (now < this.window.devProposalWindow[0]) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.window.devProposalWindow[0] - now) / 1000
+            )
+          } else if (
+            now > this.window.devProposalWindow[0] &&
+            this.nextDevProposalStart &&
+            now < this.nextDevProposalStart
+          ) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.nextDevProposalStart - now) / 1000
+            )
+          }
+        } else if (this.allowProposal) {
+          if (this.window.devProposalWindow[1] >= now) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.window.devProposalWindow[1] - now) / 1000
+            )
+          }
+        }
       }
     }
   }
@@ -343,5 +392,6 @@ export default {
   color: #6a6a6a;
   letter-spacing: 0;
   line-height: 20px;
+  margin: 15px auto;
 }
 </style>

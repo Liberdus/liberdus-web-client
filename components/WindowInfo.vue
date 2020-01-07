@@ -153,7 +153,8 @@ export default {
   }
   .window-info {
     margin: 10px auto;
-    box-shadow: 0px 2px 5px #aaa;
+    box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
     padding: 10px;
     border-radius: 5px;
     background: #fbfbfb;

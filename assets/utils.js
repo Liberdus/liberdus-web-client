@@ -681,46 +681,6 @@ utils.getDifferentParameter = function (newParameters, currentParameters) {
   return obj
 }
 
-let diff = utils.getDifferentParameter(
-  {
-    devProposalFee: 20,
-    hash: 'afd968be6b0eb05ba02ef79746ea4a7dfbe1b55c454b400952193d5f846b46f8',
-    id: '9cc61afb96a7e7c2091166f0533f96cffb024e7fb9cebb97e0fbfb41e508aecd',
-    maintenanceFee: 0.0001,
-    maintenanceInterval: 120000,
-    nodePenalty: 100,
-    nodeRewardAmount: 10,
-    nodeRewardInterval: 60000,
-    number: 1,
-    power: 0,
-    proposalFee: 500,
-    stakeRequired: 500,
-    timestamp: 1573806674148,
-    totalVotes: 0,
-    transactionFee: 0.001,
-    winner: true
-  },
-  {
-    devProposalFee: 20,
-    hash: '484308e848ea13f1b56c0246faf95305a419e471e2059250a2019e73b51058c9',
-    id: 'd9fc101091e77c5d0f17f02ea302a7660807f7aff923cc1986bfbb10471ab990',
-    maintenanceFee: 0.0001,
-    maintenanceInterval: 120000,
-    nodePenalty: 100,
-    nodeRewardAmount: 10,
-    nodeRewardInterval: 60000,
-    number: 1,
-    power: 0,
-    proposalFee: 800,
-    stakeRequired: 500,
-    timestamp: 1573806944149,
-    totalVotes: 0,
-    transactionFee: 0.001,
-    winner: true
-  }
-)
-
-// console.log(diff)
 utils.submitProposl = function (tx) {
   return new Promise((resolve, reject) => {
     injectTx(tx).then(res => {
@@ -822,6 +782,27 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
 utils.playSoundFile = soundFile => {
   let audio = new Audio(soundFile)
   audio.play()
+}
+
+utils.updateBadge = (tabName, type) => {
+  const badgeElementList = document.querySelectorAll(
+    '.tabbar__badge.notification'
+  )
+  if (tabName === 'home') {
+    if (type === 'increase') {
+      const currentBadgeCount = parseInt(badgeElementList[0].innerHTML || 0)
+      badgeElementList[0].innerHTML = currentBadgeCount + 1
+    } else if (type === 'reset') {
+      badgeElementList[0].innerHTML = ''
+    }
+  } else if (tabName === 'message') {
+    if (type === 'increase') {
+      const currentBadgeCount = parseInt(badgeElementList[1].innerHTML || 0)
+      badgeElementList[1].innerHTML = currentBadgeCount + 1
+    } else if (type === 'reset') {
+      badgeElementList[1].innerHTML = ''
+    }
+  }
 }
 
 utils.getAddress = getAddress

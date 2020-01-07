@@ -7,13 +7,36 @@
       classes="my-notification-style"
     />
     <tool-bar :option="{ menu: true, notification: true, back: false }" />
-    <v-ons-tabbar
+    <!-- <v-ons-tabbar
       swipeable
       position="top"
       :tabs="tabs"
       :visible="true"
       :index.sync="activeIndex"
-    ></v-ons-tabbar>
+    ></v-ons-tabbar> -->
+
+    <v-ons-tabbar
+      swipeable
+      position="top"
+      :visible="true"
+      :index.sync="activeIndex"
+    >
+      <template slot="pages">
+        <home></home>
+        <message></message>
+        <funding-list></funding-list>
+        <proposal-list></proposal-list>
+      </template>
+
+      <v-ons-tab
+        v-for="(tab, i) in tabs"
+        :icon="tabs[i].icon"
+        :label="tabs[i].label"
+        :badge="tabs[i].badge"
+        :key="tabs[i].label"
+        @click="onSelectTab($event, tabs[i])"
+      ></v-ons-tab>
+    </v-ons-tabbar>
   </v-ons-page>
 </template>
 
@@ -54,15 +77,17 @@ export default {
       activeIndex: 0,
       tabs: [
         {
-          icon: this.md() ? null : 'ion-ios-wallet',
+          icon: 'ion-ios-wallet',
           label: 'Wallet',
           page: Home,
+          badge: '',
           key: 'home'
         },
         {
           icon: this.md() ? null : 'ion-ios-chatboxes',
           label: 'Message',
           page: Message,
+          badge: '',
           key: 'message'
         },
         {
@@ -114,6 +139,9 @@ export default {
     }),
     md () {
       return this.$ons.platform.isAndroid()
+    },
+    onSelectTab (e, tab) {
+      utils.updateBadge(tab.key, 'reset')
     }
   },
   computed: {
@@ -136,7 +164,6 @@ export default {
     let self = this
     if (!this.isUIReady) {
       this.$router.push('/loading')
-      // return;
     }
     if (!this.getWallet) {
       const wallet = utils.loadWallet()

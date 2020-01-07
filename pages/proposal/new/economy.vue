@@ -168,14 +168,12 @@
           />
         </div> -->
         <p class="coin-usage-warning" v-if="!allowProposal">
-          Proposal window will start on
-          <strong v-if="nextProposalStart">{{
-            formatDate(nextProposalStart)
-          }}</strong>
+          Proposal window will start in
+          <strong v-if="nextProposalStart">{{ secondsToDhms }}</strong>
         </p>
         <p class="coin-usage-warning" v-else>
-          Started on
-          <strong>{{ formatDate(window.proposalWindow[0]) }}</strong
+          Proposal window will expire in
+          <strong>{{ secondsToDhms }}</strong
           >.
         </p>
         <Button
@@ -266,9 +264,10 @@ export default {
         }
       ],
       newValue: '',
-
       nextProposalStart: null,
       proposalWindowChecker: null,
+      proposalWindowTimer: null,
+      remainingSecondToProposalWindow: null,
       window: null,
       loading: true,
       form: {
@@ -290,6 +289,20 @@ export default {
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState'
     }),
+    secondsToDhms () {
+      let seconds = this.remainingSecondToProposalWindow
+      seconds = Number(seconds)
+      let d = Math.floor(seconds / (3600 * 24))
+      let h = Math.floor((seconds % (3600 * 24)) / 3600)
+      let m = Math.floor((seconds % 3600) / 60)
+      let s = Math.floor(seconds % 60)
+
+      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : ''
+      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : ''
+      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : ''
+      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
+      return dDisplay + hDisplay + mDisplay + sDisplay
+    },
     currentWindowName () {
       if (!this.window) return
       const now = Date.now()
@@ -320,10 +333,16 @@ export default {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isProposalWindowOpen()
     }, 3000)
+
+    this.proposalWindowTimer = setInterval(
+      this.getRemainingSecondToProposal,
+      1000
+    )
   },
   beforeDestroy: function () {
     console.log('Clearing proposal window checker...')
     clearInterval(this.proposalWindowChecker)
+    clearInterval(this.proposalWindowTimer)
   },
   methods: {
     formatDate (ts) {
@@ -336,7 +355,6 @@ export default {
       for (let key in this.form) {
         newParameters[key] = parseFloat(this.form[key])
       }
-      console.log(newParameters)
       let proposalTx = await utils.createProposal(myWallet, newParameters)
       console.log(proposalTx)
       let isSubmitted = await utils.submitProposl(proposalTx)
@@ -365,7 +383,10 @@ export default {
         this.loading = false
         // console.log(formatDate(proposalWindow[0]), formatDate(proposalWindow[1]));
 
-        if (this.window.proposalWindow) {
+        if (
+          this.window.proposalWindow &&
+          this.window.proposalWindow[0] >= Date.now()
+        ) {
           this.nextProposalStart = this.window.proposalWindow[0]
         } else {
           this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4
@@ -381,6 +402,32 @@ export default {
         console.warn(e)
         this.loading = false
         return false
+      }
+    },
+    getRemainingSecondToProposal () {
+      if (this.window) {
+        let now = Date.now()
+        if (!this.allowProposal) {
+          if (now < this.window.proposalWindow[0]) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.window.proposalWindow[0] - now) / 1000
+            )
+          } else if (
+            now > this.window.proposalWindow[0] &&
+            this.nextProposalStart &&
+            now < this.nextProposalStart
+          ) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.nextProposalStart - now) / 1000
+            )
+          }
+        } else if (this.allowProposal) {
+          if (this.window.proposalWindow[1] >= now) {
+            this.remainingSecondToProposalWindow = Math.round(
+              (this.window.proposalWindow[1] - now) / 1000
+            )
+          }
+        }
       }
     }
   }

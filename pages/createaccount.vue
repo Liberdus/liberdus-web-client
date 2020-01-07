@@ -1,17 +1,23 @@
 <template>
   <v-ons-page class="create-account-page">
-    <div class="create-account-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
-      <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome'}" />
+    <div
+      class="create-account-container"
+      :style="{ backgroundImage: `url(${backgroundUrl})` }"
+    >
+      <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome' }" />
       <div v-if="creatingHandle" class="create-account-content">
         <h3>Creating New Account</h3>
         <v-ons-progress-bar indeterminate></v-ons-progress-bar>
       </div>
       <div v-else class="create-account-content">
         <Title text="Create Account" />
-        <p class="text-body">Enter your username and password to create a new account</p>
+        <p class="text-body">
+          Enter your username and password to create a new account
+        </p>
         <div class="create-username-input-container">
           <input
             type="text"
+            ref="usenameInput"
             placeholder="Username"
             v-model="username"
             class="text-input"
@@ -23,14 +29,22 @@
           <p
             class="input-error-message"
             v-if="$v.username.required && !$v.username.alphaNum"
-          >Username can contain only alphabets and numberic characters</p>
+          >
+            Username can contain only alphabets and numberic characters
+          </p>
           <p
             class="input-error-message"
             v-else-if="$v.username.required && !$v.username.minLength"
-          >Username must be at least 3 characters long</p>
+          >
+            Username must be at least 3 characters long
+          </p>
           <div v-else-if="!checkingUsername">
-            <p class="input-error-message" v-if="isUsernameTaken">Username is already taken.</p>
-            <p class="input-success-message" v-else-if="isUsernameValid">Username is available.</p>
+            <p class="input-error-message" v-if="isUsernameTaken">
+              Username is already taken.
+            </p>
+            <p class="input-success-message" v-else-if="isUsernameValid">
+              Username is available.
+            </p>
           </div>
           <div v-else-if="checkingUsername">
             <p class="input-checking-message">Checking username...</p>
@@ -39,7 +53,8 @@
         <Button text="Create Account" :onClick="onCreateAccount" />
         <p class="already-registered">
           Already registered ? Please import your account
-          <nuxt-link class="link-to-import" to="/setting/import">here</nuxt-link>.
+          <nuxt-link class="link-to-import" to="/setting/import">here</nuxt-link
+          >.
         </p>
       </div>
     </div>
@@ -47,38 +62,38 @@
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import utils from "../assets/utils";
-import { mapActions, mapGetters } from "vuex";
-import { required, minLength, alphaNum } from "vuelidate/lib/validators";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import ToolBar from "~/components/ToolBar";
-import backgroundUrl from "~/assets/images/liberdus_background.png";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import utils from '../assets/utils'
+import { mapActions, mapGetters } from 'vuex'
+import { required, minLength, alphaNum } from 'vuelidate/lib/validators'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import ToolBar from '~/components/ToolBar'
+import backgroundUrl from '~/assets/images/liberdus_background.png'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 export default {
   components: { Title, Button, ToolBar },
-  data: function() {
+  data: function () {
     return {
-      username: "",
+      username: '',
       isUsernameTaken: false,
       checkingUsername: false,
       creatingHandle: false,
       backgroundUrl
-    };
+    }
   },
   filters: {
     lowerCase: str => {
-      if (!str) return;
-      return str.toLowerCase();
+      if (!str) return
+      return str.toLowerCase()
     }
   },
   validations: {
@@ -89,69 +104,77 @@ export default {
     }
   },
   computed: {
-    isUsernameValid() {
+    isUsernameValid () {
       return (
         !this.$v.username.$invalid &&
         !this.isUsernameTaken &&
         !this.checkingUsername
-      );
+      )
     }
   },
   methods: {
     ...mapActions({
-      addWallet: "wallet/addWallet"
+      addWallet: 'wallet/addWallet'
     }),
-    async onCreateAccount() {
-      let self = this;
-      if (!this.username || this.username.length === 0) return;
-      let entry = utils.createWallet(this.username);
+    async onCreateAccount () {
+      let self = this
+      if (!this.username || this.username.length === 0) return
+      let entry = utils.createWallet(this.username)
       let wallet = {
         handle: this.username,
         entry: entry
-      };
-      utils.saveWallet(wallet);
-      this.addWallet(wallet);
-      let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry);
+      }
+      utils.saveWallet(wallet)
+      this.addWallet(wallet)
+      let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry)
       if (isSubmitted) {
-        this.creatingHandle = true;
-        let isCreated;
+        this.creatingHandle = true
+        let isCreated
         let accountCreatedChecker = setInterval(async () => {
-          isCreated = await self.checkAccountCreated(wallet.handle);
+          isCreated = await self.checkAccountCreated(wallet.handle)
           if (isCreated) {
-            clearInterval(accountCreatedChecker);
-            accountCreatedChecker = null;
-            self.$router.push("/");
+            clearInterval(accountCreatedChecker)
+            accountCreatedChecker = null
+            self.$router.push('/')
           }
-        }, 1000);
+        }, 1000)
       }
     },
-    async checkUsername() {
-      this.username = this.username.toLowerCase();
-      this.checkingUsername = true;
+    async checkUsername () {
+      this.username = this.username.toLowerCase()
+      this.checkingUsername = true
       try {
-        let address = await utils.getAddress(this.username);
+        let address = await utils.getAddress(this.username)
         if (address) {
-          this.isUsernameTaken = true;
-          this.checkingUsername = false;
-          return;
+          this.isUsernameTaken = true
+          this.checkingUsername = false
+          return
         }
-        this.isUsernameTaken = false;
-        this.checkingUsername = false;
+        this.isUsernameTaken = false
+        this.checkingUsername = false
       } catch (e) {
-        this.isUsernameTaken = false;
-        this.checkingUsername = false;
+        this.isUsernameTaken = false
+        this.checkingUsername = false
       }
     },
-    async checkAccountCreated(handle) {
-      let address = await utils.getAddress(handle);
+    async checkAccountCreated (handle) {
+      let address = await utils.getAddress(handle)
       if (address) {
-        console.log(`Account created successfully.`);
-        return true;
+        console.log(`Account created successfully.`)
+        return true
       }
-      return false;
+      return false
     }
+  },
+  mounted: function () {
+    let self = this
+    setTimeout(() => {
+      try {
+        self.$refs['usenameInput'].focus()
+      } catch (e) {}
+    }, 500)
   }
-};
+}
 </script>
 
 <style>
@@ -183,7 +206,7 @@ export default {
   max-width: 600px;
 }
 .create-account-container .create-account-content h3 {
-  font-family: "Poppins";
+  font-family: 'Poppins';
 }
 .create-username-input-container {
   margin: 20px auto;
