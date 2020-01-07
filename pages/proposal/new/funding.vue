@@ -115,6 +115,17 @@
           :onClick="onSubmitProposal"
           :isDisabled="!allowProposal"
         />
+        <p
+          v-if="
+            networkParameters.CURRENT.devProposalFee &&
+              networkParameters.CURRENT.transactionFee
+          "
+        >
+          Submitting proposal will cost Proposal Fee:
+          <strong>{{ networkParameters.CURRENT.devProposalFee }}</strong> coins
+          + Transaction Fee:
+          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+        </p>
       </div>
     </div>
   </v-ons-page>
@@ -169,6 +180,7 @@ export default {
       paymentCount: 1,
       delay: 0,
       allowProposal: false,
+      networkParameters: null,
       nextDevProposalStart: null,
       proposalWindowChecker: null,
       proposalWindowTimer: null,
@@ -241,6 +253,7 @@ export default {
       try {
         // this.loading = true
         let networkParameters = await utils.queryParameters()
+        if (!this.networkParameters) this.networkParameters = networkParameters
         this.window = networkParameters['DEV_WINDOWS']
         let proposalWindow = this.window.devProposalWindow
         let applyWindow = this.window.devApplyWindow

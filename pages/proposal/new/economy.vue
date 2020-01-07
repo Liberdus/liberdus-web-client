@@ -182,6 +182,17 @@
           :onClick="onSubmitProposal"
           :isDisabled="!allowProposal"
         />
+        <p
+          v-if="
+            networkParameters.CURRENT.proposalFee &&
+              networkParameters.CURRENT.transactionFee
+          "
+        >
+          Submitting proposal will cost Proposal Fee:
+          <strong>{{ networkParameters.CURRENT.proposalFee }}</strong> coins +
+          Transaction Fee:
+          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+        </p>
       </div>
     </form>
   </v-ons-page>

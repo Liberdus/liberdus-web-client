@@ -8,28 +8,37 @@
     </div>
     <div class="center" v-if="option.title">{{ option.title }}</div>
     <div class="right">
-      <div v-if="option.notification && getWallet" class="user-alias">@{{ getWallet.handle }}</div>
+      <div v-if="option.notification && getWallet" class="user-alias">
+        @{{ getWallet.handle }}
+      </div>
       <button v-if="option.notification" @click="toggleNotification">
         <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
       </button>
       <button v-if="option.menu" @click="toggleSetting">
         <v-ons-icon icon="ion-ios-menu" size="lg"></v-ons-icon>
       </button>
-      <button v-if="option.addFriend" @click="onAddFriend" class="add-friend-button">
+      <button
+        v-if="option.addFriend"
+        @click="onAddFriend"
+        class="add-friend-button"
+      >
         <v-ons-icon icon="ion-ios-add-circle" size="lg"></v-ons-icon>
       </button>
     </div>
 
     <v-ons-modal :visible="settingVisible">
       <button class="close-setting-button">
-        <v-ons-icon icon="ion-ios-close" size="lg" @click="toggleSetting" v-if="option.menu"></v-ons-icon>
+        <v-ons-icon
+          icon="ion-ios-close"
+          size="lg"
+          @click="toggleSetting"
+          v-if="option.menu"
+        ></v-ons-icon>
       </button>
       <div class="setting-container">
         <h1 class="setting-title">Settings</h1>
         <ul>
           <li>General</li>
-          <li @click="redirect('/proposal/new/change')">Change network parameter</li>
-          <li @click="redirect('/proposal/new/feature')">Propose develpment fund</li>
           <li @click="redirect('/setting/export')">Export Account</li>
           <li @click="redirect('/setting/toll')">Toll</li>
           <li @click="redirect('/setting/friends')">Friends</li>
@@ -40,7 +49,12 @@
     </v-ons-modal>
     <v-ons-modal :visible="notificationVisible">
       <button class="close-setting-button">
-        <v-ons-icon icon="ion-ios-close" size="lg" @click="toggleNotification" v-if="option.menu"></v-ons-icon>
+        <v-ons-icon
+          icon="ion-ios-close"
+          size="lg"
+          @click="toggleNotification"
+          v-if="option.menu"
+        ></v-ons-icon>
       </button>
       <div class="setting-container">
         <h1 class="setting-title">Notifications</h1>
@@ -58,10 +72,10 @@
   </v-ons-toolbar>
 </template>
 <script>
-import Title from "~/components/baisc/Title";
-import { mapGetters, mapActions } from "vuex";
-import moment from "moment";
-import utils from "../assets/utils";
+import Title from '~/components/baisc/Title'
+import { mapGetters, mapActions } from 'vuex'
+import moment from 'moment'
+import utils from '../assets/utils'
 
 export default {
   components: { Title },
@@ -73,72 +87,72 @@ export default {
         profile: false,
         back: false,
         menu: false,
-        backUrl: "/",
+        backUrl: '/',
         addFriend: null
       }
     }
   },
-  data: function() {
+  data: function () {
     return {
       settingVisible: false,
       notificationVisible: false
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady",
-      getNotificationQueue: "chat/getNotificationQueue"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady',
+      getNotificationQueue: 'chat/getNotificationQueue'
     }),
-    notificationQueue() {
-      let queue = [...this.getNotificationQueue];
-      return queue.sort((a, b) => b.timestamp - a.timestamp);
+    notificationQueue () {
+      let queue = [...this.getNotificationQueue]
+      return queue.sort((a, b) => b.timestamp - a.timestamp)
     }
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      removeWallet: "wallet/removeWallet"
+      updateAppState: 'chat/updateAppState',
+      removeWallet: 'wallet/removeWallet'
     }),
-    formatTimestamp(ts) {
-      return moment(ts).calendar();
+    formatTimestamp (ts) {
+      return moment(ts).calendar()
     },
-    redirect(url = "/") {
-      this.$router.push(url);
+    redirect (url = '/') {
+      this.$router.push(url)
     },
-    toggleSetting() {
-      this.settingVisible = !this.settingVisible;
+    toggleSetting () {
+      this.settingVisible = !this.settingVisible
     },
-    toggleNotification() {
-      this.notificationVisible = !this.notificationVisible;
+    toggleNotification () {
+      this.notificationVisible = !this.notificationVisible
     },
-    onSignOut() {
-      this.updateAppState(null);
-      this.removeWallet();
-      localStorage.removeItem("account");
-      localStorage.removeItem("lastMessage");
-      localStorage.removeItem("lastTx");
-      this.$router.push("/welcome");
-      window.location.reload(false);
+    onSignOut () {
+      this.updateAppState(null)
+      this.removeWallet()
+      localStorage.removeItem('account')
+      localStorage.removeItem('lastMessage')
+      localStorage.removeItem('lastTx')
+      this.$router.push('/welcome')
+      window.location.reload(false)
     },
-    onAddFriend() {
-      let handle = this.option.addFriend;
-      if (!handle) return;
+    onAddFriend () {
+      let handle = this.option.addFriend
+      if (!handle) return
       if (handle === this.getWallet.handle) {
-        this.$ons.notification.alert("You cannot add yourself as friend.");
+        this.$ons.notification.alert('You cannot add yourself as friend.')
       } else {
         this.$ons.notification
           .confirm(`Confirm to add @${handle} to friend list ?`)
           .then(result => {
             if (result === 1) {
-              utils.addFriend(handle, this.getWallet.entry.keys);
+              utils.addFriend(handle, this.getWallet.entry.keys)
             }
-          });
+          })
       }
     }
   }
-};
+}
 </script>
 <style scoped lang="scss">
 .toolbar__title {
@@ -184,7 +198,7 @@ export default {
   width: 50%;
   .user-alias {
     color: #0a2463;
-    font-family: "Poppins";
+    font-family: 'Poppins';
     font-size: 14px;
   }
   button {
