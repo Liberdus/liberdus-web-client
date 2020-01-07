@@ -167,6 +167,7 @@
             autocapitalize="off"
           />
         </div> -->
+
         <p class="coin-usage-warning" v-if="!allowProposal">
           Proposal window will start in
           <strong v-if="nextProposalStart">{{ secondsToDhms }}</strong>
@@ -176,6 +177,7 @@
           <strong>{{ secondsToDhms }}</strong
           >.
         </p>
+
         <Button
           text="Submit Proposal"
           type="submit"
@@ -343,7 +345,7 @@ export default {
   mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isProposalWindowOpen()
-    }, 3000)
+    }, 1000)
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,

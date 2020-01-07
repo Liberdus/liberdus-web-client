@@ -19,6 +19,12 @@
         >Current Active Window</label
       >
       <h5>Proposal Window</h5>
+      <div v-if="currentWindowName === 'PROPOSAL'" class="timers">
+        <p class="coin-usage-warning">
+          Proposal window will expire in
+          <strong>{{ remainingSecondProposalWindow }}</strong>
+        </p>
+      </div>
       <div>
         <div>Start</div>
         <div>{{ formatDate(derivedWindow.proposalWindow[0]) }}</div>
@@ -40,6 +46,12 @@
         >Current Active Window</label
       >
       <h5>Voting Window</h5>
+      <div v-if="currentWindowName === 'VOTING'" class="timers">
+        <p class="coin-usage-warning">
+          Voting window will expire in
+          <strong>{{ remainingSecondVotingWindow }}</strong>
+        </p>
+      </div>
       <div>
         <div>Start</div>
         <div>{{ formatDate(derivedWindow.votingWindow[0]) }}</div>
@@ -61,6 +73,12 @@
         >Current Active Window</label
       >
       <h5>Grace Window</h5>
+      <div v-if="currentWindowName === 'GRACE'" class="timers">
+        <p class="coin-usage-warning">
+          Grace window will expire in
+          <strong>{{ remainingSecondGraceWindow }}</strong>
+        </p>
+      </div>
       <div>
         <div>Start</div>
         <div>{{ formatDate(derivedWindow.graceWindow[0]) }}</div>
@@ -82,6 +100,12 @@
         >Current Active Window</label
       >
       <h5>Apply Window</h5>
+      <div v-if="currentWindowName === 'APPLY'" class="timers">
+        <p class="coin-usage-warning">
+          Apply window will expire in
+          <strong>{{ remainingSecondApplyWindow }}</strong>
+        </p>
+      </div>
       <div>
         <div>Start</div>
         <div>{{ formatDate(derivedWindow.applyWindow[0]) }}</div>
@@ -123,11 +147,40 @@ export default {
           applyWindow: this.window.devApplyWindow
         }
       }
+    },
+    remainingSecondProposalWindow () {
+      let seconds = this.derivedWindow.proposalWindow[1] - Date.now()
+      return this.secondsToDhms(seconds)
+    },
+    remainingSecondVotingWindow () {
+      let seconds = this.derivedWindow.votingWindow[1] - Date.now()
+      return this.secondsToDhms(seconds)
+    },
+    remainingSecondGraceWindow () {
+      let seconds = this.derivedWindow.graceWindow[1] - Date.now()
+      return this.secondsToDhms(seconds)
+    },
+    remainingSecondApplyWindow () {
+      let seconds = this.derivedWindow.applyWindow[1] - Date.now()
+      return this.secondsToDhms(seconds)
     }
   },
   methods: {
     formatDate (ts) {
       return moment(ts)
+    },
+    secondsToDhms (milisecond) {
+      let seconds = Number(milisecond) / 1000
+      let d = Math.floor(seconds / (3600 * 24))
+      let h = Math.floor((seconds % (3600 * 24)) / 3600)
+      let m = Math.floor((seconds % 3600) / 60)
+      let s = Math.floor(seconds % 60)
+
+      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : ''
+      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : ''
+      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : ''
+      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
+      return dDisplay + hDisplay + mDisplay + sDisplay
     }
   }
 }
@@ -175,6 +228,10 @@ export default {
       font-family: 'Poppins';
       font-weight: bold;
       color: #132c68;
+    }
+    .timers {
+      text-align: left;
+      display: block;
     }
   }
   .green-bg {

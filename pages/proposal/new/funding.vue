@@ -237,7 +237,7 @@ export default {
   mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isDevProposalWindowOpen()
-    }, 3000)
+    }, 1000)
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
