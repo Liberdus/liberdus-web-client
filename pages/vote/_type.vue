@@ -287,7 +287,7 @@ export default {
           this.networkParameters = newNetworkParameters
         }
         this.window = newNetworkParameters['WINDOWS']
-        const votingWindow = this.window.proposalWindow
+        const votingWindow = this.window.votingWindow
         if (
           this.window.votingWindow &&
           this.window.votingWindow[0] >= Date.now()
