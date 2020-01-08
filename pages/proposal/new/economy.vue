@@ -8,8 +8,6 @@
         redirectUrl: '/'
       }"
     />
-
-    {{allowProposal}}
     <form class="proposal-create-container" @submit="onSubmitProposal">
       <h2 class="title-2">New Change Proposal</h2>
       <div v-if="loading" class="loading-status">
