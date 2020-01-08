@@ -8,6 +8,8 @@
         redirectUrl: '/'
       }"
     />
+
+    {{allowProposal}}
     <form class="proposal-create-container" @submit="onSubmitProposal">
       <h2 class="title-2">New Change Proposal</h2>
       <div v-if="loading" class="loading-status">
@@ -363,26 +365,30 @@ export default {
     },
     async onSubmitProposal (e) {
       e.preventDefault()
-      let myWallet = this.getWallet
-      let newParameters = {}
-      for (let key in this.form) {
-        newParameters[key] = parseFloat(this.form[key])
-      }
-      let proposalTx = await utils.createProposal(myWallet, newParameters)
-      console.log(proposalTx)
-      let isSubmitted = await utils.submitProposl(proposalTx)
-      if (isSubmitted) {
-        this.$ons.notification.alert('Your proposal is submitted.')
-        this.newValue = ''
-        this.redirect('/')
-      } else {
-        this.$ons.notification.alert('Failed to submit proposal')
+      try {
+        let myWallet = this.getWallet
+        let newParameters = {}
+        for (let key in this.form) {
+          newParameters[key] = parseFloat(this.form[key])
+        }
+        let proposalTx = await utils.createProposal(myWallet, newParameters)
+        console.log(proposalTx)
+        let isSubmitted = await utils.submitProposl(proposalTx)
+        if (isSubmitted) {
+          this.$ons.notification.alert('Your proposal is submitted.')
+          this.newValue = ''
+          this.redirect('/')
+        } else {
+          this.$ons.notification.alert('Failed to submit proposal')
+        }
+      } catch (e) {
+        console.error(e.message)
+        this.$ons.notification.alert(`Fail to submit: ${e.message}`)
       }
     },
     redirect (url) {
       this.$router.push(url)
     },
-    decideCurrentWindow () {},
     async isProposalWindowOpen () {
       try {
         // this.loading = true;
@@ -418,7 +424,7 @@ export default {
       }
     },
     getRemainingSecondToProposal () {
-      if (this.window) {
+      if (this.window && this.window.proposalWindow) {
         let now = Date.now()
         if (!this.allowProposal) {
           if (now < this.window.proposalWindow[0]) {

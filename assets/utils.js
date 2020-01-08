@@ -12,7 +12,8 @@ let walletEntries = {}
 utils.init = async defaultHost => {
   host = defaultHost
   await crypto.initialize(
-    '64f152869ca2d473e4ba64ab53f49ccdb2edae22da192c126850970e788af347'
+    // '64f152869ca2d473e4ba64ab53f49ccdb2edae22da192c126850970e788af347'
+    '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
   )
   let sampleHash = crypto.hash('Hello World')
   return sampleHash
@@ -485,19 +486,22 @@ utils.queryLatestProposals = async function () {
 // QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
 utils.queryLatestDevProposals = async function () {
   const res = await axios.get(`http://${host}/proposals/dev/latest`)
-  return res.data.devProposals
+  // return res.data.devProposals
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
 utils.getProposalCount = async function () {
   const res = await axios.get(`http://${host}/proposals/count`)
-  return res.data.proposalCount
+  // return res.data.proposalCount
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
 utils.getDevProposalCount = async function () {
   const res = await axios.get(`http://${host}/proposals/dev/count`)
-  return res.data.devProposalCount
+  // return res.data.devProposalCount
+  return res.data.count
 }
 
 utils.isTransferTx = tx => tx.type === 'transfer'
@@ -576,13 +580,15 @@ utils.queryLatestDevIssue = async function () {
 // QUERY'S THE CURRENT NETWORK ISSUE COUNT
 utils.getIssueCount = async function () {
   const res = await axios.get(`http://${host}/issues/count`)
-  return res.data.issueCount
+  // return res.data.issueCount
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT NETWORK DEV_ISSUE COUNT
 utils.getDevIssueCount = async function () {
   const res = await axios.get(`http://${host}/issues/dev/count`)
-  return res.data.devIssueCount
+  // return res.data.devIssueCount
+  return res.data.count
 }
 
 function iosCopyClipboard (str) {
@@ -612,20 +618,27 @@ function iosCopyClipboard (str) {
 
 utils.createProposal = async function (sourceAcc, newParameters) {
   const source = sourceAcc.entry
-  const issue = await utils.getIssueCount()
+  const issueCount = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
 
-  const proposalTx = {
-    type: 'proposal',
-    from: source.address,
-    proposal: crypto.hash(`issue-${issue}-proposal-${proposalCount + 1}`),
-    issue: crypto.hash(`issue-${issue}`),
-    parameters: newParameters,
-    description: '',
-    timestamp: Date.now()
+  if (issueCount >= 0 && proposalCount >= 0) {
+    const proposalTx = {
+      type: 'proposal',
+      from: source.address,
+      proposal: crypto.hash(
+        `issue-${issueCount}-proposal-${proposalCount + 1}`
+      ),
+      issue: crypto.hash(`issue-${issueCount}`),
+      parameters: newParameters,
+      description: '',
+      timestamp: Date.now()
+    }
+    crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)
+    return proposalTx
+  } else {
+    if (!issueCount) throw new Error('Unable to get issue count')
+    else if (!proposalCount) throw new Error('Unable to get proposal count')
   }
-  crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)
-  return proposalTx
 }
 utils.createDevProposal = async function (sourceAcc, proposal) {
   console.log(proposal)
@@ -640,8 +653,8 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   }
   console.log(proposal.paymentType, paymentCount, delay)
 
-  const latestIssue = await utils.getDevIssueCount()
-  const count = await utils.getDevProposalCount()
+  const issueCount = await utils.getDevIssueCount()
+  const proposalCount = await utils.getDevProposalCount()
   let paymentCount
   let delay
 
@@ -649,21 +662,29 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
     amount: proposal.totalAmount / paymentCount,
     delay: delay * i
   }))
-  const tx = {
-    type: 'dev_proposal',
-    from: source.address,
-    devIssue: crypto.hash(`dev-issue-${latestIssue}`),
-    devProposal: crypto.hash(
-      `dev-issue-${latestIssue}-dev-proposal-${count + 1}`
-    ),
-    totalAmount: proposal.totalAmount,
-    payments: payments,
-    description: proposal.title,
-    payAddress: source.address,
-    timestamp: Date.now()
+  console.log('Issue count:', issueCount)
+  console.log('Proposal count:', proposalCount)
+  if (issueCount >= 0 && proposalCount >= 0) {
+    const tx = {
+      type: 'dev_proposal',
+      from: source.address,
+      devIssue: crypto.hash(`dev-issue-${issueCount}`),
+      devProposal: crypto.hash(
+        `dev-issue-${issueCount}-dev-proposal-${proposalCount + 1}`
+      ),
+      totalAmount: proposal.totalAmount,
+      payments: payments,
+      description: proposal.title,
+      payAddress: source.address,
+      timestamp: Date.now()
+    }
+    crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+    return tx
+  } else {
+    if (!issueCount) throw new Error('Unable to get issue count')
+    else if (!proposalCount && proposalCount !== 0)
+      throw new Error('Unable to get dev proposal count')
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
-  return tx
 }
 
 utils.getDifferentParameter = function (newParameters, currentParameters) {
@@ -692,14 +713,36 @@ utils.submitProposl = function (tx) {
 }
 utils.createVote = async function (sourceAcc, proposalNumber = 1, amount = 50) {
   const source = sourceAcc.entry
-  const latest = await utils.getIssueCount()
+  const issueCount = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
   const tx = {
     type: 'vote',
     from: source.address,
-    issue: crypto.hash(`issue-${latest}`),
-    proposal: crypto.hash(`issue-${latest}-proposal-${proposalNumber}`),
+    issue: crypto.hash(`issue-${issueCount}`),
+    proposal: crypto.hash(`issue-${issueCount}-proposal-${proposalNumber}`),
     amount: amount,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  return tx
+}
+utils.createDevVote = async function (
+  sourceAcc,
+  proposalNumber = 1,
+  amount = 50,
+  approve = true
+) {
+  const source = sourceAcc.entry
+  const devIssueCount = await utils.getDevIssueCount()
+  const tx = {
+    type: 'dev_vote',
+    from: source.address,
+    devIssue: crypto.hash(`dev-issue-${devIssueCount}`),
+    devProposal: crypto.hash(
+      `dev-issue-${devIssueCount}-dev-proposal-${proposalNumber}`
+    ),
+    amount,
+    approve,
     timestamp: Date.now()
   }
   crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)

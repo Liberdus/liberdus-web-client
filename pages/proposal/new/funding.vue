@@ -281,27 +281,40 @@ export default {
       this.$router.push(url)
     },
     async onSubmitProposal () {
-      let myWallet = this.getWallet
-      let proposal = {
-        description: this.description,
-        totalAmount: parseFloat(this.amount),
-        paymentCount: parseInt(this.paymentCount),
-        delay: this.delay * 60 * 1000,
-        paymentType: this.selectedPaymentType,
-        title: this.title
-      }
-      let proposalTx = await utils.createDevProposal(myWallet, proposal)
-      // console.log(proposalTx);
-      let isSubmitted = await utils.submitProposl(proposalTx)
-      if (isSubmitted) {
-        this.$ons.notification.alert('Dev Proposal is submitted.')
-        this.amount = ''
-        this.selectedPaymentType = 'single'
-        this.delay = 0
-        this.paymentCount = 1
-        this.title = ''
-        this.description = ''
-        this.redirect('/')
+      try {
+        let myWallet = this.getWallet
+        let proposal = {
+          description: this.description,
+          totalAmount: parseFloat(this.amount),
+          paymentCount: parseInt(this.paymentCount),
+          delay: this.delay * 60 * 1000,
+          paymentType: this.selectedPaymentType,
+          title: this.title
+        }
+        let proposalTx = await utils.createDevProposal(myWallet, proposal)
+        console.log(proposalTx)
+        let isSubmitted = await utils.submitProposl(proposalTx)
+        if (isSubmitted) {
+          this.$ons.notification.alert('Dev Proposal is submitted.')
+          this.amount = ''
+          this.selectedPaymentType = 'single'
+          this.delay = 0
+          this.paymentCount = 1
+          this.title = ''
+          this.description = ''
+          this.redirect('/')
+        }
+      } catch (e) {
+        console.error(e)
+        console.error(e.message)
+        this.$ons.notification.alert(`Fail to submit: ${e.message}`)
+        // this.amount = ''
+        // this.selectedPaymentType = 'single'
+        // this.delay = 0
+        // this.paymentCount = 1
+        // this.title = ''
+        // this.description = ''
+        // this.redirect('/')
       }
     },
     getRemainingSecondToProposal () {

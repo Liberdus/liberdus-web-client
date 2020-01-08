@@ -1,33 +1,39 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true, redirectUrl: '/'}" />
+    <tool-bar
+      :option="{
+        menu: false,
+        notification: false,
+        back: true,
+        redirectUrl: '/'
+      }"
+    />
     <div class="proposal-detail-container">
-      <h2 class="title-2">Your Vote is submitted !</h2>
-      <p class="value">Thanks for voting for this proposal</p>
+      <h2 class="title-2">Your Votes are submitted !</h2>
       <ButtonOutline text="Back To Proposals" :onClick="onBackToHome" />
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import ProposalListItem from "~/components/ProposalListItem";
-import Choice from "~/components/Choice";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import ButtonOutline from "~/components/baisc/ButtonOutline";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import ProposalListItem from '~/components/ProposalListItem'
+import Choice from '~/components/Choice'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import ButtonOutline from '~/components/baisc/ButtonOutline'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -36,27 +42,31 @@ export default {
     Title,
     Choice
   },
-  data: function() {
+  data: function () {
     return {
-      voteState: "select"
-    };
+      voteState: 'select'
+    }
   },
   computed: {
-    id: () => {
-      return this.$route.params.id;
+    previousRoute: function () {
+      return this.$route.params.success_id
     }
   },
   methods: {
-    onBackToHome() {
-      this.$router.push("/");
+    onBackToHome () {
+      console.log(this.$route.params)
+      this.$router.push(`/vote/${this.previousRoute}`)
     }
   }
-};
+}
 </script>
 
 <style>
 .proposal-detail-container {
   padding: 20px;
+  width: 90%;
+  max-width: 600px;
+  margin: 20px auto;
 }
 
 .proposal-detail-container .proposal-info-detail .row-1,
