@@ -112,6 +112,12 @@ export default {
       console.log(from)
       if (to && to.query.tabIndex) {
         vm.activeIndex = parseInt(to.query.tabIndex)
+      } else if (from.path.split('/')[1] === 'vote') {
+        if (from.path.split('/')[2] === 'funding') {
+          vm.activeIndex = 2
+        } else {
+          vm.activeIndex = 3
+        }
       } else if (from.name.split('-')[0] === 'proposal') {
         if (from.name.split('-')[2] === 'funding') {
           vm.activeIndex = 2
