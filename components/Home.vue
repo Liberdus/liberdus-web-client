@@ -40,15 +40,15 @@
 </template>
 
 <script>
-import TransactionListItem from "~/components/TransactionListItem";
-import { mapGetters, mapActions } from "vuex";
-import { map, filter, concat, flow, chain } from "lodash";
-import * as _ from "lodash";
-import utils from "../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import Notification from "~/components/Notification";
+import TransactionListItem from '~/components/TransactionListItem'
+import { mapGetters, mapActions } from 'vuex'
+import { map, filter, concat, flow, chain } from 'lodash'
+import * as _ from 'lodash'
+import utils from '../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import Notification from '~/components/Notification'
 export default {
   components: {
     TransactionListItem,
@@ -57,40 +57,43 @@ export default {
     Button,
     Notification
   },
-  data: function() {
+  data: function () {
     return {
       lastMessage: null,
       lastTx: null
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getLastMessage: "chat/getLastMessage",
-      getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady",
-      getActiveProposals: "proposal/getActiveProposals",
-      getCompletedProposals: "proposal/getCompletedProposals",
-      getActiveDevProposals: "proposal/getActiveDevProposals",
-      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getLastMessage: 'chat/getLastMessage',
+      getLastTx: 'chat/getLastTx',
+      isUIReady: 'chat/isUIReady',
+      getActiveProposals: 'proposal/getActiveProposals',
+      getCompletedProposals: 'proposal/getCompletedProposals',
+      getActiveDevProposals: 'proposal/getActiveDevProposals',
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
     }),
-    transactions() {
-      if (!this.getWallet || !this.getAppState) return [];
-      let myAddress = this.getWallet.entry.address;
-      let txs = this.getAppState.data.transactions;
-      const RawTransferTxs = utils.filterByTxType(txs, "transfer");
-      const RawMessageTxs = utils.filterByTxType(txs, "message");
-      const RawRegisterTxs = utils.filterByTxType(txs, "register");
+    transactions () {
+      if (!this.getWallet || !this.getAppState) return []
+      let myAddress = this.getWallet.entry.address
+      let txs = this.getAppState.data.transactions
+      const RawTransferTxs = utils.filterByTxType(txs, 'transfer')
+      const RawMessageTxs = utils.filterByTxType(txs, 'message')
+      const RawRegisterTxs = utils.filterByTxType(txs, 'register')
       const processRawTransferTxs = txList =>
         map(txList, tx => {
           return {
             type: utils.getTransferType(tx, myAddress),
-            otherPersonAddress: tx.to,
+            otherPersonAddress:
+              tx.from.toLowerCase() === myAddress.toLowerCase()
+                ? tx.to
+                : tx.from,
             timestamp: tx.timestamp,
             amount: tx.amount
-          };
-        });
+          }
+        })
       const processRawMessageTxs = txList =>
         map(txList, tx => {
           return {
@@ -98,115 +101,114 @@ export default {
             otherPersonAddress: tx.to,
             timestamp: tx.timestamp,
             amount: tx.amount
-          };
-        });
+          }
+        })
       const processRegisterTxs = txList =>
         map(txList, tx => {
           return {
-            type: "register",
+            type: 'register',
             alias: tx.alias,
             timestamp: tx.timestamp,
             // TODO:
             amount: 0.001
-          };
-        });
-      const transferTxs = processRawTransferTxs(RawTransferTxs);
-      const messageeTxs = processRawMessageTxs(RawMessageTxs);
-      const registerTx = processRegisterTxs(RawRegisterTxs);
-      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx);
-      return utils.sortByTimestamp(allProcessedTxs, "desc");
+          }
+        })
+      const transferTxs = processRawTransferTxs(RawTransferTxs)
+      const messageeTxs = processRawMessageTxs(RawMessageTxs)
+      const registerTx = processRegisterTxs(RawRegisterTxs)
+      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx)
+      return utils.sortByTimestamp(allProcessedTxs, 'desc')
     }
   },
-  mounted: function() {
-    this.refreshAppState();
+  mounted: function () {
+    this.refreshAppState()
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx",
-      setUIReady: "chat/setUIReady",
-      updateActiveProposals: "proposal/updateActiveProposals",
-      updateCompletedProposals: "proposal/updateCompletedProposals",
-      updateActiveDevProposals: "proposal/updateActiveDevProposals",
-      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
+      updateAppState: 'chat/updateAppState',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx',
+      setUIReady: 'chat/setUIReady',
+      updateActiveProposals: 'proposal/updateActiveProposals',
+      updateCompletedProposals: 'proposal/updateCompletedProposals',
+      updateActiveDevProposals: 'proposal/updateActiveDevProposals',
+      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
     }),
-    getLastTxFromAPI() {
-      if (!this.getAppState) return;
-      let txs = this.getAppState.data.transactions;
-      return txs[txs.length - 1];
+    getLastTxFromAPI () {
+      if (!this.getAppState) return
+      let txs = this.getAppState.data.transactions
+      return txs[txs.length - 1]
     },
-    getLatestMessageFromServer(processedState) {
-      let chats = processedState.data.chats;
-      let messageList = [];
+    getLatestMessageFromServer (processedState) {
+      let chats = processedState.data.chats
+      let messageList = []
       for (let handle in chats) {
-        chats[handle].messages.forEach(m => messageList.push(m));
+        chats[handle].messages.forEach(m => messageList.push(m))
       }
       if (messageList.length > 0) {
         let sortedMessageList = messageList.sort(
           (a, b) => b.timestamp - a.timestamp
-        );
+        )
         return {
           body: sortedMessageList[0].body,
           timestamp: sortedMessageList[0].timestamp,
           handle: sortedMessageList[0].handle
-        };
+        }
       } else
         return {
           body: null,
           timestamp: null,
           handle: null
-        };
-    },
-    async processData(myAccountData) {
-      try {
-        let { account } = myAccountData;
-        let keys = Object.keys(account.data.chats);
-        let modifiedChats = {};
-        for (let i = 0; i < keys.length; i++) {
-          let handle = await utils.getHandle(keys[i]);
-          modifiedChats[handle] = account.data.chats[keys[i]];
         }
-        let processed = { ...account };
-        processed.data.chats = modifiedChats;
+    },
+    async processData (myAccountData) {
+      try {
+        let { account } = myAccountData
+        let keys = Object.keys(account.data.chats)
+        let modifiedChats = {}
+        for (let i = 0; i < keys.length; i++) {
+          let handle = await utils.getHandle(keys[i])
+          modifiedChats[handle] = account.data.chats[keys[i]]
+        }
+        let processed = { ...account }
+        processed.data.chats = modifiedChats
         for (var handle in processed.data.chats) {
           processed.data.chats[handle].messages = processed.data.chats[
             handle
-          ].messages.map(m => JSON.parse(m));
+          ].messages.map(m => JSON.parse(m))
         }
-        let friendList = Object.values(processed.data.friends);
-        friendList = friendList.filter(f => f !== null);
-        processed.data.friends = friendList;
-        return processed;
+        let friendList = Object.values(processed.data.friends)
+        friendList = friendList.filter(f => f !== null)
+        processed.data.friends = friendList
+        return processed
       } catch (e) {
-        console.warn(`Unable to process account state data...`);
-        console.log(myAccountData);
+        console.warn(`Unable to process account state data...`)
+        console.log(myAccountData)
       }
     },
-    async refreshAppState() {
-      let self = this;
+    async refreshAppState () {
+      let self = this
       if (self.getWallet && self.isUIReady) {
-        console.log("Refreshing App state...");
-        let myHandle = this.getWallet.handle;
-        let myAccountData = await utils.queryAccount(myHandle);
-        let processedState = await this.processData(myAccountData);
-        self.updateAppState(processedState);
+        console.log('Refreshing App state...')
+        let myHandle = this.getWallet.handle
+        let myAccountData = await utils.queryAccount(myHandle)
+        let processedState = await this.processData(myAccountData)
+        self.updateAppState(processedState)
         let lastMessageFromServer = this.getLatestMessageFromServer(
           processedState
-        );
-        if (lastMessageFromServer.body)
-          this.lastMessage = lastMessageFromServer;
-        let lastTxFromAPI = this.getLastTxFromAPI();
+        )
+        if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
+        let lastTxFromAPI = this.getLastTxFromAPI()
         if (lastTxFromAPI) {
-          this.lastTx = lastTxFromAPI;
+          this.lastTx = lastTxFromAPI
         }
-        setTimeout(this.refreshAppState, 10000);
+        setTimeout(this.refreshAppState, 10000)
       } else {
-        setTimeout(this.refreshAppState, 5000);
+        setTimeout(this.refreshAppState, 5000)
       }
     }
   }
-};
+}
 </script>
 
 <style>

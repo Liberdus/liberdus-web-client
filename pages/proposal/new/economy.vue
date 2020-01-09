@@ -478,6 +478,7 @@ export default {
           padding: 10px;
           display: block;
           height: 30px;
+          font-size: 14px;
           max-width: 80px;
           margin: 0 auto;
           border-radius: 5px;

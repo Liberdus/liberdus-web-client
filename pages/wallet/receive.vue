@@ -1,40 +1,40 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true }" />
     <!-- TODO: -->
-    <div class="receive-container">
+    <div class="receive-container" v-if="getWallet.handle">
       <Title text="Receive Coins" />
       <p>Share your username to your senders</p>
       <!-- TODO
       <p id="username">{{getWallet.handle}}</p>
       <qriously :value="getWallet.handle" :size="200" class="qr-code" />-->
       <p id="username">
-        <strong>thantsintoe</strong>
+        <strong>{{ getWallet.handle }}</strong>
       </p>
-      <qriously value="thantsintoe" :size="200" class="qr-code" />
+      <qriously :value="getWallet.handle" :size="200" class="qr-code" />
       <Button text="Copy Account Address" :onClick="onCopy" />
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import VueQriously from "vue-qriously";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import VueQriously from 'vue-qriously'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-Vue.use(VueOnsen);
-Vue.use(VueQriously);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Vue.use(VueQriously)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -42,31 +42,31 @@ export default {
     Button,
     ToolBar
   },
-  data: function() {
-    return {};
+  data: function () {
+    return {}
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady'
     })
   },
   methods: {
-    redirect(url, option) {
-      this.$router.push(url);
-      if (url === "/" && option) {
+    redirect (url, option) {
+      this.$router.push(url)
+      if (url === '/' && option) {
       }
     },
-    onCopy() {
+    onCopy () {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
-      utils.copyToClipboard("thantsintoe");
-      this.$ons.notification.alert("Copied to clipboard!");
+      utils.copyToClipboard(this.getWallet.handle)
+      this.$ons.notification.alert('Copied to clipboard!')
     }
   }
-};
+}
 </script>
 
 <style>
