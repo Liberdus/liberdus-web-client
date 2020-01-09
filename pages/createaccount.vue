@@ -53,7 +53,8 @@
         <Button text="Create Account" :onClick="onCreateAccount" />
         <p class="already-registered">
           Already registered ? Please import your account
-          <nuxt-link class="link-to-import" to="/setting/import">here</nuxt-link
+          <nuxt-link class="link-to-import" to="/setting/import"
+            ><strong>here</strong></nuxt-link
           >.
         </p>
       </div>

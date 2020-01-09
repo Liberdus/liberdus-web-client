@@ -1,47 +1,56 @@
 <template>
   <v-ons-page>
-    <div class="welcome-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
+    <div
+      class="welcome-container"
+      :style="{ backgroundImage: `url(${backgroundUrl})` }"
+    >
       <div class="welcome-content">
         <Title text="Getting Started" />
         <Button-Outline text="Import Account" :onClick="onImportAccount" />
         <Button text="Create Account" :onClick="onCreateAccount" />
+        <p class="already-registered" style="text-align: center">
+          Change network setting
+          <nuxt-link class="link-to-import" to="/setting/network"
+            ><strong>here</strong></nuxt-link
+          >.
+        </p>
       </div>
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import ButtonOutline from "~/components/baisc/ButtonOutline";
-import backgroundUrl from "~/assets/images/liberdus_background.png";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import ButtonOutline from '~/components/baisc/ButtonOutline'
+import backgroundUrl from '~/assets/images/liberdus_background.png'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 export default {
   components: { Button, ButtonOutline, Title },
-  data: function() {
+  data: function () {
     return {
-      username: "",
+      username: '',
       backgroundUrl
-    };
+    }
   },
   methods: {
-    onCreateAccount() {
-      this.$router.push("/createaccount");
+    onCreateAccount () {
+      this.$router.push('/createaccount')
     },
-    onImportAccount() {
-      this.$router.push("/setting/import");
+    onImportAccount () {
+      this.$router.push('/setting/import')
     }
   }
-};
+}
 </script>
 
 <style>

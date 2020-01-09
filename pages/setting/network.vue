@@ -1,6 +1,13 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true }" />
+    <tool-bar
+      :option="{
+        menu: false,
+        notification: false,
+        back: true,
+        backUrl: previousUrl
+      }"
+    />
     <div class="network-container">
       <p v-if="seedNode">
         Current Seed Node IP:
@@ -16,36 +23,47 @@
 
       <form class="network-form" v-on:submit.prevent="onUpdateSeedNode">
         <p class="sub-head">Change Seed Node</p>
-        <input type="text" placeholder="New ip address" v-model="newIP" class="text-input" />
-        <input type="text" placeholder="New port number" v-model="newPort" class="text-input" />
+        <input
+          type="text"
+          placeholder="New ip address"
+          v-model="newIP"
+          class="text-input"
+        />
+        <input
+          type="text"
+          placeholder="New port number"
+          v-model="newPort"
+          class="text-input"
+        />
         <Button text="Update Network" :onClick="onUpdateSeedNode" />
       </form>
       <v-ons-button
         class="new-message-btn"
         modifier="quiet"
         @click="onResetNetwork"
-      >Reset to Default Network</v-ons-button>
+        >Reset to Default Network</v-ons-button
+      >
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters, mapActions } from "vuex";
-import CONFIG from "../../config";
-import utils from "../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters, mapActions } from 'vuex'
+import CONFIG from '../../config'
+import utils from '../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -53,62 +71,62 @@ export default {
     Button,
     ToolBar
   },
-  data: function() {
+  data: function () {
     return {
-      newPort: "",
-      previousUrl: "/",
-      newIP: "",
+      newPort: '',
+      previousUrl: '/',
+      newIP: '',
       seedNode: CONFIG.server
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getNetwork: "chat/getNetwork"
+      getNetwork: 'chat/getNetwork'
     })
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter (to, from, next) {
     next(vm => {
-      vm.previousUrl = from.path;
-      console.log(vm.previousUrl);
-    });
+      vm.previousUrl = from.path
+      console.log(vm.previousUrl)
+    })
   },
   methods: {
     ...mapActions({
-      updateNetwork: "chat/updateNetwork"
+      updateNetwork: 'chat/updateNetwork'
     }),
-    redirect(url, option) {
-      console.log(`Pushing to ${url}`);
-      this.$router.push(url);
-      if (url === "/" && option) {
+    redirect (url, option) {
+      console.log(`Pushing to ${url}`)
+      this.$router.push(url)
+      if (url === '/' && option) {
       }
     },
-    onUpdateSeedNode() {
-      console.log("Updating Seednode and network");
-      utils.updateSeedNodeHost(this.newIP, this.newPort);
+    onUpdateSeedNode () {
+      console.log('Updating Seednode and network')
+      utils.updateSeedNodeHost(this.newIP, this.newPort)
       this.seedNode = {
         ip: this.newIP,
         port: this.newPort
-      };
-      this.updateChatServerHost();
-      this.newIP = "";
-      this.newPort = "";
+      }
+      this.updateChatServerHost()
+      this.newIP = ''
+      this.newPort = ''
     },
-    async updateChatServerHost() {
-      console.log("Updating chat server host...");
-      let randomHost = await utils.getRandomHost();
-      this.updateNetwork(randomHost);
-      utils.updateHost(`${randomHost.ip}:${randomHost.port}`);
+    async updateChatServerHost () {
+      console.log('Updating chat server host...')
+      let randomHost = await utils.getRandomHost()
+      this.updateNetwork(randomHost)
+      utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
     },
-    async onResetNetwork() {
-      console.log("Resetting Seednode and network");
-      utils.updateSeedNodeHost(CONFIG.server.ip, CONFIG.server.port);
-      this.seedNode = CONFIG.server;
-      this.updateChatServerHost();
-      this.newIP = "";
-      this.newPort = "";
+    async onResetNetwork () {
+      console.log('Resetting Seednode and network')
+      utils.updateSeedNodeHost(CONFIG.server.ip, CONFIG.server.port)
+      this.seedNode = CONFIG.server
+      this.updateChatServerHost()
+      this.newIP = ''
+      this.newPort = ''
     }
   }
-};
+}
 </script>
 
 <style lang="scss">
