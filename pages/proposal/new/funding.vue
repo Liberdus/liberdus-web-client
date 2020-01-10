@@ -186,7 +186,8 @@ export default {
       proposalWindowTimer: null,
       remainingSecondToProposalWindow: null,
       loading: true,
-      window: null
+      window: null,
+      previousWindow: null
     }
   },
   computed: {
@@ -254,7 +255,19 @@ export default {
         // this.loading = true
         let networkParameters = await utils.queryParameters()
         if (!this.networkParameters) this.networkParameters = networkParameters
-        this.window = networkParameters['DEV_WINDOWS']
+
+        if (!this.previousWindow) {
+          this.window = networkParameters['DEV_WINDOWS']
+          this.previousWindow = networkParameters['DEV_WINDOWS']
+        } else if (
+          networkParameters['DEV_WINDOWS'].devProposalWindow[0] > Date.now()
+        ) {
+          this.window = { ...this.previousWindow }
+        } else {
+          this.window = networkParameters['DEV_WINDOWS']
+          this.previousWindow = networkParameters['DEV_WINDOWS']
+        }
+
         let proposalWindow = this.window.devProposalWindow
         let applyWindow = this.window.devApplyWindow
         this.loading = false

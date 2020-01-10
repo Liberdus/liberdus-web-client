@@ -62,7 +62,7 @@ export default {
     manifest: {
       name: 'Liberdus',
       short_name: 'Liberdus',
-      lang: 'fa'
+      lang: 'en'
     },
     icon: {
       iconSrc: './static/icon.png',

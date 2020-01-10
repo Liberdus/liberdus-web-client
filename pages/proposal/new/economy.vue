@@ -282,6 +282,7 @@ export default {
       proposalWindowTimer: null,
       remainingSecondToProposalWindow: null,
       window: null,
+      previousWindow: null,
       loading: true,
       form: {
         devProposalFee: '',
@@ -317,6 +318,8 @@ export default {
       return dDisplay + hDisplay + mDisplay + sDisplay
     },
     currentWindowName () {
+      // console.log(`NOW: ${new Date()}`)
+      // console.log(`APPLY END: ${new Date(this.window.applyWindow[1])}`)
       if (!this.window) return
       const now = Date.now()
       if (
@@ -395,7 +398,19 @@ export default {
           this.networkParameters = newNetworkParameters
           this.form = Object.assign({}, this.networkParameters.CURRENT)
         }
-        this.window = newNetworkParameters['WINDOWS']
+        if (!this.previousWindow) {
+          this.window = newNetworkParameters['WINDOWS']
+          this.previousWindow = newNetworkParameters['WINDOWS']
+        } else if (
+          newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
+        ) {
+          // this.window = JSON.parse(JSON.stringify(this.previousWindow))
+          this.window = { ...this.previousWindow }
+        } else {
+          this.window = newNetworkParameters['WINDOWS']
+          this.previousWindow = newNetworkParameters['WINDOWS']
+        }
+
         const proposalWindow = this.window.proposalWindow
         this.loading = false
         // console.log(formatDate(proposalWindow[0]), formatDate(proposalWindow[1]));

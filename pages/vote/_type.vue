@@ -73,6 +73,7 @@ export default {
       propsalListSubscription: null,
       voteCollector: {},
       window: null,
+      previousWindow: null,
       votingWindowChecker: null,
       votingWindowTimer: null,
       remainingSecondToVotingWindow: null,
@@ -286,7 +287,19 @@ export default {
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
         }
-        this.window = newNetworkParameters['WINDOWS']
+
+        if (!this.previousWindow) {
+          this.window = newNetworkParameters['WINDOWS']
+          this.previousWindow = newNetworkParameters['WINDOWS']
+        } else if (
+          newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
+        ) {
+          this.window = { ...this.previousWindow }
+        } else {
+          this.window = newNetworkParameters['WINDOWS']
+          this.previousWindow = newNetworkParameters['WINDOWS']
+        }
+
         const votingWindow = this.window.votingWindow
         if (
           this.window.votingWindow &&
