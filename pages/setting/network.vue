@@ -8,6 +8,7 @@
         backUrl: previousUrl
       }"
     />
+    <!-- {{ seedNode }} -->
     <div class="network-container">
       <p v-if="seedNode">
         Current Seed Node IP:
@@ -82,7 +83,10 @@ export default {
   computed: {
     ...mapGetters({
       getNetwork: 'chat/getNetwork'
-    })
+    }),
+    currentSeedNode () {
+      return this.getNetwork
+    }
   },
   beforeRouteEnter (to, from, next) {
     next(vm => {
@@ -103,13 +107,15 @@ export default {
     onUpdateSeedNode () {
       console.log('Updating Seednode and network')
       utils.updateSeedNodeHost(this.newIP, this.newPort)
-      this.seedNode = {
-        ip: this.newIP,
-        port: this.newPort
-      }
+      this.seedNode.ip = this.newIP
+      this.seedNode.port = this.newPort
+
       this.updateChatServerHost()
-      this.newIP = ''
-      this.newPort = ''
+      setTimeout(() => {
+        this.newIP = ''
+        this.newPort = ''
+      }, 1000)
+      this.$ons.notification.alert('Seed node server is updated.')
     },
     async updateChatServerHost () {
       console.log('Updating chat server host...')
