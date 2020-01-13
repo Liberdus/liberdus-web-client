@@ -6,7 +6,10 @@
       width="100%"
       classes="my-notification-style"
     />
-    <tool-bar :option="{ menu: true, notification: true, back: false }" />
+    <tool-bar
+      v-if="isUIReady"
+      :option="{ menu: true, notification: true, back: false }"
+    />
     <!-- <v-ons-tabbar
       swipeable
       position="top"
@@ -14,8 +17,9 @@
       :visible="true"
       :index.sync="activeIndex"
     ></v-ons-tabbar> -->
-
+    <p style="display: none">{{ isUIReady }}</p>
     <v-ons-tabbar
+      v-if="isUIReady"
       swipeable
       position="top"
       :visible="true"

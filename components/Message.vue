@@ -21,14 +21,14 @@
 </template>
 
 <script>
-import MessageListItem from "~/components/MessageListItem";
-import { mapGetters, mapActions } from "vuex";
-import { last } from "lodash";
-import utils from "../assets/utils";
-import newMessageSoundFile from "../assets/new_message_sound.mp3";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import MessageListItem from '~/components/MessageListItem'
+import { mapGetters, mapActions } from 'vuex'
+import { last } from 'lodash'
+import utils from '../assets/utils'
+import newMessageSoundFile from '../assets/new_message_sound.mp3'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 export default {
   components: {
     MessageListItem,
@@ -36,49 +36,51 @@ export default {
     Button,
     ToolBar
   },
-  data: function() {
-    return {};
+  data: function () {
+    return {}
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getLastMessage: "chat/getLastMessage",
-      getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getLastMessage: 'chat/getLastMessage',
+      getLastTx: 'chat/getLastTx',
+      isUIReady: 'chat/isUIReady'
     }),
-    shouldRender() {
-      let should = this.isUIReady;
-      return should;
+    shouldRender () {
+      let should = this.isUIReady
+      return should
     },
-    messageList() {
+    messageList () {
       if (this.getAppState && this.isUIReady) {
-        let chats = this.getAppState.data.chats;
-        let handles = Object.keys(chats);
-        let list = [];
+        let chats = this.getAppState.data.chats
+        let handles = Object.keys(chats)
+        let list = []
         for (let handle in chats) {
+          if (!chats[handle].messages || chats[handle].messages.length === 0)
+            continue
           list.push({
             handle,
             timestamp: last(chats[handle].messages).timestamp,
             lastMessage: last(chats[handle].messages).body
-          });
+          })
         }
-        list = list.sort((a, b) => b.timestamp - a.timestamp);
-        return list;
+        list = list.sort((a, b) => b.timestamp - a.timestamp)
+        return list
       } else {
-        return [];
+        return []
       }
     }
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx"
+      updateAppState: 'chat/updateAppState',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx'
     })
   },
-  mounted: function() {}
-};
+  mounted: function () {}
+}
 </script>
 
 <style>

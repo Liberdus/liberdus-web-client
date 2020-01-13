@@ -1,15 +1,17 @@
 <template>
   <v-ons-page>
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
-    <div class="home-tab-container">
+    <!-- {{ getWallet }} -->
+
+    <p style="display: none">{{ isUIReady }}</p>
+    <div class="home-tab-container" v-if="isUIReady">
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance">
           {{ getAppState.data.balance.toFixed(3) }}
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
-          12,000
-          <span class="total-unit">LBD</span>
+          <v-ons-progress-circular indeterminate></v-ons-progress-circular>
         </h1>
       </div>
       <div>
@@ -140,6 +142,7 @@ export default {
       return txs[txs.length - 1]
     },
     getLatestMessageFromServer (processedState) {
+      return null
       let chats = processedState.data.chats
       let messageList = []
       for (let handle in chats) {
@@ -168,14 +171,16 @@ export default {
         let modifiedChats = {}
         for (let i = 0; i < keys.length; i++) {
           let handle = await utils.getHandle(keys[i])
-          modifiedChats[handle] = account.data.chats[keys[i]]
+          // modifiedChats[handle] = account.data.chats[keys[i]]
+          modifiedChats[handle] = []
         }
         let processed = { ...account }
         processed.data.chats = modifiedChats
         for (var handle in processed.data.chats) {
-          processed.data.chats[handle].messages = processed.data.chats[
-            handle
-          ].messages.map(m => JSON.parse(m))
+          // processed.data.chats[handle].messages = processed.data.chats[
+          //   handle
+          // ].messages.map(m => JSON.parse(m))
+          // TODO: Decrypt messages here
         }
         let friendList = Object.values(processed.data.friends)
         friendList = friendList.filter(f => f !== null)
@@ -183,6 +188,7 @@ export default {
         return processed
       } catch (e) {
         console.warn(`Unable to process account state data...`)
+        console.warn(e)
         console.log(myAccountData)
       }
     },
@@ -194,10 +200,11 @@ export default {
         let myAccountData = await utils.queryAccount(myHandle)
         let processedState = await this.processData(myAccountData)
         self.updateAppState(processedState)
-        let lastMessageFromServer = this.getLatestMessageFromServer(
-          processedState
-        )
-        if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
+        // let lastMessageFromServer = this.getLatestMessageFromServer(
+        //   processedState
+        // )
+        // TODO
+        // if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
         let lastTxFromAPI = this.getLastTxFromAPI()
         if (lastTxFromAPI) {
           this.lastTx = lastTxFromAPI

@@ -687,6 +687,54 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   }
 }
 
+utils.createEmailTx = function (email, sourceAcc) {
+  const source = sourceAcc.entry
+  console.log(source)
+  const signedTx = {
+    emailHash: crypto.hash(email),
+    from: source.address
+  }
+  crypto.signObj(signedTx, source.keys.secretKey, source.keys.publicKey)
+  const tx = {
+    type: 'email',
+    signedTx,
+    email: email,
+    timestamp: Date.now()
+  }
+  return tx
+}
+utils.createVerifyTx = function (code, sourceAcc) {
+  const source = sourceAcc.entry
+  let tx = {
+    type: 'verify',
+    from: source.address,
+    code: code,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  return tx
+}
+utils.registerEmail = function (email, sourceAcc) {
+  const tx = utils.createEmailTx(email, sourceAcc)
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    })
+  })
+}
+utils.verifyEmail = function (code, sourceAcc) {
+  const tx = utils.createVerifyTx(code, sourceAcc)
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    })
+  })
+}
+
 utils.getDifferentParameter = function (newParameters, currentParameters) {
   let obj = {}
   let excludeKeys = ['hash', 'id', 'timestamp']

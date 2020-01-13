@@ -20,33 +20,39 @@
           <p
             class="input-error-message"
             v-if="$v.newToll.required && !$v.newToll.between"
-          >Invalid toll amount</p>
+          >
+            Invalid toll amount
+          </p>
         </div>
-        <Button text="Update Toll Amount" :onClick="onUpdateToll" :isDisabled="!isTollVaild" />
+        <Button
+          text="Update Toll Amount"
+          :onClick="onUpdateToll"
+          :isDisabled="!isTollVaild"
+        />
       </form>
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters } from "vuex";
-import utils from "../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters } from 'vuex'
+import utils from '../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-import Vuelidate from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
-Vue.use(VueOnsen);
-Vue.use(Vuelidate);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+import Vuelidate from 'vuelidate'
+import { required, minLength, between } from 'vuelidate/lib/validators'
+Vue.use(VueOnsen)
+Vue.use(Vuelidate)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -54,10 +60,10 @@ export default {
     Button,
     ToolBar
   },
-  data: function() {
+  data: function () {
     return {
-      newToll: ""
-    };
+      newToll: ''
+    }
   },
   validations: {
     newToll: {
@@ -67,35 +73,35 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady'
     }),
-    isTollVaild() {
-      if (this.$v.newToll.required && this.$v.newToll.between) return true;
+    isTollVaild () {
+      if (this.$v.newToll.required && this.$v.newToll.between) return true
     }
   },
   methods: {
-    async onUpdateToll() {
+    async onUpdateToll () {
       let isSubmitted = await utils.setToll(
         this.newToll,
         this.getWallet.entry.keys
-      );
+      )
       if (isSubmitted) {
-        this.newToll = "";
-        this.notify("Your transaction is submitted to network.");
+        this.newToll = ''
+        this.notify('Your transaction is submitted to network.')
       }
     },
-    redirect(url, option) {
-      this.$router.push(url);
-      if (url === "/" && option) {
+    redirect (url, option) {
+      this.$router.push(url)
+      if (url === '/' && option) {
       }
     },
-    notify(message) {
-      this.$ons.notification.alert(message);
+    notify (message) {
+      this.$ons.notification.alert(message)
     }
   }
-};
+}
 </script>
 
 <style lang="scss">

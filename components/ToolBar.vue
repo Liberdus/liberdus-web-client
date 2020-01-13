@@ -40,6 +40,7 @@
         <ul>
           <li>General</li>
           <li @click="redirect('/setting/export')">Export Account</li>
+          <li @click="redirect('/email/register')">Register Email</li>
           <li @click="redirect('/setting/toll')">Toll</li>
           <li @click="redirect('/setting/friends')">Friends</li>
           <li @click="redirect('/setting/network')">Network</li>
