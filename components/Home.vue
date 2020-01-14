@@ -153,7 +153,6 @@ export default {
       return txs[txs.length - 1]
     },
     getLatestMessageFromServer (processedState) {
-      return null
       let chats = processedState.data.chats
       let messageList = []
       for (let handle in chats) {
@@ -204,10 +203,8 @@ export default {
           let handle = await utils.getHandle(keys[i])
           modifiedChats[handle] = account.data.chats[keys[i]]
         }
-        console.log(modifiedChats)
 
         processed.data.chats = modifiedChats
-
         let friendList = Object.values(processed.data.friends)
         friendList = friendList.filter(f => f !== null)
         processed.data.friends = friendList
@@ -226,11 +223,10 @@ export default {
         let myAccountData = await utils.queryAccount(myHandle)
         let processedState = await this.processData(myAccountData)
         self.updateAppState(processedState)
-        // let lastMessageFromServer = this.getLatestMessageFromServer(
-        //   processedState
-        // )
-        // TODO
-        // if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
+        let lastMessageFromServer = this.getLatestMessageFromServer(
+          processedState
+        )
+        if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
         let lastTxFromAPI = this.getLastTxFromAPI()
         if (lastTxFromAPI) {
           this.lastTx = lastTxFromAPI

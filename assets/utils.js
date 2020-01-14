@@ -388,6 +388,9 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
         type: 'message',
         from: source.address,
         to: targetAddress,
+        chatId: crypto.hash(
+          [source.address, targetAddress].sort((a, b) => a < b).join``
+        ),
         message: encryptedMsg,
         amount: toll,
         timestamp: Date.now()
@@ -902,12 +905,12 @@ utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
   return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
 }
 utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-  return {
-    handle: 'tester1',
-    body: encryptedMessage.substr(2, 10),
-    timestamp: Date.now()
-  }
-  // return crypto.decryptAB(sealed, otherPartyPubKey, mySecKey)
+  // return {
+  //   handle: 'tester1',
+  //   body: encryptedMessage.substr(2, 10),
+  //   timestamp: Date.now()
+  // }
+  return JSON.parse(crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey))
 }
 
 utils.queryEncryptedChats = async function (chatId) {

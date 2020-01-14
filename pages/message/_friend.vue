@@ -92,11 +92,13 @@ export default {
       let chatId = chats[this.otherPersonAddress]
       if (chatId) {
         // console.log(`chatId =>`, chatId)
-        // let newMessages = messages.map(m => JSON.parse(m))
-        // if (newMessages.length > this.messages) {
-        //   setTimeout(this.scrollToLastMessage, 1000)
-        // }
+
         const encryptedChatList = await utils.queryEncryptedChats(chatId)
+
+        if (encryptedChatList.length > this.messages.length) {
+          setTimeout(this.scrollToLastMessage, 1000)
+        }
+
         // console.log(`encryptedChatList =>`, encryptedChatList)
         this.messages = encryptedChatList.map(sealed => {
           return utils.decryptMessage(
@@ -105,18 +107,18 @@ export default {
             this.secretKey
           )
         })
-        // let lastMessage = this.messages[this.messages.length - 1]
-        // if (lastMessage.handle !== this.getWallet.handle)
-        //   this.updateLastMessage({ body: lastMessage.body, read: true })
-        // if (this.pendingMessage) {
-        //   if (
-        //     this.pendingMessage.handle === lastMessage.handle &&
-        //     this.pendingMessage.body === lastMessage.body
-        //   ) {
-        //     this.pendingMessage = null
-        //     utils.playSoundFile(sentSoundFile)
-        //   }
-        // }
+        let lastMessage = this.messages[this.messages.length - 1]
+        if (lastMessage.handle !== this.getWallet.handle)
+          this.updateLastMessage({ body: lastMessage.body, read: true })
+        if (this.pendingMessage) {
+          if (
+            this.pendingMessage.handle === lastMessage.handle &&
+            this.pendingMessage.body === lastMessage.body
+          ) {
+            this.pendingMessage = null
+            utils.playSoundFile(sentSoundFile)
+          }
+        }
       }
     },
 
