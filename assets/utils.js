@@ -388,9 +388,7 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
         type: 'message',
         from: source.address,
         to: targetAddress,
-        chatId: crypto.hash(
-          [source.address, targetAddress].sort((a, b) => a < b).join``
-        ),
+        chatId: crypto.hash([source.address, targetAddress].sort().join``),
         message: encryptedMsg,
         amount: toll,
         timestamp: Date.now()
@@ -445,7 +443,6 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 
 utils.getHandle = async publicKey => {
   let { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
-  console.log(`http://${host}/account/${publicKey}/alias`)
   return handle
 }
 
@@ -910,12 +907,13 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
   //   body: encryptedMessage.substr(2, 10),
   //   timestamp: Date.now()
   // }
-  return JSON.parse(crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey))
+  return JSON.parse(
+    crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
+  )
 }
 
 utils.queryEncryptedChats = async function (chatId) {
   const res = await axios.get(`http://${host}/messages/${chatId}`)
-  console.log(`http://${host}/messages/${chatId}`)
   return res.data.messages
 }
 
