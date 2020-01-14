@@ -2,7 +2,6 @@
   <v-ons-page>
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <div class="message-tab-container">
-      <!-- <Title text="Messages" /> -->
       <button
         class="white-button new-message-button"
         @click="$router.push('/message/new')"

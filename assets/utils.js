@@ -16,6 +16,22 @@ utils.init = async defaultHost => {
     '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
   )
   let sampleHash = crypto.hash('Hello World')
+  // const Alice = crypto.generateKeypair()
+  // const Bob = crypto.generateKeypair()
+  // const message = 'hi hello world'
+  // const encryptedMessage = crypto.encryptAB(
+  //   message,
+  //   Bob.publicKey,
+  //   Alice.secretKey
+  // )
+  // const decryptedMessage = crypto.decryptAB(
+  //   encryptedMessage,
+  //   Alice.publicKey,
+  //   Bob.secretKey
+  // )
+  // console.log(message === decryptedMessage) // true
+  // console.log(decryptedMessage) // hi hello world
+
   return sampleHash
 }
 
@@ -350,20 +366,6 @@ utils.setToll = (toll, keys) => {
 }
 
 utils.sendMessage = async (text, sourceAcc, targetHandle) => {
-  // { type: 'message',
-  // from:
-  //  'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
-  // to:
-  //  '506e25334cbc536fd3e96adcfed207cfa4290c70124ff7281b231a20c8a5dde0',
-  // message:
-  //  '{"body":"hi there","handle":"d53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f","timestamp":1574228614992}',
-  // timestamp: 1574228614992,
-  // sign:
-  //  { owner:
-  //     'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
-  //    sig:
-  //     'ddac7d14966ee7e2d36e2d80e04027430f15426943de4deece6004339cb02ec274c1389fefc10afe2ad968c817bb201f731a4a4552c33ca6fe9d5dd47ccb610828f99d069099e7c49246c19969fc77789357e8b0d2414f4c899b2f2d9ba01d98' } }
-
   const source = sourceAcc.entry
   const targetAddress = await getAddress(targetHandle)
   if (targetAddress === undefined || targetAddress === null) {
@@ -375,18 +377,18 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
     timestamp: Date.now(),
     handle: sourceAcc.handle
   })
-  // const encryptedMsg = crypto.encrypt(
-  //   message,
-  //   crypto.convertSkToCurve(source.keys.secretKey),
-  //   crypto.convertPkToCurve(targetAddress)
-  // );
+  const encryptedMsg = utils.encryptMessage(
+    message,
+    targetAddress,
+    source.keys.secretKey
+  )
   return new Promise(resolve => {
     getToll(targetAddress, source.address).then(toll => {
       const tx = {
         type: 'message',
         from: source.address,
         to: targetAddress,
-        message: message,
+        message: encryptedMsg,
         amount: toll,
         timestamp: Date.now()
       }
@@ -894,6 +896,24 @@ utils.updateBadge = (tabName, type) => {
       badgeElementList[1].innerHTML = ''
     }
   }
+}
+
+utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
+  return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
+}
+utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
+  return {
+    handle: 'tester1',
+    body: encryptedMessage.substr(2, 10),
+    timestamp: Date.now()
+  }
+  // return crypto.decryptAB(sealed, otherPartyPubKey, mySecKey)
+}
+
+utils.queryEncryptedChats = async function (chatId) {
+  const res = await axios.get(`http://${host}/messages/${chatId}`)
+  console.log(`http://${host}/messages/${chatId}`)
+  return res.data.messages
 }
 
 utils.getAddress = getAddress

@@ -124,6 +124,17 @@ export default {
   },
   mounted: function () {
     this.refreshAppState()
+    // let originalMessage = 'liberdus is awesome'
+    // let encryptedMessage = utils.encryptMessage(
+    //   originalMessage,
+    //   this.getWallet.entry.keys
+    // )
+    // console.log(`Encrypt Message: `, encryptedMessage)
+    // let decryptedMessage = utils.decryptMessage(
+    //   'ca1bbfcd8e9ba12936ff91ae1b8c6959b0d9d9659949e8a2af55bf23a280c60a3238311a1de72e83acf8fcf476aed2f05d612cd4d52df8885b87beaff6f5504cecfbe7786c54890323120f173e',
+    //   this.getWallet.entry.keys
+    // )
+    // console.log(originalMessage === decryptedMessage) // return true
   },
   methods: {
     ...mapActions({
@@ -165,23 +176,38 @@ export default {
         }
     },
     async processData (myAccountData) {
+      let self = this
       try {
         let { account } = myAccountData
+        let processed = { ...account }
+
+        for (let otherPersonPk in processed.data.chats) {
+          const chatId = processed.data.chats[otherPersonPk]
+          const encryptedChatList = await utils.queryEncryptedChats(chatId)
+          const decryptedChatList = encryptedChatList.map(data => {
+            return utils.decryptMessage(
+              data,
+              otherPersonPk,
+              self.getWallet.entry.keys.secretKey
+            )
+          })
+          // console.log('Encrypted chats => ', encryptedChatList)
+          // console.log('Decrypted chats => ', decryptedChatList)
+          processed.data.chats[otherPersonPk] = {
+            messages: decryptedChatList
+          }
+        }
+
         let keys = Object.keys(account.data.chats)
         let modifiedChats = {}
         for (let i = 0; i < keys.length; i++) {
           let handle = await utils.getHandle(keys[i])
-          // modifiedChats[handle] = account.data.chats[keys[i]]
-          modifiedChats[handle] = []
+          modifiedChats[handle] = account.data.chats[keys[i]]
         }
-        let processed = { ...account }
+        console.log(modifiedChats)
+
         processed.data.chats = modifiedChats
-        for (var handle in processed.data.chats) {
-          // processed.data.chats[handle].messages = processed.data.chats[
-          //   handle
-          // ].messages.map(m => JSON.parse(m))
-          // TODO: Decrypt messages here
-        }
+
         let friendList = Object.values(processed.data.friends)
         friendList = friendList.filter(f => f !== null)
         processed.data.friends = friendList
