@@ -6,8 +6,8 @@ import stringify from 'fast-stable-stringify'
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 let host
 let seedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
-let utils = {}
-let walletEntries = {}
+const utils = {}
+const walletEntries = {}
 
 utils.init = async defaultHost => {
   host = defaultHost
@@ -15,7 +15,7 @@ utils.init = async defaultHost => {
     // '64f152869ca2d473e4ba64ab53f49ccdb2edae22da192c126850970e788af347'
     '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
   )
-  let sampleHash = crypto.hash('Hello World')
+  const sampleHash = crypto.hash('Hello World')
   // const Alice = crypto.generateKeypair()
   // const Bob = crypto.generateKeypair()
   // const message = 'hi hello world'
@@ -41,18 +41,21 @@ utils.updateHost = newHost => {
 }
 utils.isServerActive = async () => {
   try {
-    let res = await axios.get(getAccountsUrl())
-    let isActive = res.status === 200 && res.data.accounts ? true : false
+    const res = await axios.get(getAccountsUrl())
+    const isActive = !!(res.status === 200 && res.data.accounts)
     return isActive
   } catch (e) {
     return false
   }
 }
 utils.getRandomHost = async () => {
-  let res = await axios.get(`http://${seedNodeHost}/nodelist`)
-  let nodeList = res.data.nodeList
-  let randIndex = Math.floor(Math.random() * nodeList.length)
-  let randHost = nodeList[randIndex]
+  const res = await axios.get(`http://${seedNodeHost}/nodelist`)
+  const nodeList = res.data.nodeList
+  const randIndex = Math.floor(Math.random() * nodeList.length)
+  const randHost = nodeList[randIndex]
+  if (!randHost) {
+    throw new Error('Unable to get random host')
+  }
   if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
   console.log(randHost)
   return randHost
@@ -80,7 +83,7 @@ utils.saveWallet = entries => {
 
 utils.loadWallet = () => {
   try {
-    let loadedEntries = localStorage.getItem('account')
+    const loadedEntries = localStorage.getItem('account')
     return JSON.parse(loadedEntries)
   } catch (e) {
     return null
@@ -88,7 +91,7 @@ utils.loadWallet = () => {
 }
 utils.loadLastMessage = () => {
   try {
-    let loadedEntries = localStorage.getItem('lastMessage')
+    const loadedEntries = localStorage.getItem('lastMessage')
     return JSON.parse(loadedEntries)
   } catch (e) {
     return null
@@ -96,7 +99,7 @@ utils.loadLastMessage = () => {
 }
 utils.loadLastTx = () => {
   try {
-    let loadedEntries = localStorage.getItem('lastTx')
+    const loadedEntries = localStorage.getItem('lastTx')
     return JSON.parse(loadedEntries)
   } catch (e) {
     return null
@@ -166,7 +169,7 @@ async function getAccountData (id) {
 
 async function getToll (friendId, yourId) {
   try {
-    let { toll } = await getJSON(
+    const { toll } = await getJSON(
       `http://${host}/account/${friendId}/${yourId}/toll`
     )
     return toll
@@ -196,8 +199,8 @@ async function getAddress (handle) {
 
 async function pollMessages (from, to, timestamp) {
   try {
-    let url = `http://${host}/messages/${to}/${from}`
-    let { messages } = await getJSON(url)
+    const url = `http://${host}/messages/${to}/${from}`
+    const { messages } = await getJSON(url)
     return messages
   } catch (err) {
     return err.message
@@ -219,12 +222,12 @@ utils.createWallet = (name, id) => {
 }
 // import wallet
 utils.importWallet = async sk => {
-  let keys = {
+  const keys = {
     publicKey: sk.slice(64),
     secretKey: sk
   }
-  let handle = await utils.getHandle(keys.publicKey)
-  let entry = {
+  const handle = await utils.getHandle(keys.publicKey)
+  const entry = {
     address: keys.publicKey,
     id: crypto.hash(handle),
     keys
@@ -236,7 +239,7 @@ utils.importWallet = async sk => {
 }
 // wallet list [name]. Lists wallet for the given [name]. Otherwise, lists all wallets."
 utils.listWallet = name => {
-  let wallet = walletEntries[name]
+  const wallet = walletEntries[name]
   if (typeof wallet !== 'undefined' && wallet !== null) {
     console.log(`${JSON.stringify(wallet, null, 2)}`)
   } else {
@@ -406,19 +409,19 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
 // message broadcast <message> <source> [recipients...]" | "broadcasts a <message> from <source> to all the [recipients...]
 utils.broadcastMessage = async (text, sourceAcc, recipients) => {
   const source = walletEntries[sourceAcc]
-  let targetAccs = []
-  let messages = []
+  const targetAccs = []
+  const messages = []
   let requiredAmount = 0
   for (let i = 0; i < recipients.length; i++) {
     console.log('RECIP: ', recipients[i])
-    let tgtAddress = await getAddress(recipients[i])
+    const tgtAddress = await getAddress(recipients[i])
     targetAccs.push(tgtAddress)
-    let message = stringify({
+    const message = stringify({
       body: text,
       timestamp: Date.now(),
       handle: source
     })
-    let encryptedMsg = crypto.encrypt(
+    const encryptedMsg = crypto.encrypt(
       message,
       crypto.convertSkToCurve(source.keys.secretKey),
       crypto.convertPkToCurve(tgtAddress)
@@ -442,14 +445,18 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 }
 
 utils.getHandle = async publicKey => {
-  let { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
+  const { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
   return handle
 }
 
 // Poll Messages function
 utils.getMessages = async (srcEntry, tgt, timestamp) => {
   const targetAddress = await getAddress(tgt)
-  let messages = await pollMessages(srcEntry.address, targetAddress, timestamp)
+  const messages = await pollMessages(
+    srcEntry.address,
+    targetAddress,
+    timestamp
+  )
   return messages
 }
 
@@ -463,7 +470,7 @@ utils.queryAccount = async handle => {
   //   address ? `'${handle}' wallet data` : "all data"
   //   }:`
   // );
-  let accountData = await getAccountData(address)
+  const accountData = await getAccountData(address)
   return accountData
 }
 
@@ -684,8 +691,9 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
     return tx
   } else {
     if (!issueCount) throw new Error('Unable to get issue count')
-    else if (!proposalCount && proposalCount !== 0)
+    else if (!proposalCount && proposalCount !== 0) {
       throw new Error('Unable to get dev proposal count')
+    }
   }
 }
 
@@ -707,7 +715,7 @@ utils.createEmailTx = function (email, sourceAcc) {
 }
 utils.createVerifyTx = function (code, sourceAcc) {
   const source = sourceAcc.entry
-  let tx = {
+  const tx = {
     type: 'verify',
     from: source.address,
     code: code,
@@ -738,9 +746,9 @@ utils.verifyEmail = function (code, sourceAcc) {
 }
 
 utils.getDifferentParameter = function (newParameters, currentParameters) {
-  let obj = {}
-  let excludeKeys = ['hash', 'id', 'timestamp']
-  for (let key in newParameters) {
+  const obj = {}
+  const excludeKeys = ['hash', 'id', 'timestamp']
+  for (const key in newParameters) {
     if (excludeKeys.indexOf(key) >= 0) continue
     if (
       currentParameters[key] &&
@@ -828,7 +836,7 @@ function fallbackCopyTextToClipboard (text) {
 
 function copyTextToClipboard (text) {
   if (!navigator.clipboard) {
-    console.log(`Navigator.clipboard doesn't exist`)
+    console.log("Navigator.clipboard doesn't exist")
     fallbackCopyTextToClipboard(text)
     return
   }
@@ -873,7 +881,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
 }
 
 utils.playSoundFile = soundFile => {
-  let audio = new Audio(soundFile)
+  const audio = new Audio(soundFile)
   audio.play()
 }
 

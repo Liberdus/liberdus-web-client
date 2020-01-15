@@ -195,27 +195,44 @@ export default {
     }
 
     let checkServerStatus = setInterval(async () => {
+      if (this.$route.path === '/loading' || this.$route.path === '/welcome')
+        return
       try {
         let shouldUpdate = false
-        let isServerActive = await utils.isServerActive()
-        // console.log('Is server active => ', isServerActive)
-        // console.log(
-        //   'Server last updated on => ',
-        //   new Date(this.getNetwork.timestamp)
-        // )
+        let isServerActive
+        try {
+          isServerActive = await utils.isServerActive()
+          // console.log('Is server active => ', isServerActive)
+          // console.log(
+          //   'Server last updated on => ',
+          //   new Date(this.getNetwork.timestamp)
+          // )
+        } catch (e) {
+          console.error('Server is offline')
+        }
 
         if (!isServerActive) {
           shouldUpdate = true
         } else {
-          // if (Date.now() > this.getNetwork.timestamp + 1000 * 60 * 2) {
+          let interval = 1000 * 60 * 2
+          // console.log(
+          //   new Date(),
+          //   new Date(this.getNetwork.timestamp + interval)
+          // )
+          // console.log(
+          //   new Date() > new Date(this.getNetwork.timestamp + interval)
+          // )
+          // if (Date.now() >= this.getNetwork.timestamp + interval) {
           //   shouldUpdate = true
           // }
         }
         if (shouldUpdate) {
           let randomHost = await utils.getRandomHost()
-          console.log('Updating Network')
-          self.updateNetwork(randomHost)
-          utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+          if (randomHost) {
+            console.log('Updating Network')
+            self.updateNetwork(randomHost)
+            utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+          }
         }
       } catch (e) {
         console.warn(e)

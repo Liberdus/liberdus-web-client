@@ -8,11 +8,14 @@
         backUrl: '/email/register'
       }"
     />
-    <div v-if="checkingCode && !codeAccepted" class="checkingCode-container">
+    <div v-if="checkingCode" class="checkingCode-container">
       <v-ons-progress-circular indeterminate></v-ons-progress-circular>
       <p class="body">Checking verification code</p>
     </div>
-    <div v-if="!checkingCode && codeAccepted" class="checkingCode-container">
+    <div
+      v-else-if="!checkingCode && codeAccepted"
+      class="checkingCode-container"
+    >
       <p class="body" id="verified-message">
         Your email address has been verified.
       </p>
@@ -125,6 +128,7 @@ export default {
       e.preventDefault()
       this.error = ''
       let self = this
+      this.checkingCode = true
       let isSubmitted = await utils.verifyEmail(this.code, this.getWallet)
       if (isSubmitted) {
         this.email = ''
