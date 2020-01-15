@@ -10,7 +10,7 @@
     />
     <div class="email-container">
       <Title text="Verify Email" />
-      <form @submit.prevent="onVerifyCode" class="email-form">
+      <form class="email-form">
         <div class="email-input-container">
           <p class="body">Enter the verification code sent to your email</p>
           <input
@@ -107,7 +107,8 @@ export default {
     }
   },
   methods: {
-    async onVerifyCode () {
+    async onVerifyCode (e) {
+      e.preventDefault()
       let self = this
       let isSubmitted = await utils.verifyEmail(this.code, this.getWallet)
       if (isSubmitted) {

@@ -22,7 +22,7 @@
       </p>
       <p v-else>Current Seed Node PORT:</p>
 
-      <form class="network-form" v-on:submit.prevent="onUpdateSeedNode">
+      <form class="network-form">
         <p class="sub-head">Change Seed Node</p>
         <input
           type="text"
@@ -62,6 +62,9 @@ import utils from '../../assets/utils'
 import ToolBar from '~/components/ToolBar'
 import Title from '~/components/baisc/Title'
 import Button from '~/components/baisc/Button'
+const defaultSeedNode = Object.assign({}, CONFIG.server)
+
+console.log(`default`, defaultSeedNode)
 
 Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
@@ -77,7 +80,8 @@ export default {
       newPort: '',
       previousUrl: '/',
       newIP: '',
-      seedNode: CONFIG.server
+      seedNode: CONFIG.server,
+      defaultSeedNode
     }
   },
   computed: {
@@ -94,6 +98,9 @@ export default {
       console.log(vm.previousUrl)
     })
   },
+  mounted: function () {
+    let self = this
+  },
   methods: {
     ...mapActions({
       updateNetwork: 'chat/updateNetwork'
@@ -104,7 +111,8 @@ export default {
       if (url === '/' && option) {
       }
     },
-    onUpdateSeedNode () {
+    onUpdateSeedNode (e) {
+      e.preventDefault()
       console.log('Updating Seednode and network')
       utils.updateSeedNodeHost(this.newIP, this.newPort)
       this.seedNode.ip = this.newIP
@@ -125,11 +133,16 @@ export default {
     },
     async onResetNetwork () {
       console.log('Resetting Seednode and network')
-      utils.updateSeedNodeHost(CONFIG.server.ip, CONFIG.server.port)
-      this.seedNode = CONFIG.server
+      this.seedNode.ip = this.defaultSeedNode.ip
+      this.seedNode.port = this.defaultSeedNode.port
+      utils.updateSeedNodeHost(
+        this.defaultSeedNode.ip,
+        this.defaultSeedNode.port
+      )
       this.updateChatServerHost()
       this.newIP = ''
       this.newPort = ''
+      this.$ons.notification.alert('Seed node server is reset to default.')
     }
   }
 }

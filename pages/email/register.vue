@@ -16,7 +16,7 @@
           >
         </p>
       </div>
-      <form @submit.prevent="onRegisterEmail" class="email-form" v-else>
+      <form class="email-form" v-else>
         <div class="email-input-container">
           <p class="body">Enter your email address</p>
           <input
@@ -36,8 +36,8 @@
         </div>
         <Button
           text="Register Email"
-          :onClick="onRegisterEmail"
           :isDisabled="!isEmailValid"
+          :onClick="onRegisterEmail"
         />
         <p class="already-registered">
           Already received a verification code ? Please verify your email
@@ -101,9 +101,11 @@ export default {
     }
   },
   methods: {
-    async onRegisterEmail () {
+    async onRegisterEmail (e) {
+      e.preventDefault()
       let self = this
       let isSubmitted = await utils.registerEmail(this.email, this.getWallet)
+      console.log(`is submitted: `, isSubmitted)
       if (isSubmitted) {
         this.email = ''
         self.$router.push('/email/verify')
