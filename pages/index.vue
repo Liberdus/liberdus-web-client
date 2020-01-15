@@ -198,11 +198,16 @@ export default {
       try {
         let shouldUpdate = false
         let isServerActive = await utils.isServerActive()
+        // console.log('Is server active => ', isServerActive)
+        // console.log(
+        //   'Server last updated on => ',
+        //   new Date(this.getNetwork.timestamp)
+        // )
+
         if (!isServerActive) {
           shouldUpdate = true
         } else {
-          let lastUpdatedTimestamp = this.getNetwork.timestamp
-          if (lastUpdatedTimestamp < Date.now() - 120000) {
+          if (Date.now() > this.getNetwork.timestamp + 1000 * 60 * 2) {
             shouldUpdate = true
           }
         }

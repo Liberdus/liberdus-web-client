@@ -218,7 +218,7 @@ export default {
     async refreshAppState () {
       let self = this
       if (self.getWallet && self.isUIReady) {
-        console.log('Refreshing App state...')
+        // console.log('Refreshing App state...')
         let myHandle = this.getWallet.handle
         let myAccountData = await utils.queryAccount(myHandle)
         let processedState = await this.processData(myAccountData)

@@ -175,7 +175,6 @@ export default {
     onVoteReceiveFromChild (voteInfo) {
       this.voteCollector[voteInfo.number] = voteInfo
       this.calculateTotal(this.voteCollector)
-      console.log(this.voteCollector)
     },
     calculateTotal (collector) {
       console.log('calculating...')
@@ -212,7 +211,7 @@ export default {
             return true
           else return false
         })
-      console.log(allProposals)
+
       let activeProposalList = allProposals.filter(proposal => {
         return !proposal.hasOwnProperty('winner')
       })
