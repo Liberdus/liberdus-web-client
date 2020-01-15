@@ -5,7 +5,12 @@ import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 let host
-let seedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
+const defaultSeedNode = `${CONFIG.server.ip}:${CONFIG.server.port}`
+const storedSeedNode = localStorage.getItem('seednode')
+const seedNodeHost = storedSeedNode || defaultSeedNode
+console.log('stored seednode: ', storedSeedNode)
+console.log('Seed node: ', seedNodeHost)
+
 const utils = {}
 const walletEntries = {}
 
@@ -16,23 +21,14 @@ utils.init = async defaultHost => {
     '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
   )
   const sampleHash = crypto.hash('Hello World')
-  // const Alice = crypto.generateKeypair()
-  // const Bob = crypto.generateKeypair()
-  // const message = 'hi hello world'
-  // const encryptedMessage = crypto.encryptAB(
-  //   message,
-  //   Bob.publicKey,
-  //   Alice.secretKey
-  // )
-  // const decryptedMessage = crypto.decryptAB(
-  //   encryptedMessage,
-  //   Alice.publicKey,
-  //   Bob.secretKey
-  // )
-  // console.log(message === decryptedMessage) // true
-  // console.log(decryptedMessage) // hi hello world
-
   return sampleHash
+}
+
+utils.getCurrentSeedNode = function (host) {
+  return {
+    ip: host.split(':')[0],
+    port: parseInt(host.split(':')[1])
+  }
 }
 
 utils.hashVerificationCode = code => {
@@ -53,6 +49,7 @@ utils.isServerActive = async () => {
   }
 }
 utils.getRandomHost = async () => {
+  console.log(`http://${seedNodeHost}/nodelist`)
   const res = await axios.get(`http://${seedNodeHost}/nodelist`)
   const nodeList = res.data.nodeList
   const randIndex = Math.floor(Math.random() * nodeList.length)
@@ -65,7 +62,8 @@ utils.getRandomHost = async () => {
   return randHost
 }
 utils.updateSeedNodeHost = async (ip, port) => {
-  seedNodeHost = `${ip}:${port}`
+  const seedNodeHost = `${ip}:${port}`
+  localStorage.setItem('seednode', seedNodeHost)
   return seedNodeHost
 }
 utils.getSeedNode = async (ip, port) => {
@@ -643,7 +641,7 @@ utils.createProposal = async function (sourceAcc, newParameters) {
       ),
       issue: crypto.hash(`issue-${issueCount}`),
       parameters: newParameters,
-      description: '',
+      description: newParameters.description || '',
       timestamp: Date.now()
     }
     crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)

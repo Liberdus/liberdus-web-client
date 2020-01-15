@@ -183,7 +183,7 @@
           text="Submit Proposal"
           type="submit"
           :onClick="onSubmitProposal"
-          :isDisabled="!allowProposal"
+          :isDisabled="false"
         />
         <p
           v-if="
@@ -371,7 +371,11 @@ export default {
         let myWallet = this.getWallet
         let newParameters = {}
         for (let key in this.form) {
-          newParameters[key] = parseFloat(this.form[key])
+          if (key === 'description') {
+            newParameters[key] = this.form[key]
+          } else {
+            newParameters[key] = parseFloat(this.form[key])
+          }
         }
         let proposalTx = await utils.createProposal(myWallet, newParameters)
         console.log(proposalTx)

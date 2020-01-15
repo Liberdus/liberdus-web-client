@@ -79,7 +79,10 @@ export default {
       newPort: '',
       previousUrl: '/',
       newIP: '',
-      seedNode: CONFIG.server,
+      seedNode: {
+        ip: '',
+        port: ''
+      },
       defaultSeedNode
     }
   },
@@ -99,10 +102,18 @@ export default {
   },
   mounted: function () {
     let self = this
+
+    const defaultSeedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
+    const storedSeedNodeHost = localStorage.getItem('seednode')
+    const seedNodeHost = storedSeedNodeHost || defaultSeedNodeHost
+
+    this.seedNode = utils.getCurrentSeedNode(seedNodeHost)
   },
   methods: {
     ...mapActions({
-      updateNetwork: 'chat/updateNetwork'
+      updateNetwork: 'chat/updateNetwork',
+      updateAppState: 'chat/updateAppState',
+      removeWallet: 'wallet/removeWallet'
     }),
     redirect (url, option) {
       console.log(`Pushing to ${url}`)
@@ -125,7 +136,18 @@ export default {
       this.$ons.notification.alert('Seed node server is updated.')
       if (this.previousUrl === '/welcome') {
         this.$router.push('/loading')
+      } else {
+        this.signOut()
       }
+    },
+    signOut () {
+      this.updateAppState(null)
+      this.removeWallet()
+      // localStorage.removeItem('account')
+      // localStorage.removeItem('lastMessage')
+      // localStorage.removeItem('lastTx')
+      this.$router.push('/loading')
+      // window.location.reload(false)
     },
     async updateChatServerHost () {
       console.log('Updating chat server host...')

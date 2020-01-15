@@ -50,6 +50,7 @@ export default {
       randomHost = await utils.getRandomHost()
     } catch (e) {
       console.log('Cannot get a random host')
+      console.warn(e)
       this.$ons.notification.alert(
         'Seed Node server is offline. Please change the seed node from network settings.'
       )
@@ -79,9 +80,9 @@ export default {
               this.updateAppState(null)
               this.removeWallet()
               // TODO: to reconsider about removing account info.
-              localStorage.removeItem('account')
-              localStorage.removeItem('lastMessage')
-              localStorage.removeItem('lastTx')
+              // localStorage.removeItem('account')
+              // localStorage.removeItem('lastMessage')
+              // localStorage.removeItem('lastTx')
               self.$router.push('/welcome')
             }
           } catch (e) {
