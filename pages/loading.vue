@@ -44,8 +44,17 @@ export default {
   },
   async mounted () {
     let self = this
-    console.log('GETTING RANDOM HOST...')
-    let randomHost = await utils.getRandomHost()
+    let randomHost
+    try {
+      console.log('GETTING RANDOM HOST...')
+      randomHost = await utils.getRandomHost()
+    } catch (e) {
+      console.log('Cannot get a random host')
+      this.$ons.notification.alert(
+        'Seed Node server is offline. Please change the seed node server.'
+      )
+      this.$router.push('/welcome')
+    }
     this.host = `${randomHost.ip}:${randomHost.port}`
     this.updateNetwork({
       ip: randomHost.ip,

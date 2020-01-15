@@ -124,6 +124,9 @@ export default {
         this.newPort = ''
       }, 1000)
       this.$ons.notification.alert('Seed node server is updated.')
+      if (this.previousUrl === '/welcome') {
+        this.$router.push('/loading')
+      }
     },
     async updateChatServerHost () {
       console.log('Updating chat server host...')

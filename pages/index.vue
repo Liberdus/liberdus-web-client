@@ -145,7 +145,7 @@ export default {
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
-      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
+      updateNetwork: 'chat/updateNetwork'
     }),
     md () {
       return this.$ons.platform.isAndroid()
@@ -159,7 +159,7 @@ export default {
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
       getLastMessage: 'chat/getLastMessage',
-      updateNetwork: 'chat/updateNetwork',
+      getNetwork: 'chat/getNetwork',
       getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
@@ -198,22 +198,18 @@ export default {
       try {
         let shouldUpdate = false
         let isServerActive = await utils.isServerActive()
-        // console.log(`is Server active: ${isServerActive}`)
         if (!isServerActive) {
           shouldUpdate = true
+        } else {
+          let lastUpdatedTimestamp = this.getNetwork.timestamp
+          if (lastUpdatedTimestamp < Date.now() - 120000) {
+            shouldUpdate = true
+          }
         }
-        // else {
-        //   console.log(this.getNetwork)
-        //   let lastUpdatedTimestamp = this.getNetwork.timestamp
-        //   if (lastUpdatedTimestamp < Date.now() - 120000) shouldUpdate = true
-        // }
-        // console.log(`Should update server: ${shouldUpdate}`)
-
         if (shouldUpdate) {
           let randomHost = await utils.getRandomHost()
-          console.log(self)
           console.log('Updating Network')
-          // self.updateNetwork(randomHost)
+          self.updateNetwork(randomHost)
           utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
         }
       } catch (e) {
