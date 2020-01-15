@@ -207,9 +207,9 @@ export default {
         if (!isServerActive) {
           shouldUpdate = true
         } else {
-          if (Date.now() > this.getNetwork.timestamp + 1000 * 60 * 2) {
-            shouldUpdate = true
-          }
+          // if (Date.now() > this.getNetwork.timestamp + 1000 * 60 * 2) {
+          //   shouldUpdate = true
+          // }
         }
         if (shouldUpdate) {
           let randomHost = await utils.getRandomHost()

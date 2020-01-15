@@ -8,7 +8,6 @@
         backUrl: previousUrl
       }"
     />
-    <!-- {{ seedNode }} -->
     <div class="network-container">
       <p v-if="seedNode">
         Current Seed Node IP:
