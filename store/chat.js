@@ -26,7 +26,7 @@ export const mutations = {
   },
   updateNetwork (state, payload) {
     state.network = payload
-    state.network.timestamp = Date.now()
+    state.network.timestamp = Date.now() + 1000 * 60 * 2
   },
   setUIReady (state) {
     state.isUIReady = true

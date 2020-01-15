@@ -6,6 +6,7 @@
       width="100%"
       classes="my-notification-style"
     />
+    <!-- <v-offline @detected-condition="handleConnectivityChange"></v-offline> -->
     <tool-bar
       v-if="isUIReady"
       :option="{ menu: true, notification: true, back: false }"
@@ -49,6 +50,7 @@ import Vue from 'vue'
 import 'onsenui/css/onsenui.css'
 import 'onsenui/css/onsen-css-components.css'
 import VueOnsen from 'vue-onsenui/esm'
+import VOffline from 'v-offline'
 import OnsenComponents from '~/components/Onsen'
 import Message from '~/components/Message'
 import ToolBar from '~/components/ToolBar'
@@ -74,11 +76,14 @@ export default {
     Setting,
     ProposalList,
     FundingList,
-    ToolBar
+    ToolBar,
+    VOffline
   },
   data () {
     return {
       activeIndex: 0,
+      onlineSlot: 'online',
+      offlineSlot: 'offline',
       tabs: [
         {
           icon: 'ion-ios-wallet',
@@ -152,6 +157,16 @@ export default {
     },
     onSelectTab (e, tab) {
       utils.updateBadge(tab.key, 'reset')
+    },
+    handleConnectivityChange (status) {
+      console.log(`Connectivity Status: ${status}`)
+      // this.updateConnection(status)
+      if (status === true) {
+        this.$ons.notification.toast('No internet connection', {
+          timeout: 1000,
+          animation: 'fall'
+        })
+      }
     }
   },
   computed: {
@@ -195,8 +210,10 @@ export default {
     }
 
     let checkServerStatus = setInterval(async () => {
-      if (this.$route.path === '/loading' || this.$route.path === '/welcome')
+      if (this.$route.path === '/loading' || this.$route.path === '/welcome') {
         return
+      }
+
       try {
         let shouldUpdate = false
         let isServerActive
@@ -214,7 +231,7 @@ export default {
         if (!isServerActive) {
           shouldUpdate = true
         } else {
-          let interval = 1000 * 60 * 2
+          // let interval = 1000 * 60 * 2
           // console.log(
           //   new Date(),
           //   new Date(this.getNetwork.timestamp + interval)
@@ -222,7 +239,7 @@ export default {
           // console.log(
           //   new Date() > new Date(this.getNetwork.timestamp + interval)
           // )
-          // if (Date.now() >= this.getNetwork.timestamp + interval) {
+          // if (Date.now() >= this.getNetwork.timestamp) {
           //   shouldUpdate = true
           // }
         }
@@ -237,7 +254,7 @@ export default {
       } catch (e) {
         console.warn(e)
       }
-    }, 2000)
+    }, 3000)
   }
 }
 </script>

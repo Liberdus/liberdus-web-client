@@ -149,7 +149,7 @@ export default {
     },
     async checkVerification () {
       let self = this
-      if (this.getAppState.emailHash && this.getAppState.verified) {
+      if (this.getAppState.emailHash && this.getAppState.verified === true) {
         this.codeAccepted = true
         this.checkingCode = false
         clearInterval(this.codeChecker)

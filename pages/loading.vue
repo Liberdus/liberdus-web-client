@@ -51,7 +51,7 @@ export default {
     } catch (e) {
       console.log('Cannot get a random host')
       this.$ons.notification.alert(
-        'Seed Node server is offline. Please change the seed node server.'
+        'Seed Node server is offline. Please change the seed node from network settings.'
       )
       this.$router.push('/welcome')
     }
