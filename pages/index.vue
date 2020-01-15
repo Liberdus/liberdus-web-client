@@ -50,7 +50,7 @@ import Vue from 'vue'
 import 'onsenui/css/onsenui.css'
 import 'onsenui/css/onsen-css-components.css'
 import VueOnsen from 'vue-onsenui/esm'
-import VOffline from 'v-offline'
+// import VOffline from 'v-offline'
 import OnsenComponents from '~/components/Onsen'
 import Message from '~/components/Message'
 import ToolBar from '~/components/ToolBar'
@@ -76,8 +76,7 @@ export default {
     Setting,
     ProposalList,
     FundingList,
-    ToolBar,
-    VOffline
+    ToolBar
   },
   data () {
     return {
