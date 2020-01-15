@@ -3,6 +3,8 @@
     <tool-bar :option="{ menu: false, notification: false, back: true }" />
     <div class="email-container">
       <Title text="Register Email" />
+      <!-- {{ hasEmailHash }}
+      {{ hasVerified }} -->
       <div v-if="hasEmailHash && hasVerified">
         <p class="body" id="verified-message">
           Your email address has been verified.
@@ -10,7 +12,8 @@
       </div>
       <div v-else-if="hasEmailHash && !hasVerified">
         <p class="body" id="registered-message">
-          You have registered email address. Please verify your email
+          A verification code has been sent to your inbox. Please verify your
+          email
           <nuxt-link class="link-to-import" to="/email/verify"
             ><strong>here</strong></nuxt-link
           >
@@ -124,7 +127,7 @@ export default {
   },
   mounted: async function () {
     if (this.getAppState.emailHash) this.hasEmailHash = true
-    if (this.getAppState.verified) this.hasVerified = true
+    if (this.getAppState.verified === true) this.hasVerified = true
   }
 }
 </script>

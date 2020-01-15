@@ -115,17 +115,27 @@ export default {
       isUIReady: 'chat/isUIReady'
     }),
     isCodeValid () {
-      if (
-        this.$v.code.required &&
-        this.$v.code.minLength &&
-        this.$v.code.integer
-      )
-        return true
+      // if (
+      //   this.$v.code.required ||
+      //   this.$v.code.minLength ||
+      //   this.$v.code.integer
+      // ) {
+      //   return false
+      // }
+
+      const hashedCode = utils.hashVerificationCode(this.code)
+      if (this.getAppState.verified === hashedCode) return true
+      return false
     }
+  },
+  beforeDestroy: function () {
+    clearInterval(this.codeChecker)
+    this.codeChecker = null
   },
   methods: {
     async onVerifyCode (e) {
       e.preventDefault()
+
       this.error = ''
       let self = this
       this.checkingCode = true

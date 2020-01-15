@@ -35,6 +35,10 @@ utils.init = async defaultHost => {
   return sampleHash
 }
 
+utils.hashVerificationCode = code => {
+  return crypto.hash(code)
+}
+
 utils.updateHost = newHost => {
   host = newHost
   return true
