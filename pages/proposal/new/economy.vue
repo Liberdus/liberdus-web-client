@@ -43,6 +43,15 @@
               </td>
             </tr>
             <tr>
+              <td class="parameter-name">Network Proposal Fee</td>
+              <td class="current-value">
+                {{ networkParameters.CURRENT.proposalFee }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.proposalFee" required />
+              </td>
+            </tr>
+            <tr>
               <td class="parameter-name">Min. Maintenance Fee</td>
               <td class="current-value">
                 {{ networkParameters.CURRENT.maintenanceFee }}
@@ -95,15 +104,7 @@
                 />
               </td>
             </tr>
-            <tr>
-              <td class="parameter-name">Proposal Fee</td>
-              <td class="current-value">
-                {{ networkParameters.CURRENT.proposalFee }}
-              </td>
-              <td class="new-value">
-                <input type="number" v-model="form.proposalFee" required />
-              </td>
-            </tr>
+
             <tr>
               <td class="parameter-name">Stake Required</td>
               <td class="current-value">

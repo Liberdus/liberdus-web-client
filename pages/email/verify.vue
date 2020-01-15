@@ -8,9 +8,19 @@
         backUrl: '/email/register'
       }"
     />
-    <div class="email-container">
+    <div v-if="checkingCode && !codeAccepted" class="checkingCode-container">
+      <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      <p class="body">Checking verification code</p>
+    </div>
+    <div v-if="!checkingCode && codeAccepted" class="checkingCode-container">
+      <p class="body" id="verified-message">
+        Your email address has been verified.
+      </p>
+    </div>
+    <div v-else class="email-container">
       <Title text="Verify Email" />
       <form class="email-form">
+        <p class="body error-warning">{{ error }}</p>
         <div class="email-input-container">
           <p class="body">Enter the verification code sent to your email</p>
           <input
@@ -77,7 +87,11 @@ export default {
     return {
       email: '',
       code: '',
-      sending: false
+      error: '',
+      sending: false,
+      checkingCode: false,
+      codeChecker: null,
+      codeAccepted: false
     }
   },
   validations: {
@@ -109,14 +123,38 @@ export default {
   methods: {
     async onVerifyCode (e) {
       e.preventDefault()
+      this.error = ''
       let self = this
       let isSubmitted = await utils.verifyEmail(this.code, this.getWallet)
       if (isSubmitted) {
         this.email = ''
-        this.notify('Your verification code is submitted to network.')
-        this.$router.push('/')
+        this.codeChecker = setInterval(this.checkVerification, 1000)
+        setTimeout(function () {
+          this.codeAccepted = false
+          this.checkingCode = false
+          clearInterval(this.codeChecker)
+          this.codeChecker = null
+          this.error =
+            'Verification code is not approved within 15 seconds. Please try again.'
+        }, 15000)
+        // this.notify('Your verification code is submitted to network.')
+        // this.$router.push('/')
       } else {
         this.notify('Failed to submit verification code.')
+      }
+    },
+    async checkVerification () {
+      let self = this
+      if (this.getAppState.emailHash && this.getAppState.verified) {
+        this.codeAccepted = true
+        this.checkingCode = false
+        clearInterval(this.codeChecker)
+        this.codeChecker = null
+        this.$ons.notification
+          .alert('Your verification code is approved.')
+          .then(result => {
+            this.redirect('/')
+          })
       }
     },
     redirect (url, option) {
@@ -158,6 +196,20 @@ export default {
       color: red;
       height: 20px;
     }
+  }
+}
+.checkingCode-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 75px);
+  position: relative;
+  top: -75px;
+  .body {
+    text-align: center;
+    margin: 20px auto;
   }
 }
 </style>

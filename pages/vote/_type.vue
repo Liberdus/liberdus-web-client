@@ -2,6 +2,7 @@
   <v-ons-page>
     <tool-bar :option="{ menu: false, notification: false, back: true }" />
     <div class="proposal-list-container">
+      <!-- {{ allProposalList }} -->
       <Title v-if="voteType === 'economy'" text="Vote Proposals" />
       <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
       <window-info
@@ -152,6 +153,7 @@ export default {
     activeProposalList () {
       if (this.voteType === 'economy') {
         return this.getActiveProposals
+        // return this.allProposalList
       } else if (this.voteType === 'funding') {
         return this.getActiveDevProposals
         // return this.getCompletedDevProposals
@@ -210,10 +212,10 @@ export default {
             return true
           else return false
         })
-      //   console.log(allProposals)
-      let activeProposalList = allProposals.filter(
-        proposal => proposal.winner !== true && proposal.winner !== false
-      )
+      console.log(allProposals)
+      let activeProposalList = allProposals.filter(proposal => {
+        return !proposal.hasOwnProperty('winner')
+      })
       let completedProposalList = allProposals.filter(
         proposal => proposal.winner === true || proposal.winner === false
       )
