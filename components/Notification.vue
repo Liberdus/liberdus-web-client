@@ -86,9 +86,9 @@ export default {
     async notifyNewTx (tx) {
       let textBody
       if (tx.type === 'receive') {
-        textBody = `Receieved ${tx.amount} Coin from @${tx.otherPersonAlias}`
+        textBody = `Receieved ${tx.amount} Coins from @${tx.otherPersonAlias}`
       } else if (tx.type === 'send') {
-        textBody = `Sent ${tx.amount} Coin to @${tx.otherPersonAlias}`
+        textBody = `Sent ${tx.amount} Coins to @${tx.otherPersonAlias}`
       } else {
         return
       }
