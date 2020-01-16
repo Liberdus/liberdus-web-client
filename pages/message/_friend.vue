@@ -45,6 +45,8 @@ import Button from '~/components/baisc/Button'
 Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
+let messagesChanged = false
+
 export default {
   components: {
     ChatText,
@@ -84,44 +86,42 @@ export default {
       updateAppState: 'chat/updateAppState',
       updateLastMessage: 'chat/updateLastMessage'
     }),
-    async refreshChatHistory () {
-      // console.log("Refreshing chat history...");
+    async refreshMessages () {
       let self = this
       let myAccountData = await utils.queryAccount(this.getWallet.handle)
       let chats = myAccountData.account.data.chats
       let chatId = chats[this.otherPersonAddress]
       if (chatId) {
-        // console.log(`chatId =>`, chatId)
-
         const encryptedChatList = await utils.queryEncryptedChats(chatId)
-
-        if (encryptedChatList.length > this.messages.length) {
-          setTimeout(this.scrollToLastMessage, 1000)
-        }
-
-        // console.log(`encryptedChatList =>`, encryptedChatList)
-        this.messages = encryptedChatList.map(sealed => {
+        const decryptedMessages = encryptedChatList.map(sealed => {
           return utils.decryptMessage(
             sealed,
             self.otherPersonAddress,
             this.secretKey
           )
         })
-        let lastMessage = this.messages[this.messages.length - 1]
-        if (lastMessage.handle !== this.getWallet.handle)
-          this.updateLastMessage({ body: lastMessage.body, read: true })
-        if (this.pendingMessage) {
-          if (
-            this.pendingMessage.handle === lastMessage.handle &&
-            this.pendingMessage.body === lastMessage.body
-          ) {
-            this.pendingMessage = null
-            utils.playSoundFile(sentSoundFile)
+
+        if (decryptedMessages.length > this.messages.length) {
+          this.messages = decryptedMessages
+          messagesChanged = true
+
+          let lastMessage = this.messages[this.messages.length - 1]
+          if (lastMessage.handle !== this.getWallet.handle) {
+            this.updateLastMessage({ body: lastMessage.body, read: true })
+          }
+
+          if (this.pendingMessage) {
+            if (
+              this.pendingMessage.handle === lastMessage.handle &&
+              this.pendingMessage.body === lastMessage.body
+            ) {
+              this.pendingMessage = null
+              utils.playSoundFile(sentSoundFile)
+            }
           }
         }
       }
     },
-
     onGoBack () {
       clearInterval(this.refresher)
       this.refresher = null
@@ -146,21 +146,32 @@ export default {
     },
     setPendingMessage (message) {
       this.pendingMessage = message
+      this.$nextTick(this.scrollToLastMessage)
     },
     scrollToLastMessage () {
       let container = document.querySelector(
         '.chat-history-view .page__content'
       )
       let element = document.querySelector('.end-of-history')
-      var topPos = element.offsetTop
-      container.scrollTop = topPos
+      if (element) {
+        var topPos = element.offsetTop
+        container.scrollTop = topPos
+      }
     }
+  },
+  created: async function () {
+    this.otherPersonAddress = await utils.getAddress(this.friend)
+    this.refreshMessages()
   },
   mounted: async function () {
     let self = this
-    this.otherPersonAddress = await utils.getAddress(this.friend)
-    this.refreshChatHistory()
-    this.refresher = setInterval(self.refreshChatHistory, 2000)
+    this.refresher = setInterval(self.refreshMessages, 2000)
+  },
+  updated: function () {
+    if (messagesChanged) {
+      this.$nextTick(this.scrollToLastMessage)
+      messagesChanged = false
+    }
   }
 }
 </script>
