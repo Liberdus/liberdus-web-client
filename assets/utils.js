@@ -57,7 +57,7 @@ utils.getRandomHost = async () => {
   if (!randHost) {
     throw new Error('Unable to get random host')
   }
-  if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
+  // if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
   console.log(randHost)
   return randHost
 }
@@ -654,7 +654,7 @@ utils.createProposal = async function (sourceAcc, newParameters) {
 utils.createDevProposal = async function (sourceAcc, proposal) {
   console.log(proposal)
   const source = sourceAcc.entry
-  var paymentCount
+  let paymentCount
   let delay
 
   if (proposal.paymentType === 'multiple') {
@@ -670,7 +670,7 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   const proposalCount = await utils.getDevProposalCount()
 
   const payments = new Array(paymentCount).fill(1).map((_, i) => ({
-    amount: (1 / paymentCount),
+    amount: proposal.totalAmount / paymentCount,
     delay: delay * i
   }))
   console.log('Issue count:', issueCount)
