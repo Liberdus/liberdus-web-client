@@ -377,6 +377,8 @@ export default {
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
           this.form = Object.assign({}, this.networkParameters.CURRENT)
+          this.form.title = ""
+          this.form.description = ""
         }
         if (!this.previousWindow) {
           this.window = newNetworkParameters['WINDOWS']
