@@ -8,12 +8,14 @@ export const state = () => ({
     txId: null
   },
   isUIReady: false,
-  notificationQueue: []
+  notificationQueue: [],
+  timers: {}
 })
 
 export const getters = {
   getAppState: state => state.appState,
   getNetwork: state => state.network,
+  getTimers: state => state.timers,
   getLastMessage: state => state.lastMessage,
   getLastTx: state => state.lastTx,
   getNotificationQueue: state => state.notificationQueue,
@@ -24,9 +26,11 @@ export const mutations = {
   updateAppState (state, payload) {
     state.appState = payload
   },
+  addTimer (state, payload) {
+    state.timers[payload.key] = payload.value
+  },
   updateNetwork (state, payload) {
     state.network = payload
-    state.network.timestamp = Date.now() + 1000 * 60 * 2
   },
   setUIReady (state) {
     state.isUIReady = true
@@ -50,6 +54,9 @@ export const mutations = {
 export const actions = {
   async updateAppState (store, payload) {
     store.commit('updateAppState', payload)
+  },
+  async addTimer (store, payload) {
+    store.commit('addTimer', payload)
   },
   async updateNetwork (store, payload) {
     store.commit('updateNetwork', payload)

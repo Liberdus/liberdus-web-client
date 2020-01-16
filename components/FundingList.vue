@@ -15,6 +15,12 @@
       <v-ons-icon icon="ion-ios-checkmark-circle-outline" size="lg"></v-ons-icon
       >Vote Fundings
     </button>
+    <button
+      class="white-button new-funding-button"
+      @click="$router.push('/vote/success')"
+    >
+      <v-ons-icon icon="ion-ios-cash" size="lg"></v-ons-icon>Funded Projects
+    </button>
   </v-ons-page>
 </template>
 

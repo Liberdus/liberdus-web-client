@@ -36,6 +36,7 @@ utils.hashVerificationCode = code => {
 }
 
 utils.updateHost = newHost => {
+  console.log('Host is updated: ', newHost)
   host = newHost
   return true
 }
@@ -49,7 +50,7 @@ utils.isServerActive = async () => {
   }
 }
 utils.getRandomHost = async () => {
-  console.log(`http://${seedNodeHost}/nodelist`)
+  console.log(seedNodeHost)
   const res = await axios.get(`http://${seedNodeHost}/nodelist`)
   const nodeList = res.data.nodeList
   const randIndex = Math.floor(Math.random() * nodeList.length)
@@ -57,14 +58,29 @@ utils.getRandomHost = async () => {
   if (!randHost) {
     throw new Error('Unable to get random host')
   }
-  // if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
-  console.log(randHost)
+  if (randHost.ip === '127.0.0.1') {
+    randHost.ip = seedNodeHost.split(':')[0]
+  }
+  // console.log(randHost)
   return randHost
 }
-utils.updateSeedNodeHost = async (ip, port) => {
+utils.updateSeedNodeHostLocally = async (ip, port) => {
   const seedNodeHost = `${ip}:${port}`
+  console.log('Seed node is updated locally')
   localStorage.setItem('seednode', seedNodeHost)
-  return seedNodeHost
+}
+utils.isSeedNodeOnline = async (ip, port) => {
+  try {
+    const seedNodeHost = `${ip}:${port}`
+    const res = await axios.get(`http://${seedNodeHost}/nodelist`)
+    if (res.status === 200) {
+      return true
+    }
+    return false
+  } catch (e) {
+    console.warn(e)
+    return false
+  }
 }
 utils.getSeedNode = async (ip, port) => {
   return {
@@ -79,14 +95,38 @@ utils.createAccount = (keys = crypto.generateKeypair()) => {
   }
 }
 
-utils.saveWallet = entries => {
-  localStorage.setItem('account', JSON.stringify(entries))
+utils.saveWallet = newWalletEntry => {
+  try {
+    const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
+    // console.log('existing wallet list', existingWalletList)
+    // console.log('entries', newWalletEntry)
+    // console.log([...existingWalletList, newWalletEntry])
+    // console.log(JSON.stringify([...existingWalletList, newWalletEntry]))
+    const newWallet = [...existingWalletList]
+      .filter(w => w.handle !== newWalletEntry.handle)
+      .concat(newWalletEntry)
+    console.log('new wallet', newWallet)
+    localStorage.setItem('wallets', JSON.stringify(newWallet))
+  } catch (e) {
+    console.log(e)
+    console.log(JSON.stringify([newWalletEntry]))
+    localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
+  }
 }
 
-utils.loadWallet = () => {
+// utils.loadWallet = () => {
+//   try {
+//     const loadedEntries = localStorage.getItem('account')
+//     return JSON.parse(loadedEntries)
+//   } catch (e) {
+//     return null
+//   }
+// }
+utils.loadWallet = username => {
   try {
-    const loadedEntries = localStorage.getItem('account')
-    return JSON.parse(loadedEntries)
+    const loadedEntries = localStorage.getItem('wallets')
+    const walletList = JSON.parse(loadedEntries)
+    return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
   }
@@ -195,7 +235,8 @@ async function getAddress (handle) {
     }
   } catch (e) {
     // console.error(e.message)
-    console.log(`Error while getting address for ${handle}`)
+    console.warn(`Error while getting address for ${handle}`)
+    return null
   }
 }
 
@@ -652,7 +693,6 @@ utils.createProposal = async function (sourceAcc, newParameters) {
   }
 }
 utils.createDevProposal = async function (sourceAcc, proposal) {
-  console.log(proposal)
   const source = sourceAcc.entry
   let paymentCount
   let delay
@@ -685,7 +725,8 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
       ),
       totalAmount: proposal.totalAmount,
       payments: payments,
-      description: proposal.title,
+      description: proposal.description,
+      title: proposal.title,
       payAddress: source.address,
       timestamp: Date.now()
     }
@@ -771,7 +812,12 @@ utils.submitProposl = function (tx) {
     })
   })
 }
-utils.createVote = async function (sourceAcc, proposalNumber = 1, amount = 50) {
+utils.createVote = async function (
+  sourceAcc,
+  proposalNumber = 1,
+  approve = true,
+  amount = 50
+) {
   const source = sourceAcc.entry
   const issueCount = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
@@ -780,6 +826,7 @@ utils.createVote = async function (sourceAcc, proposalNumber = 1, amount = 50) {
     from: source.address,
     issue: crypto.hash(`issue-${issueCount}`),
     proposal: crypto.hash(`issue-${issueCount}-proposal-${proposalNumber}`),
+    approve: approve,
     amount: amount,
     timestamp: Date.now()
   }

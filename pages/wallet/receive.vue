@@ -8,11 +8,25 @@
       <!-- TODO
       <p id="username">{{getWallet.handle}}</p>
       <qriously :value="getWallet.handle" :size="200" class="qr-code" />-->
-      <p id="username">
-        <strong>{{ getWallet.handle }}</strong>
-      </p>
-      <qriously :value="getWallet.handle" :size="200" class="qr-code" />
-      <Button text="Copy Account Address" :onClick="onCopy" />
+      <div>
+        <p id="username">
+          <strong>{{ getWallet.handle }}</strong>
+        </p>
+        <qriously :value="getWallet.handle" :size="180" class="qr-code" />
+        <Button text="Copy Account Username" :onClick="onCopyUsername" />
+      </div>
+
+      <div>
+        <p id="public-key">
+          <strong>{{ getWallet.entry.keys.publicKey }}</strong>
+        </p>
+        <qriously
+          :value="getWallet.entry.keys.publicKey"
+          :size="180"
+          class="qr-code"
+        />
+        <Button text="Copy Account Username" :onClick="onCopyAddress" />
+      </div>
     </div>
   </v-ons-page>
 </template>
@@ -58,12 +72,19 @@ export default {
       if (url === '/' && option) {
       }
     },
-    onCopy () {
+    onCopyUsername () {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
       utils.copyToClipboard(this.getWallet.handle)
-      this.$ons.notification.alert('Copied to clipboard!')
+      this.$ons.notification.alert('Copied username to clipboard!')
+    },
+    onCopyAddress () {
+      // TODO
+      // utils.copyToClipboard(this.getWallet.handle);
+      // this.$ons.notification.alert("Copied to clipboard!");
+      utils.copyToClipboard(this.getWallet.entry.keys.publicKey)
+      this.$ons.notification.alert('Copied address to clipboard!')
     }
   }
 }
@@ -118,6 +139,20 @@ export default {
   margin: 20px auto;
 }
 #username > strong {
+  user-select: text;
+}
+#public-key {
+  font-family: Inconsolata;
+  font-size: 20px;
+  width: 315px;
+  word-break: break-all;
+  color: #2f457a;
+  letter-spacing: -0.21px;
+  text-align: center;
+  line-height: 27px;
+  margin: 20px auto;
+}
+#public-key > strong {
   user-select: text;
 }
 .qr-code {

@@ -13,8 +13,11 @@
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate></v-ons-progress-circular>
       </div>
-      <div class="loading-status" v-else-if="!loading && !window">
-        Unable to get proposal window from server
+      <div
+        class="loading-status"
+        v-else-if="!loading && (!window || !window.devProposalWindow)"
+      >
+        Unable to get funding proposal window from server
       </div>
       <div v-else>
         <p class="body">Submit new proposal when proposal window is active.</p>
@@ -212,26 +215,30 @@ export default {
     currentWindowName () {
       if (!this.window) return
       const now = Date.now()
-      if (
-        now >= this.window.devProposalWindow[0] &&
-        now < this.window.devProposalWindow[1]
-      ) {
-        return 'PROPOSAL'
-      } else if (
-        now >= this.window.devVotingWindow[0] &&
-        now < this.window.devVotingWindow[1]
-      ) {
-        return 'VOTING'
-      } else if (
-        now >= this.window.devGraceWindow[0] &&
-        now < this.window.devGraceWindow[1]
-      ) {
-        return 'GRACE'
-      } else if (
-        now >= this.window.devApplyWindow[0] &&
-        now < this.window.devApplyWindow[1]
-      ) {
-        return 'APPLY'
+      try {
+        if (
+          now >= this.window.devProposalWindow[0] &&
+          now < this.window.devProposalWindow[1]
+        ) {
+          return 'PROPOSAL'
+        } else if (
+          now >= this.window.devVotingWindow[0] &&
+          now < this.window.devVotingWindow[1]
+        ) {
+          return 'VOTING'
+        } else if (
+          now >= this.window.devGraceWindow[0] &&
+          now < this.window.devGraceWindow[1]
+        ) {
+          return 'GRACE'
+        } else if (
+          now >= this.window.devApplyWindow[0] &&
+          now < this.window.devApplyWindow[1]
+        ) {
+          return 'APPLY'
+        }
+      } catch (e) {
+        return null
       }
     }
   },

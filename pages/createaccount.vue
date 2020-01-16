@@ -10,9 +10,9 @@
         <v-ons-progress-bar indeterminate></v-ons-progress-bar>
       </div>
       <div v-else class="create-account-content">
-        <Title text="Create Account" />
+        <Title text="Sign In or Create Account" />
         <p class="text-body">
-          Enter your username and password to create a new account
+          Enter your username to sign in existing account or create a new one
         </p>
         <div class="create-username-input-container">
           <input
@@ -21,36 +21,54 @@
             placeholder="Username"
             v-model="username"
             class="text-input"
-            v-on:keyup="checkUsername"
+            v-on:keyup="loadAccount"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
           />
-          <p
-            class="input-error-message"
-            v-if="$v.username.required && !$v.username.alphaNum"
-          >
-            Username can contain only alphabets and numberic characters
-          </p>
-          <p
-            class="input-error-message"
-            v-else-if="$v.username.required && !$v.username.minLength"
-          >
-            Username must be at least 3 characters long
-          </p>
-          <div v-else-if="!checkingUsername">
-            <p class="input-error-message" v-if="isUsernameTaken">
-              Username is already taken.
+
+          <div v-if="!allowSignIn">
+            <p
+              class="input-error-message"
+              v-if="$v.username.required && !$v.username.alphaNum"
+            >
+              Username can contain only alphabets and numberic characters
             </p>
-            <p class="input-success-message" v-else-if="isUsernameValid">
-              Username is available.
+            <p
+              class="input-error-message"
+              v-else-if="$v.username.required && !$v.username.minLength"
+            >
+              Username must be at least 3 characters long
             </p>
+            <div v-else-if="!checkingUsername">
+              <p class="input-error-message" v-if="isUsernameTaken">
+                Username is already taken.
+              </p>
+              <p class="input-success-message" v-else-if="isUsernameValid">
+                Username is available.
+              </p>
+            </div>
+            <div v-else-if="checkingUsername">
+              <p class="input-checking-message">Checking username...</p>
+            </div>
           </div>
-          <div v-else-if="checkingUsername">
-            <p class="input-checking-message">Checking username...</p>
+          <div v-if="allowSignIn">
+            <p class="input-success-message">
+              Valid account found in the local wallet.
+            </p>
           </div>
         </div>
-        <Button text="Create Account" :onClick="onCreateAccount" />
+        <Button
+          v-if="existingValidAccount"
+          text="Sign In"
+          :onClick="onSignIn"
+        />
+        <Button
+          v-else
+          text="Create Account"
+          :onClick="onCreateAccount"
+          :isDisabled="!isUsernameValid"
+        />
         <p class="already-registered">
           Already registered ? Please import your account
           <nuxt-link class="link-to-import" to="/setting/import"
@@ -88,7 +106,9 @@ export default {
       isUsernameTaken: false,
       checkingUsername: false,
       creatingHandle: false,
-      backgroundUrl
+      backgroundUrl,
+      existingValidAccount: null,
+      allowSignIn: false
     }
   },
   filters: {
@@ -115,7 +135,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      addWallet: 'wallet/addWallet'
+      addWallet: 'wallet/addWallet',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx'
     }),
     async onCreateAccount () {
       let self = this
@@ -125,7 +147,6 @@ export default {
         handle: this.username,
         entry: entry
       }
-      utils.saveWallet(wallet)
       this.addWallet(wallet)
       let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry)
       if (isSubmitted) {
@@ -136,6 +157,7 @@ export default {
           if (isCreated) {
             clearInterval(accountCreatedChecker)
             accountCreatedChecker = null
+            utils.saveWallet(wallet)
             self.$router.push('/')
           }
         }, 1000)
@@ -165,6 +187,42 @@ export default {
         return true
       }
       return false
+    },
+    async loadAccount () {
+      this.checkUsername()
+      const localWallet = utils.loadWallet(this.username)
+      const lastMessage = utils.loadLastMessage()
+      const lastTx = utils.loadLastTx()
+      if (localWallet) {
+        const remoteAccountAddress = await utils.getAddress(localWallet.handle)
+        const localAccountAddress = localWallet.entry.address
+        // console.log('Remote address: ', remoteAccountAddress)
+        // console.log('Local address: ', localAccountAddress)
+        if (remoteAccountAddress === localAccountAddress) {
+          this.existingValidAccount = localWallet
+          this.allowSignIn = true
+        } else {
+          this.existingValidAccount = null
+          this.allowSignIn = false
+        }
+      } else {
+        console.log('No local wallet found with username: ', this.username)
+        this.existingValidAccount = null
+        this.allowSignIn = false
+      }
+    },
+    onSignIn () {
+      this.addWallet(this.existingValidAccount)
+      console.log('Wallet added to vuex store.')
+      this.$router.push('/')
+      // if (lastMessage) {
+      //   console.log('Last message added to vuex store.')
+      //   this.updateLastMessage(lastMessage)
+      // }
+      // if (lastTx) {
+      //   console.log('Last tx added to vuex store.')
+      //   this.updateLastTx(lastTx)
+      // }
     }
   },
   mounted: function () {

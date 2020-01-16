@@ -49,18 +49,31 @@
             "
             class="invalid-username"
           >
-            The username provided does not exist.
+            The username or address provided does not exist.
           </p>
           <p
             v-else-if="
               username.length > 0 &&
                 !hasUsernameFocus &&
                 !checkingUsername &&
-                isUsernameExist
+                isUsernameExist &&
+                targetInputType === 'username'
             "
             class="valid-username"
           >
             The username is valid.
+          </p>
+          <p
+            v-else-if="
+              username.length > 0 &&
+                !hasUsernameFocus &&
+                !checkingUsername &&
+                isUsernameExist &&
+                targetInputType === 'address'
+            "
+            class="valid-username"
+          >
+            The address is valid.
           </p>
         </div>
         <div class="send-amount-input-container">
@@ -143,8 +156,14 @@ export default {
       getAppState: 'chat/getAppState',
       isUIReady: 'chat/isUIReady'
     }),
+    targetInputType () {
+      if (this.username.length === 64) return 'address'
+      else return 'username'
+    },
     isOwnName () {
       if (this.username.toLowerCase() === this.getWallet.handle) return true
+      if (this.username.toLowerCase() === this.getWallet.entry.address)
+        return true
       else return false
     },
     isFormValid () {
@@ -181,10 +200,14 @@ export default {
       this.checkingUsername = true
       try {
         const address = await utils.getAddress(this.username)
-        if (address) this.isUsernameExist = true
-        else this.isUsernameExist = false
+        if (address) {
+          console.log('found address', address)
+          this.isUsernameExist = true
+        } else {
+          this.isUsernameExist = false
+        }
       } catch (e) {
-        console.log(e)
+        console.warn(e)
         this.isUsernameExist = false
       }
       this.checkingUsername = false

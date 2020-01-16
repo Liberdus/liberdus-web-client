@@ -7,7 +7,7 @@
       <div class="welcome-content">
         <Title text="Getting Started" />
         <Button-Outline text="Import Account" :onClick="onImportAccount" />
-        <Button text="Create Account" :onClick="onCreateAccount" />
+        <Button text="Sign In or Create Account" :onClick="onCreateAccount" />
         <p class="already-registered" style="text-align: center">
           Change network setting
           <nuxt-link class="link-to-import" to="/setting/network"

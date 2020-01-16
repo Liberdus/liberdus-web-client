@@ -9,19 +9,8 @@
     </div>
     <div v-else class="proposal-list-container">
       <!-- {{ allProposalList }} -->
-      <Title v-if="voteType === 'economy'" text="Vote Proposals" />
-      <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
-      <Title
-        v-else-if="voteType === 'funding_success'"
-        text="Funded Projects"
-      />
-
-      <window-info
-        v-if="window"
-        :window="window"
-        :currentWindowName="currentWindowName"
-      />
-      <div v-if="activeProposalList.length > 0" class="list-container">
+      <Title text="Funded Projects" />
+      <div v-if="activeProposalList.length > 0">
         <ProposalListItem
           v-for="proposal in activeProposalList"
           :key="proposal.id"
@@ -30,23 +19,8 @@
         />
       </div>
       <div v-else class="no-proposal-message">
-        No <strong>active</strong> {{ voteType }} proposals to vote
+        No projects are funded yet.
       </div>
-    </div>
-    <div class="vote-footer">
-      <p v-if="networkParameters && networkParameters.CURRENT.transactionFee">
-        Submitting votes will cost vote amount total:
-        <strong>{{ totalVoteAmount }}</strong> coins + Transaction Fee:
-        <strong>{{ networkParameters.CURRENT.transactionFee }}</strong>
-        coins
-      </p>
-      <button
-        class="default-button new-proposal-button"
-        @click="onSubmitVotes"
-        :disabled="!allowVote"
-      >
-        Submit Votes
-      </button>
     </div>
   </v-ons-page>
 </template>
@@ -154,15 +128,9 @@ export default {
       return utils.sortByTimestamp(combinedProposals, 'desc')
     },
     activeProposalList () {
-      if (this.voteType === 'economy') {
-        return utils.sortByTimestamp(this.getActiveProposals, 'desc')
-        // return utils.sortByTimestamp(this.getCompletedProposals, 'desc')
-      } else if (this.voteType === 'funding') {
-        return utils.sortByTimestamp(this.getActiveDevProposals, 'desc')
-        // return utils.sortByTimestamp(this.getCompletedDevProposals, 'desc')
-      } else if (this.voteType === 'all') {
-        return this.allProposalList
-      } else return []
+      return utils.sortByTimestamp(
+        this.getCompletedDevProposals.filter(p => p.approved === true)
+      )
     }
   },
   methods: {
@@ -180,6 +148,7 @@ export default {
       this.calculateTotal(this.voteCollector)
     },
     calculateTotal (collector) {
+      console.log('calculating...')
       let total = Object.values(collector).reduce(
         (prev, current) => prev + current.amount,
         0
@@ -267,7 +236,6 @@ export default {
             voteTx = await utils.createVote(
               myWallet,
               id,
-              this.voteCollector[id].approve,
               this.voteCollector[id].amount
             )
           } else if (this.voteType === 'funding') {
@@ -373,60 +341,11 @@ export default {
 }
 </script>
 
-<style lang="scss">
-.nuxt-link {
-  width: 100%;
-}
-.new-proposal-button {
-  width: auto;
-  padding: 0px 20px;
-  display: block;
-  position: relative;
-  margin: 20px auto;
-  // font-size: 13px;
-}
-.loading-status {
-  text-align: center;
-  margin: 20px auto;
-  position: relative;
-  top: 100px;
-}
+<style scoped lang="scss">
 .proposal-list-container {
   width: 90%;
   max-width: 600px;
   margin: 0 auto;
-  margin-bottom: 130px;
-}
-.no-proposal-message {
-  margin: 30px auto;
-  text-align: center;
-}
-.vote-footer {
-  background: #f4f4f4;
-  position: fixed;
-  bottom: 0px;
-  width: 100%;
-  box-shadow: 0 -2px 6px 0px rgb(205, 205, 205);
-  p {
-    width: 90%;
-    max-width: 600px;
-    margin: 10px auto;
-  }
-  .default-button {
-    width: 90%;
-    max-width: 600px;
-    height: 50px;
-    cursor: pointer;
-    margin: 5px auto;
-    margin-bottom: 10px;
-    :disabled {
-      background: #d1d1d1;
-      cursor: not-allowed;
-    }
-  }
-  .default-button:disabled {
-    background: #d1d1d1;
-    cursor: not-allowed;
-  }
+  margin-bottom: 100px;
 }
 </style>

@@ -8,7 +8,11 @@
         backUrl: previousUrl
       }"
     />
-    <div class="network-container">
+    <div v-if="checkingSeedNode" class="checking-container">
+      <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      <p class="body">Checking seed node</p>
+    </div>
+    <div v-else class="network-container">
       <p v-if="seedNode">
         Current Seed Node IP:
         <span>{{ seedNode.ip }}</span>
@@ -83,7 +87,8 @@ export default {
         ip: '',
         port: ''
       },
-      defaultSeedNode
+      defaultSeedNode,
+      checkingSeedNode: false
     }
   },
   computed: {
@@ -102,11 +107,9 @@ export default {
   },
   mounted: function () {
     let self = this
-
     const defaultSeedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
     const storedSeedNodeHost = localStorage.getItem('seednode')
     const seedNodeHost = storedSeedNodeHost || defaultSeedNodeHost
-
     this.seedNode = utils.getCurrentSeedNode(seedNodeHost)
   },
   methods: {
@@ -121,37 +124,49 @@ export default {
       if (url === '/' && option) {
       }
     },
-    onUpdateSeedNode (e) {
+    async onUpdateSeedNode (e) {
       e.preventDefault()
-      console.log('Updating Seednode and network')
-      utils.updateSeedNodeHost(this.newIP, this.newPort)
-      this.seedNode.ip = this.newIP
-      this.seedNode.port = this.newPort
+      this.checkingSeedNode = true
+      const isSeedNodeOnline = await utils.isSeedNodeOnline(
+        this.newIP,
+        this.newPort
+      )
+      if (isSeedNodeOnline) {
+        console.log('Updating Seednode and network')
+        utils.updateSeedNodeHostLocally(this.newIP, this.newPort)
+        this.seedNode.ip = this.newIP
+        this.seedNode.port = this.newPort
 
-      this.updateChatServerHost()
-      setTimeout(() => {
-        this.newIP = ''
-        this.newPort = ''
-      }, 1000)
-      this.$ons.notification.alert('Seed node server is updated.')
-      if (this.previousUrl === '/welcome') {
-        this.$router.push('/loading')
-      } else {
+        this.updateChatServerHost()
+        setTimeout(() => {
+          this.newIP = ''
+          this.newPort = ''
+        }, 1000)
+        // this.$ons.notification.alert('Seed node server is updated.')
+        // this.checkingSeedNode = false
+        // if (this.previousUrl === '/welcome') {
+        //   this.$router.push('/loading')
+        // } else {
+        //   this.signOut()
+        // }
         this.signOut()
+      } else {
+        this.$ons.notification.alert('Provided seed node is not online.')
       }
+      this.checkingSeedNode = false
     },
     signOut () {
       this.updateAppState(null)
       this.removeWallet()
-      // localStorage.removeItem('account')
-      // localStorage.removeItem('lastMessage')
-      // localStorage.removeItem('lastTx')
-      this.$router.push('/loading')
-      // window.location.reload(false)
+      this.$router.push('/')
+      setTimeout(() => {
+        window.location.reload(false)
+      }, 500)
     },
     async updateChatServerHost () {
       console.log('Updating chat server host...')
       let randomHost = await utils.getRandomHost()
+      randomHost.timestamp = Date.now()
       this.updateNetwork(randomHost)
       utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
     },
@@ -159,7 +174,7 @@ export default {
       console.log('Resetting Seednode and network')
       this.seedNode.ip = this.defaultSeedNode.ip
       this.seedNode.port = this.defaultSeedNode.port
-      utils.updateSeedNodeHost(
+      utils.updateSeedNodeHostLocally(
         this.defaultSeedNode.ip,
         this.defaultSeedNode.port
       )
@@ -173,6 +188,20 @@ export default {
 </script>
 
 <style lang="scss">
+.checking-container {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 75px);
+  position: relative;
+  top: -75px;
+  .body {
+    text-align: center;
+    margin: 20px auto;
+  }
+}
 .network-container {
   width: 90%;
   max-width: 600px;

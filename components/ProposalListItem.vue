@@ -2,7 +2,12 @@
   <div class="proposal-list-item">
     <!-- {{ proposal }} -->
     <div v-if="proposal.type === 'proposal'">
-      <h4 v-if="proposalTitle" class="proposal-title">{{ proposalTitle }}</h4>
+      <h4 class="proposal-title">
+        {{ proposal.parameters.title }}
+      </h4>
+      <p class="proposal-description">
+        <strong>Description</strong>: {{ proposal.parameters.description }}
+      </p>
       <table id="network-table" v-if="proposal">
         <thead>
           <tr>
@@ -127,6 +132,29 @@
         </tbody>
       </table>
 
+      <div class="choice-list">
+        <button
+          :class="{
+            'choice-button': true,
+            approve: true,
+            active: selectedChoice === true
+          }"
+          @click="onChooseVote(true)"
+        >
+          Approve
+        </button>
+        <button
+          :class="{
+            'choice-button': true,
+            reject: true,
+            active: selectedChoice === false
+          }"
+          @click="onChooseVote(false)"
+        >
+          No Change
+        </button>
+      </div>
+
       <input
         type="text"
         placeholder="Enter coin amount to vote"
@@ -143,10 +171,30 @@
     </div>
 
     <div v-else-if="proposal.type === 'dev_proposal'">
-      <h4 v-if="proposalTitle" class="proposal-title">{{ proposalTitle }}</h4>
-      <p class="proposal-type">Description: {{ proposal.description }}</p>
-
-      <div class="choice-list">
+      <h4 v-if="proposal.title" class="proposal-title">{{ proposal.title }}</h4>
+      <p class="proposal-type">
+        <strong>Description</strong>: {{ proposal.description }}
+      </p>
+      <p class="proposal-type">
+        <strong>Amount</strong>: {{ proposal.totalAmount }} coins
+      </p>
+      <p class="proposal-type">
+        <strong>Payment Type</strong>:
+        {{ proposal.payments.length > 1 ? 'Multiple' : 'One time' }}
+      </p>
+      <section v-if="proposal.payments.length > 1">
+        <p class="proposal-type"><strong>Payment Milestones</strong>:</p>
+        <ul class="milestone-list">
+          <li
+            v-for="(milestone, i) in proposal.payments"
+            :key="generateHash(milestone)"
+          >
+            <em>Milestone {{ i + 1 }}</em> : {{ milestone.amount }} coins after
+            {{ milestone.delay / (1000 * 60) }} minutes
+          </li>
+        </ul>
+      </section>
+      <div class="choice-list" v-if="Object.hasOwnProperty('approved')">
         <button
           :class="{
             'choice-button': true,
@@ -175,11 +223,26 @@
         class="text-input"
         v-model="voteAmount"
         v-on:keyup="onEnterVote"
+        v-if="Object.hasOwnProperty('approved')"
       />
 
       <div class="proposal-footer">
-        <p>Total {{ proposal.totalVotes }} votes</p>
-        <p>{{ timestamp }}</p>
+        <div>
+          <p>Vote Count</p>
+          <p>{{ proposal.totalVotes }}</p>
+        </div>
+        <div>
+          <p>Approve Votes</p>
+          <p>{{ proposal.approve }} coins</p>
+        </div>
+        <div>
+          <p>Rejecte Votes</p>
+          <p>{{ proposal.reject }} coins</p>
+        </div>
+        <div>
+          <p>Created on</p>
+          <p>{{ timestamp }}</p>
+        </div>
       </div>
     </div>
   </div>
@@ -222,6 +285,9 @@ export default {
         approve: this.selectedChoice,
         number: this.proposal.number
       })
+    },
+    generateHash (data) {
+      return utils.hashVerificationCode(JSON.stringify(data)).slice(0, 8)
     }
   }
 }
@@ -312,22 +378,33 @@ export default {
 }
 .proposal-list-item .proposal-description {
   font-family: Poppins;
-  font-size: 14px;
-  color: #6a6a6a;
+  font-size: 13px;
+  color: #333;
   letter-spacing: 0;
   line-height: 20px;
   text-align: left;
-}
-.proposal-list-item .proposal-footer > p {
-  font-family: Poppins;
-  font-size: 14px;
-  color: #0a2463;
-  letter-spacing: 0;
-  line-height: 20px;
 }
 .proposal-list-item .proposal-footer {
   display: flex;
   justify-content: space-between;
   margin-top: 10px;
+  p {
+    font-family: Poppins;
+    font-size: 11px;
+    text-align: left;
+    color: #0a2463;
+    letter-spacing: 0;
+    line-height: 20px;
+  }
+  p:nth-of-type(1) {
+    font-weight: bold;
+  }
+}
+.milestone-list {
+  font-size: 13px;
+  padding-left: 15px;
+  li {
+    list-style: none;
+  }
 }
 </style>

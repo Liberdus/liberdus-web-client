@@ -57,10 +57,7 @@ export default {
       this.$router.push('/welcome')
     }
     this.host = `${randomHost.ip}:${randomHost.port}`
-    this.updateNetwork({
-      ip: randomHost.ip,
-      port: randomHost.port
-    })
+    this.updateNetwork(Object.assign({}, randomHost))
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`)
       self.setUIReady()
@@ -79,10 +76,6 @@ export default {
             else {
               this.updateAppState(null)
               this.removeWallet()
-              // TODO: to reconsider about removing account info.
-              // localStorage.removeItem('account')
-              // localStorage.removeItem('lastMessage')
-              // localStorage.removeItem('lastTx')
               self.$router.push('/welcome')
             }
           } catch (e) {

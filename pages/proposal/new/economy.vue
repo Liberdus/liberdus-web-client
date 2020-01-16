@@ -13,7 +13,10 @@
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate></v-ons-progress-circular>
       </div>
-      <div class="loading-status" v-else-if="!loading && !window">
+      <div
+        class="loading-status"
+        v-else-if="!loading && (!window || !window.proposalWindow)"
+      >
         Unable to get proposal window from server
       </div>
       <div v-else>
@@ -125,26 +128,10 @@
             </tr>
           </tbody>
         </table>
-
-        <!-- <div>
-          <p class="label">Select a parameter to change</p>
-          <div class="drop-down-container">
-            <v-ons-select style="width: 40%" v-model="selectedParameter">
-              <option
-                v-for="item in parameters"
-                :value="item.value"
-                :key="item.id"
-                >{{ item.text }}</option
-              >
-            </v-ons-select>
-            <v-ons-icon
-              icon="ion-ios-arrow-down"
-              size="lg"
-              class="drop-down-icon"
-            ></v-ons-icon>
-          </div>
-        </div> -->
-
+        <div>
+          <p class="label">Title</p>
+          <input name="title-input" class="text-input" v-model="form.title" />
+        </div>
         <div>
           <p class="label">Description</p>
           <textarea
@@ -155,19 +142,6 @@
             rows="5"
           ></textarea>
         </div>
-
-        <!-- <div>
-          <p class="label">Enter proposed value</p>
-          <input
-            "
-            placeholder="Proposed value"
-            v-model="newValue"
-            class="text-input"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          />
-        </div> -->
 
         <p class="coin-usage-warning" v-if="!allowProposal">
           Proposal window will start in
@@ -295,7 +269,8 @@ export default {
         proposalFee: '',
         stakeRequired: '',
         transactionFee: '',
-        description: ''
+        description: '',
+        title: ''
       }
     }
   },
@@ -371,7 +346,7 @@ export default {
         let myWallet = this.getWallet
         let newParameters = {}
         for (let key in this.form) {
-          if (key === 'description') {
+          if (key === 'description' || key === 'title') {
             newParameters[key] = this.form[key]
           } else {
             newParameters[key] = parseFloat(this.form[key])

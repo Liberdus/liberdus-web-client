@@ -69,6 +69,8 @@ export default {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
+      getNetwork: 'chat/getNetwork',
+      getTimers: 'chat/getTimers',
       getLastMessage: 'chat/getLastMessage',
       getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady',

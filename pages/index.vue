@@ -83,6 +83,8 @@ export default {
       activeIndex: 0,
       onlineSlot: 'online',
       offlineSlot: 'offline',
+      nodeHealthChecker: null,
+      nodeRotator: null,
       tabs: [
         {
           icon: 'ion-ios-wallet',
@@ -139,6 +141,13 @@ export default {
       }
     })
   },
+  beforeDestroy: function () {
+    console.log('Clearing health checker and rotator')
+    clearInterval(this.nodeHealthChecker)
+    clearInterval(this.nodeRotator)
+    this.nodeHealthChecker = null
+    this.nodeRotator = null
+  },
   methods: {
     ...mapActions({
       updateAppState: 'chat/updateAppState',
@@ -149,7 +158,8 @@ export default {
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
-      updateNetwork: 'chat/updateNetwork'
+      updateNetwork: 'chat/updateNetwork',
+      addTimer: 'chat/addTimer'
     }),
     md () {
       return this.$ons.platform.isAndroid()
@@ -174,6 +184,7 @@ export default {
       getAppState: 'chat/getAppState',
       getLastMessage: 'chat/getLastMessage',
       getNetwork: 'chat/getNetwork',
+      getTimers: 'chat/getTimers',
       getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
@@ -190,70 +201,86 @@ export default {
     if (!this.isUIReady) {
       this.$router.push('/loading')
     }
-    if (!this.getWallet) {
-      const wallet = utils.loadWallet()
-      const lastMessage = utils.loadLastMessage()
-      const lastTx = utils.loadLastTx()
-      if (wallet) {
-        this.addWallet(wallet)
-        console.log('Wallet added to vuex store.')
-      }
-      if (lastMessage) {
-        console.log('Last message added to vuex store.')
-        this.updateLastMessage(lastMessage)
-      }
-      if (lastTx) {
-        console.log('Last tx added to vuex store.')
-        this.updateLastTx(lastTx)
-      }
+    // if (!this.getWallet) {
+    //   const wallet = utils.loadWallet()
+    //   const lastMessage = utils.loadLastMessage()
+    //   const lastTx = utils.loadLastTx()
+    //   if (wallet) {
+    //     this.addWallet(wallet)
+    //     console.log('Wallet added to vuex store.')
+    //   }
+    //   if (lastMessage) {
+    //     console.log('Last message added to vuex store.')
+    //     this.updateLastMessage(lastMessage)
+    //   }
+    //   if (lastTx) {
+    //     console.log('Last tx added to vuex store.')
+    //     this.updateLastTx(lastTx)
+    //   }
+    // }
+    if (!this.getTimers['nodeHealthChecker']) {
+      const nodeHealthChecker = setInterval(async () => {
+        if (
+          this.$route.path === '/loading' ||
+          this.$route.path === '/welcome'
+        ) {
+          return
+        }
+        try {
+          let shouldUpdate = false
+          let isServerActive
+          try {
+            isServerActive = await utils.isServerActive()
+          } catch (e) {
+            console.error('Server is offline')
+          }
+
+          if (!isServerActive) {
+            shouldUpdate = true
+          }
+          if (shouldUpdate) {
+            let randomHost = await utils.getRandomHost()
+            if (randomHost) {
+              let now = Date.now()
+              console.log(`Change to a random Host: `, randomHost)
+
+              self.updateNetwork(randomHost)
+              utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+            }
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+      }, 2000)
+      this.addTimer({ key: 'nodeHealthChecker', value: nodeHealthChecker })
     }
 
-    let checkServerStatus = setInterval(async () => {
-      if (this.$route.path === '/loading' || this.$route.path === '/welcome') {
-        return
-      }
-
-      try {
-        let shouldUpdate = false
-        let isServerActive
+    if (!this.getTimers['nodeRotator']) {
+      const nodeRotator = setInterval(async () => {
+        if (
+          this.$route.path === '/loading' ||
+          this.$route.path === '/welcome'
+        ) {
+          return
+        }
         try {
-          isServerActive = await utils.isServerActive()
-          // console.log('Is server active => ', isServerActive)
-          // console.log(
-          //   'Server last updated on => ',
-          //   new Date(this.getNetwork.timestamp)
-          // )
-        } catch (e) {
-          console.error('Server is offline')
-        }
-
-        if (!isServerActive) {
-          shouldUpdate = true
-        } else {
-          // let interval = 1000 * 60 * 2
-          // console.log(
-          //   new Date(),
-          //   new Date(this.getNetwork.timestamp + interval)
-          // )
-          // console.log(
-          //   new Date() > new Date(this.getNetwork.timestamp + interval)
-          // )
-          // if (Date.now() >= this.getNetwork.timestamp) {
-          //   shouldUpdate = true
-          // }
-        }
-        if (shouldUpdate) {
           let randomHost = await utils.getRandomHost()
           if (randomHost) {
-            console.log('Updating Network')
+            let now = Date.now()
+            console.log(`Rotate to a random Host on ${new Date()}`)
+            console.log(randomHost)
             self.updateNetwork(randomHost)
             utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
           }
+        } catch (e) {
+          console.warn(e)
         }
-      } catch (e) {
-        console.warn(e)
-      }
-    }, 3000)
+      }, 1000 * 60 * 2)
+      this.addTimer({
+        key: 'nodeRotator',
+        value: nodeRotator
+      })
+    }
   }
 }
 </script>
