@@ -123,9 +123,12 @@ export default {
       if (to && to.query.tabIndex) {
         vm.activeIndex = parseInt(to.query.tabIndex)
       } else if (from.path.split('/')[1] === 'vote') {
-        if (from.path.split('/')[2] === 'funding') {
+        if (
+          from.path.split('/')[2] === 'funding' ||
+          from.path.split('/')[2] === 'success'
+        ) {
           vm.activeIndex = 2
-        } else {
+        } else if (from.path.split('/')[2] === 'economy') {
           vm.activeIndex = 3
         }
       } else if (from.name.split('-')[0] === 'proposal') {

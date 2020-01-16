@@ -25,7 +25,7 @@
           :size="180"
           class="qr-code"
         />
-        <Button text="Copy Account Username" :onClick="onCopyAddress" />
+        <Button text="Copy Account Address" :onClick="onCopyAddress" />
       </div>
     </div>
   </v-ons-page>

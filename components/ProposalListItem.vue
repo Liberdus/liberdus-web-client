@@ -189,12 +189,13 @@
             v-for="(milestone, i) in proposal.payments"
             :key="generateHash(milestone)"
           >
-            <em>Milestone {{ i + 1 }}</em> : {{ milestone.amount }} coins after
+            <em>Milestone {{ i + 1 }}</em> :
+            {{ milestone.amount * proposal.totalAmount }} coins after
             {{ milestone.delay / (1000 * 60) }} minutes
           </li>
         </ul>
       </section>
-      <div class="choice-list" v-if="Object.hasOwnProperty('approved')">
+      <div class="choice-list" v-if="!proposal.hasOwnProperty('approved')">
         <button
           :class="{
             'choice-button': true,
@@ -223,7 +224,7 @@
         class="text-input"
         v-model="voteAmount"
         v-on:keyup="onEnterVote"
-        v-if="Object.hasOwnProperty('approved')"
+        v-if="!proposal.hasOwnProperty('approved')"
       />
 
       <div class="proposal-footer">
