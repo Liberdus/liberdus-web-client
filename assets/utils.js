@@ -72,7 +72,7 @@ utils.updateSeedNodeHostLocally = async (ip, port) => {
 utils.isSeedNodeOnline = async (ip, port) => {
   try {
     const seedNodeHost = `${ip}:${port}`
-    const res = await axios.get(`http://${seedNodeHost}/nodelist`)
+    const res = await axios.get(`http://${seedNodeHost}/nodelist`, { timeout: 15000 })
     if (res.status === 200) {
       return true
     }
