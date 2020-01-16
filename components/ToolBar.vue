@@ -131,14 +131,14 @@ export default {
     onSignOut () {
       let handle = this.getWallet.handle
       this.updateAppState(null)
-      this.removeWallet()
+      // this.removeWallet()
       let existingWalletList
       try {
         existingWalletList = JSON.parse(localStorage.getItem('wallets'))
         if (existingWalletList) {
           let filteredList = existingWalletList.filter(w => w.handle !== handle)
           console.log(filteredList)
-          localStorage.setItem('wallets', JSON.stringify(filteredList))
+          // localStorage.setItem('wallets', JSON.stringify(filteredList))
           localStorage.removeItem('lastMessage')
           localStorage.removeItem('lastTx')
         }
