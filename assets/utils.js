@@ -654,6 +654,8 @@ utils.createProposal = async function (sourceAcc, newParameters) {
 utils.createDevProposal = async function (sourceAcc, proposal) {
   console.log(proposal)
   const source = sourceAcc.entry
+  var paymentCount
+  let delay
 
   if (proposal.paymentType === 'multiple') {
     paymentCount = proposal.paymentCount
@@ -666,8 +668,6 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
 
   const issueCount = await utils.getDevIssueCount()
   const proposalCount = await utils.getDevProposalCount()
-  let paymentCount
-  let delay
 
   const payments = new Array(paymentCount).fill(1).map((_, i) => ({
     amount: (1 / paymentCount),
