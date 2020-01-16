@@ -237,7 +237,7 @@
           <p>{{ proposal.approve }} coins</p>
         </div>
         <div>
-          <p>Rejecte Votes</p>
+          <p>Reject Votes</p>
           <p>{{ proposal.reject }} coins</p>
         </div>
         <div>
