@@ -28,6 +28,7 @@
           :key="proposal.id"
           :proposal="proposal"
           v-on:vote-enter="onVoteReceiveFromChild"
+          :ref="proposal.id.slice(0, 6)"
         />
       </div>
       <div v-else class="no-proposal-message">
@@ -320,7 +321,12 @@ export default {
         }
       }
       //   this.$router.push(`/proposal/success/economy`)
-      this.$emit('clearVote')
+      let self = this
+      let refList = this.$refs
+      this.activeProposalList.forEach(function (p) {
+        // console.log(refList[p.id.slice(0, 6)][0])
+        refList[p.id.slice(0, 6)][0].clearVote()
+      })
       this.$ons.notification.alert('Your votes are submitted.')
     },
     async isVotingWindowOpen () {
@@ -340,29 +346,11 @@ export default {
           this.voteType === 'economy' &&
           newNetworkParameters[WINDOW_TYPE].proposalWindow[0] > Date.now()
         ) {
-          console.log('Using previous proposal window...')
-          console.log(
-            'proposal start:',
-            new Date(this.previousWindow.proposalWindow[0])
-          )
-          console.log(
-            'apply end:',
-            new Date(this.previousWindow.applyWindow[1])
-          )
           this.window = { ...this.previousWindow }
         } else if (
           this.voteType === 'funding' &&
           newNetworkParameters[WINDOW_TYPE].devProposalWindow[0] > Date.now()
         ) {
-          console.log('Using previous dev proposal window...')
-          console.log(
-            'proposal start:',
-            new Date(this.previousWindow.devProposalWindow[0])
-          )
-          console.log(
-            'apply end:',
-            new Date(this.previousWindow.devApplyWindow[1])
-          )
           this.window = { ...this.previousWindow }
         } else {
           this.window = newNetworkParameters[WINDOW_TYPE]

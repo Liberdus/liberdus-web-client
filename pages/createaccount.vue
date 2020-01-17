@@ -169,7 +169,17 @@ export default {
       try {
         let address = await utils.getAddress(this.username)
         if (address) {
-          let wallets = JSON.parse(localStorage.getItem('wallets'))
+          let wallets
+          try {
+            wallets = JSON.parse(localStorage.getItem('wallets'))
+          } catch (e) {
+            console.warn(e)
+          }
+          if (!wallets) {
+            this.checkingUsername = false
+            this.isUsernameTaken = true
+            return
+          }
           let foundWallet = wallets.find(w => w.address === address)
           if (wallets && foundWallet) {
             this.allowSignIn = true
