@@ -169,11 +169,9 @@ export default {
       try {
         let address = await utils.getAddress(this.username)
         if (address) {
-          let wallets = localStorage.getItem('wallets')
-          if (
-            wallets &&
-            address === wallets.some(wallet => wallet.address === address)
-          ) {
+          let wallets = JSON.parse(localStorage.getItem('wallets'))
+          let foundWallet = wallets.find(w => w.address === address)
+          if (wallets && foundWallet) {
             this.allowSignIn = true
           } else {
             this.isUsernameTaken = true
@@ -185,6 +183,7 @@ export default {
           this.checkingUsername = false
         }
       } catch (e) {
+        console.warn(e)
         this.isUsernameTaken = false
         this.checkingUsername = false
       }
