@@ -341,7 +341,7 @@ h1 {
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   border-radius: 30px;
   font-family: Poppins;
-  font-size: 14px;
+  font-size: 16px;
   color: #484848;
   letter-spacing: 0.17px;
   line-height: 20px;

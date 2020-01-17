@@ -179,6 +179,8 @@
       <p class="proposal-type">
         <strong>Amount</strong>: {{ proposal.totalAmount }} coins
       </p>
+      <p class="proposal-type"><strong>Pay To</strong>: @{{ this.payTo }}</p>
+
       <p class="proposal-type">
         <strong>Payment Type</strong>:
         {{ proposal.payments.length > 1 ? 'Multiple' : 'One time' }}
@@ -258,7 +260,8 @@ export default {
   data: function () {
     return {
       voteAmount: '',
-      selectedChoice: true
+      selectedChoice: true,
+      payTo: ''
     }
   },
   computed: {
@@ -273,7 +276,7 @@ export default {
   async mounted () {
     // if(this.proposal) this.otherPersonHandle = await utils.getHandle(this.proposal.otherPersonAddress)
     console.log(this.proposal)
-    this.$parent.$on('clearVote', this.clearVote)
+    this.payTo = await utils.getHandle(this.proposal.payAddress)
   },
   methods: {
     clearVote () {

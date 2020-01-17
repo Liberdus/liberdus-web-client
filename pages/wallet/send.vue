@@ -27,6 +27,7 @@
             class="send-username-input text-input"
             @focusout="checkUsername"
             @focusin="onUsernameFocus"
+            ref="username-input"
           />
           <v-ons-button
             modifier="quiet"
@@ -90,6 +91,9 @@
           >
             Invalid amount
           </p>
+          <p class="input-error-message" v-else-if="!hasEnoughBalance">
+            Not enough balance.
+          </p>
         </div>
         <p class="required-tx-fee">
           Tx Fee {{ requiredTxFee }} coins will be deducted from your account.
@@ -147,7 +151,7 @@ export default {
     },
     amount: {
       required,
-      between: between(1, 1000)
+      between: between(1, 1000000000)
     }
   },
   computed: {
@@ -159,6 +163,12 @@ export default {
     targetInputType () {
       if (this.username.length === 64) return 'address'
       else return 'username'
+    },
+    hasEnoughBalance () {
+      const totalCost =
+        parseFloat(this.amount) + parseFloat(this.requiredTxFee || 0.001)
+      console.log(parseFloat(totalCost), this.getAppState.data.balance)
+      return this.getAppState.data.balance >= parseFloat(totalCost)
     },
     isOwnName () {
       if (this.username.toLowerCase() === this.getWallet.handle) return true
@@ -197,9 +207,10 @@ export default {
     },
     async checkUsername () {
       this.hasUsernameFocus = false
+      this.username = this.username.toLowerCase()
       this.checkingUsername = true
       try {
-        const address = await utils.getAddress(this.username)
+        const address = await utils.getAddress(this.username.toLowerCase())
         if (address) {
           console.log('found address', address)
           this.isUsernameExist = true
@@ -279,12 +290,12 @@ export default {
   margin-bottom: 0px;
 }
 .send-amount-input-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: flex-start;
+  // display: flex;
+  // flex-direction: column;
+  // justify-content: space-between;
+  // align-items: flex-start;
   height: 80px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
 }
 .send-username-input {
   height: 40px;
@@ -293,6 +304,7 @@ export default {
 }
 .send-username-input.send-amount-input {
   width: 100%;
+  height: 40px;
 }
 .input-error-message {
   color: red;
