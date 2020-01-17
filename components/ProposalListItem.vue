@@ -132,7 +132,7 @@
         </tbody>
       </table>
 
-      <div class="choice-list">
+      <!-- <div class="choice-list">
         <button
           :class="{
             'choice-button': true,
@@ -153,7 +153,7 @@
         >
           No Change
         </button>
-      </div>
+      </div> -->
 
       <input
         type="text"
@@ -165,7 +165,8 @@
 
       <!-- <p class="proposal-description">{{proposal.description}}</p> -->
       <div class="proposal-footer">
-        <p>Total {{ proposal.totalVotes }} votes</p>
+        <p>Total: {{ proposal.totalVotes }} votes</p>
+        <p>Voted: {{ proposal.power }} coins</p>
         <p>{{ timestamp }}</p>
       </div>
     </div>

@@ -94,7 +94,8 @@ export default {
                 ? tx.to
                 : tx.from,
             timestamp: tx.timestamp,
-            amount: tx.amount
+            amount: tx.amount,
+            fee: tx.fee
           }
         })
       const processRawMessageTxs = txList =>

@@ -204,14 +204,14 @@ export default {
           obj.type = 'proposal'
           return obj
         })
-        .filter(proposal => {
-          if (
-            proposal.proposedParameters &&
-            Object.keys(proposal.proposedParameters).length > 0
-          )
-            return true
-          else return false
-        })
+      // .filter(proposal => {
+      //   if (
+      //     proposal.proposedParameters &&
+      //     Object.keys(proposal.proposedParameters).length > 0
+      //   )
+      //     return true
+      //   else return false
+      // })
 
       let activeProposalList = allProposals.filter(proposal => {
         return !proposal.hasOwnProperty('winner')

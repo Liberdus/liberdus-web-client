@@ -915,12 +915,14 @@ utils.copyToClipboard = text => {
 // Transfer Token Function
 utils.transferTokens = async (tgtHandle, amount, keys) => {
   const targetAddress = await getAddress(tgtHandle)
+  const parameters = await utils.queryParameters()
   const tx = {
     type: 'transfer',
     from: keys.publicKey,
     to: targetAddress,
     amount: parseFloat(amount),
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    fee: parameters.CURRENT.transactionFee || 0.001
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
   console.log(tx)

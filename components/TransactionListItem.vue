@@ -2,70 +2,96 @@
   <div class="transaction-list-item">
     <!-- {{ transaction }} -->
     <div class="type-plus-address">
-      <div class="transaction-type" v-if="transaction.type === 'receive'">Received coins from</div>
-      <div class="transaction-type" v-else-if="transaction.type === 'send'">Sent coins to</div>
-      <div class="transaction-type" v-else-if="transaction.type === 'send_message'">Sent message to</div>
+      <div class="transaction-type" v-if="transaction.type === 'receive'">
+        Received coins from
+      </div>
+      <div class="transaction-type" v-else-if="transaction.type === 'send'">
+        Sent coins to
+      </div>
+      <div
+        class="transaction-type"
+        v-else-if="transaction.type === 'send_message'"
+      >
+        Sent message to
+      </div>
       <div
         class="transaction-type"
         v-else-if="transaction.type === 'receive_message'"
-      >Receive message from</div>
-      <div class="transaction-type" v-else-if="transaction.type === 'register'">Register as</div>
+      >
+        Receive message from
+      </div>
+      <div class="transaction-type" v-else-if="transaction.type === 'register'">
+        Register as
+      </div>
 
-      <p
-        v-if="transaction.type === 'register'"
-        class="other-person-address"
-      >@{{ transaction.alias }}</p>
-      <p v-else-if="otherPersonHandle" class="other-person-address">@{{ otherPersonHandle }}</p>
-      <p v-else class="other-person-address">{{ transaction.otherPersonAddress }}</p>
+      <p v-if="transaction.type === 'register'" class="other-person-address">
+        @{{ transaction.alias }}
+      </p>
+      <p v-else-if="otherPersonHandle" class="other-person-address">
+        @{{ otherPersonHandle }}
+      </p>
+      <p v-else class="other-person-address">
+        {{ transaction.otherPersonAddress }}
+      </p>
     </div>
     <div class="timestamp-plus-amount">
       <div class="timestamp">{{ timestamp }}</div>
       <div
         v-if="transaction.type === 'receive'"
         class="transaction-amount receive-amount"
-      >+ {{ transaction.amount.toFixed(3) }}</div>
+      >
+        + {{ transaction.amount.toFixed(3) }}
+      </div>
       <div
         v-else-if="transaction.type === 'send'"
         class="transaction-amount send-amount"
-      >- {{ transaction.amount + 0.001 }}</div>
+      >
+        - {{ transaction.amount + (transaction.fee || 0.001) }}
+      </div>
       <div
         v-else-if="transaction.type === 'send_message'"
         class="transaction-amount send-amount"
-      >- {{ transaction.amount + 0.001 }}</div>
+      >
+        - {{ transaction.amount + (transaction.fee || 0.001) }}
+      </div>
       <div
         v-else-if="transaction.type === 'receive_message'"
         class="transaction-amount receive-amount"
-      >+ {{ transaction.amount.toFixed(3) }}</div>
+      >
+        + {{ transaction.amount.toFixed(3) }}
+      </div>
       <div
         v-else-if="transaction.type === 'register'"
         class="transaction-amount send-amount"
-      >- {{ transaction.amount.toFixed(3) }}</div>
+      >
+        - {{ transaction.amount.toFixed(3) }}
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import moment from "moment";
-import utils from "../assets/utils";
+import moment from 'moment'
+import utils from '../assets/utils'
 export default {
-  props: ["transaction"],
-  data: function() {
+  props: ['transaction'],
+  data: function () {
     return {
       otherPersonHandle: null
-    };
-  },
-  computed: {
-    timestamp() {
-      return moment(this.transaction.timestamp).calendar();
     }
   },
-  async mounted() {
+  computed: {
+    timestamp () {
+      return moment(this.transaction.timestamp).calendar()
+    }
+  },
+  async mounted () {
     if (this.transaction)
       this.otherPersonHandle = await utils.getHandle(
         this.transaction.otherPersonAddress
-      );
+      )
   }
-};
+}
 </script>
 
 <style>
