@@ -109,25 +109,40 @@ export default {
     },
     checkMessage () {
       let shouldNotifiyNewMessage = false
-      if (
+      if (this.lastMessage && !this.getLastMessage) {
+        shouldNotifiyNewMessage = true
+      } else if (
         this.lastMessage &&
-        this.lastMessage.body !== this.getLastMessage.body
+        this.lastMessage.body !== this.getLastMessage.body &&
+        this.lastMessage.timestamp > this.getLastMessage.timestamp
       ) {
-        this.updateLastMessage({
-          body: this.lastMessage.body,
-          read: false
-        })
         shouldNotifiyNewMessage = true
       }
       if (shouldNotifiyNewMessage) {
         if (this.lastMessage.handle !== this.getWallet.handle) {
           this.notifyNewMessage(this.lastMessage.handle, this.lastMessage.body)
           utils.playSoundFile(newMessageSoundFile)
+          this.updateLastMessage({
+            ...this.lastMessage,
+            read: true,
+            readTimestamp: Date.now(),
+            walletUsername: this.getWallet.handle
+          })
         }
       }
     },
     async checkTx () {
-      if (this.lastTx && this.getLastTx.txId !== this.lastTx.txId) {
+      let shouldNotifiyNewTx = false
+      if (this.lastTx && !this.getLastTx) {
+        shouldNotifiyNewTx = true
+      } else if (
+        this.lastTx &&
+        this.getLastTx.txId !== this.lastTx.txId &&
+        this.getLastTx.timestamp < this.lastTx.timestamp
+      ) {
+        shouldNotifiyNewTx = true
+      }
+      if (shouldNotifiyNewTx) {
         this.updateLastTx(this.lastTx)
         let processedTx = await this.processTx(this.lastTx)
         this.notifyNewTx(processedTx)

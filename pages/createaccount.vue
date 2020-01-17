@@ -170,7 +170,10 @@ export default {
         let address = await utils.getAddress(this.username)
         if (address) {
           let wallets = localStorage.getItem('wallets')
-          if (wallets && address === wallets.some(wallet => wallet.address === address)) {
+          if (
+            wallets &&
+            address === wallets.some(wallet => wallet.address === address)
+          ) {
             this.allowSignIn = true
           } else {
             this.isUsernameTaken = true
@@ -197,13 +200,10 @@ export default {
     async loadAccount () {
       this.checkUsername()
       const localWallet = utils.loadWallet(this.username)
-      const lastMessage = utils.loadLastMessage()
-      const lastTx = utils.loadLastTx()
+
       if (localWallet) {
         const remoteAccountAddress = await utils.getAddress(localWallet.handle)
         const localAccountAddress = localWallet.entry.address
-        // console.log('Remote address: ', remoteAccountAddress)
-        // console.log('Local address: ', localAccountAddress)
         if (remoteAccountAddress === localAccountAddress) {
           this.existingValidAccount = localWallet
           this.allowSignIn = true
@@ -220,15 +220,18 @@ export default {
     onSignIn () {
       this.addWallet(this.existingValidAccount)
       console.log('Wallet added to vuex store.')
+      const lastMessage = utils.loadLastMessage(this.username)
+      const lastTx = utils.loadLastTx(this.username)
+
+      if (lastMessage) {
+        console.log('Last message added to vuex store.')
+        this.updateLastMessage(lastMessage)
+      }
+      if (lastTx) {
+        console.log('Last tx added to vuex store.')
+        this.updateLastTx(lastTx)
+      }
       this.$router.push('/')
-      // if (lastMessage) {
-      //   console.log('Last message added to vuex store.')
-      //   this.updateLastMessage(lastMessage)
-      // }
-      // if (lastTx) {
-      //   console.log('Last tx added to vuex store.')
-      //   this.updateLastTx(lastTx)
-      // }
     }
   },
   mounted: function () {

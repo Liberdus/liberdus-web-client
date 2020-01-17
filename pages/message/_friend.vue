@@ -107,7 +107,12 @@ export default {
 
           let lastMessage = this.messages[this.messages.length - 1]
           if (lastMessage.handle !== this.getWallet.handle) {
-            this.updateLastMessage({ body: lastMessage.body, read: true })
+            this.updateLastMessage({
+              ...lastMessage,
+              read: true,
+              readTimestamp: Date.now(),
+              walletUsername: this.getWallet.handle
+            })
           }
 
           if (this.pendingMessage) {
@@ -172,6 +177,11 @@ export default {
       this.$nextTick(this.scrollToLastMessage)
       messagesChanged = false
     }
+  },
+  beforeDestroy: function () {
+    console.log('Clearing message refresher...')
+    clearInterval(this.refresher)
+    this.refresher = null
   }
 }
 </script>

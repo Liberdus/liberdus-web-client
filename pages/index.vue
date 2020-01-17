@@ -188,7 +188,6 @@ export default {
       getLastMessage: 'chat/getLastMessage',
       getNetwork: 'chat/getNetwork',
       getTimers: 'chat/getTimers',
-      getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
@@ -204,23 +203,6 @@ export default {
     if (!this.isUIReady) {
       this.$router.push('/loading')
     }
-    // if (!this.getWallet) {
-    //   const wallet = utils.loadWallet()
-    //   const lastMessage = utils.loadLastMessage()
-    //   const lastTx = utils.loadLastTx()
-    //   if (wallet) {
-    //     this.addWallet(wallet)
-    //     console.log('Wallet added to vuex store.')
-    //   }
-    //   if (lastMessage) {
-    //     console.log('Last message added to vuex store.')
-    //     this.updateLastMessage(lastMessage)
-    //   }
-    //   if (lastTx) {
-    //     console.log('Last tx added to vuex store.')
-    //     this.updateLastTx(lastTx)
-    //   }
-    // }
     if (!this.getTimers['nodeHealthChecker']) {
       const nodeHealthChecker = setInterval(async () => {
         if (

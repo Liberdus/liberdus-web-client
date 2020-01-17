@@ -72,7 +72,9 @@ utils.updateSeedNodeHostLocally = async (ip, port) => {
 utils.isSeedNodeOnline = async (ip, port) => {
   try {
     const seedNodeHost = `${ip}:${port}`
-    const res = await axios.get(`http://${seedNodeHost}/nodelist`, { timeout: 15000 })
+    const res = await axios.get(`http://${seedNodeHost}/nodelist`, {
+      timeout: 15000
+    })
     if (res.status === 200) {
       return true
     }
@@ -131,18 +133,20 @@ utils.loadWallet = username => {
     return null
   }
 }
-utils.loadLastMessage = () => {
+utils.loadLastMessage = username => {
   try {
     const loadedEntries = localStorage.getItem('lastMessage')
-    return JSON.parse(loadedEntries)
+    const lastMessage = JSON.parse(loadedEntries)
+    return lastMessage[username]
   } catch (e) {
     return null
   }
 }
-utils.loadLastTx = () => {
+utils.loadLastTx = username => {
   try {
     const loadedEntries = localStorage.getItem('lastTx')
-    return JSON.parse(loadedEntries)
+    const lastTx = JSON.parse(loadedEntries)
+    return lastTx[username]
   } catch (e) {
     return null
   }

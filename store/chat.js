@@ -1,12 +1,8 @@
 export const state = () => ({
   appState: null,
   network: null,
-  lastMessage: {
-    message: null
-  },
-  lastTx: {
-    txId: null
-  },
+  lastMessage: null,
+  lastTx: null,
   isUIReady: false,
   notificationQueue: [],
   timers: {}
@@ -37,11 +33,28 @@ export const mutations = {
   },
   updateLastMessage (state, payload) {
     state.lastMessage = payload
-    localStorage.setItem('lastMessage', JSON.stringify(state.lastMessage))
+
+    const existingLastMessages = JSON.parse(localStorage.getItem('lastMessage'))
+    if (existingLastMessages) {
+      existingLastMessages[payload.walletUsername] = payload
+      localStorage.setItem('lastMessage', JSON.stringify(existingLastMessages))
+    } else {
+      const obj = {}
+      obj[payload.walletUsername] = payload
+      localStorage.setItem('lastMessage', JSON.stringify(obj))
+    }
   },
   updateLastTx (state, payload) {
     state.lastTx = payload
-    localStorage.setItem('lastTx', JSON.stringify(state.lastTx))
+    const existingLastTx = JSON.parse(localStorage.getItem('lastTx'))
+    if (existingLastTx) {
+      existingLastTx[payload.walletUsername] = payload
+      localStorage.setItem('lastTx', JSON.stringify(existingLastTx))
+    } else {
+      const obj = {}
+      obj[payload.walletUsername] = payload
+      localStorage.setItem('lastTx', JSON.stringify(obj))
+    }
   },
   addNotificationQueue (state, payload) {
     state.notificationQueue.push(payload)

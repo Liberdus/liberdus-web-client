@@ -43,7 +43,6 @@ export default {
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
       getLastMessage: 'chat/getLastMessage',
-      getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady'
     }),
     shouldRender () {

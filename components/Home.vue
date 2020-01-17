@@ -72,7 +72,6 @@ export default {
       getNetwork: 'chat/getNetwork',
       getTimers: 'chat/getTimers',
       getLastMessage: 'chat/getLastMessage',
-      getLastTx: 'chat/getLastTx',
       isUIReady: 'chat/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
@@ -231,7 +230,9 @@ export default {
         if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
         let lastTxFromAPI = this.getLastTxFromAPI()
         if (lastTxFromAPI) {
-          this.lastTx = lastTxFromAPI
+          this.lastTx = { ...lastTxFromAPI }
+          this.lastTx.walletUsername = myHandle
+          this.lastTx.timestamp = Date.now()
         }
         setTimeout(this.refreshAppState, 10000)
       } else {
