@@ -980,6 +980,14 @@ utils.queryEncryptedChats = async function (chatId) {
   return res.data.messages
 }
 
+utils.calculateWholeCycleDuration = function (window) {
+  if (window.proposalWindow && window.devApplyWindow) {
+    return window.devApplyWindow[1] - window.proposalWindow[0]
+  } else {
+    return 1000 * 60 * 7
+  }
+}
+
 utils.getAddress = getAddress
 utils.getToll = getToll
 export default utils

@@ -284,9 +284,12 @@ export default {
         ) {
           this.nextDevProposalStart = this.window.devProposalWindow[0]
         } else {
-          this.nextDevProposalStart = proposalWindow[1] + 1000 * 60 * 4
+          const wholeCycleDuration = utils.calculateWholeCycleDuration(
+            this.window
+          )
+          this.nextDevProposalStart =
+            this.window.devProposalWindow[0] + wholeCycleDuration
         }
-        // console.log(new Date(proposalWindow[0]), new Date(proposalWindow[1]));
         let now = Date.now()
         if (now > proposalWindow[0] && now < proposalWindow[1]) {
           return true

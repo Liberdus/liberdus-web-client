@@ -9,6 +9,7 @@
     </div>
     <div v-else class="proposal-list-container">
       <!-- {{ allProposalList }} -->
+      {{ window }}
       <Title v-if="voteType === 'economy'" text="Vote Proposals" />
       <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
       <Title
@@ -34,11 +35,23 @@
       </div>
     </div>
     <div class="vote-footer">
-      <p v-if="networkParameters && networkParameters.CURRENT.transactionFee">
+      <p
+        v-if="
+          allowVote &&
+            networkParameters &&
+            networkParameters.CURRENT.transactionFee
+        "
+      >
         Submitting votes will cost vote amount total:
         <strong>{{ totalVoteAmount }}</strong> coins + Transaction Fee:
         <strong>{{ networkParameters.CURRENT.transactionFee }}</strong>
         coins
+      </p>
+      <p v-if="!allowVote">
+        Voting window will start in
+        <strong v-if="remainingSecondToVotingWindow">{{
+          secondsToDhms
+        }}</strong>
       </p>
       <button
         class="default-button new-proposal-button"
@@ -118,26 +131,51 @@ export default {
     currentWindowName () {
       if (!this.window) return
       const now = Date.now()
-      if (
-        now >= this.window.proposalWindow[0] &&
-        now < this.window.proposalWindow[1]
-      ) {
-        return 'PROPOSAL'
-      } else if (
-        now >= this.window.votingWindow[0] &&
-        now < this.window.votingWindow[1]
-      ) {
-        return 'VOTING'
-      } else if (
-        now >= this.window.graceWindow[0] &&
-        now < this.window.graceWindow[1]
-      ) {
-        return 'GRACE'
-      } else if (
-        now >= this.window.applyWindow[0] &&
-        now < this.window.applyWindow[1]
-      ) {
-        return 'APPLY'
+
+      if (this.voteType === 'economy') {
+        if (
+          now >= this.window.proposalWindow[0] &&
+          now < this.window.proposalWindow[1]
+        ) {
+          return 'PROPOSAL'
+        } else if (
+          now >= this.window.votingWindow[0] &&
+          now < this.window.votingWindow[1]
+        ) {
+          return 'VOTING'
+        } else if (
+          now >= this.window.graceWindow[0] &&
+          now < this.window.graceWindow[1]
+        ) {
+          return 'GRACE'
+        } else if (
+          now >= this.window.applyWindow[0] &&
+          now < this.window.applyWindow[1]
+        ) {
+          return 'APPLY'
+        }
+      } else if (this.voteType === 'funding') {
+        if (
+          now >= this.window.devProposalWindow[0] &&
+          now < this.window.devProposalWindow[1]
+        ) {
+          return 'PROPOSAL'
+        } else if (
+          now >= this.window.devVotingWindow[0] &&
+          now < this.window.devVotingWindow[1]
+        ) {
+          return 'VOTING'
+        } else if (
+          now >= this.window.devGraceWindow[0] &&
+          now < this.window.devGraceWindow[1]
+        ) {
+          return 'GRACE'
+        } else if (
+          now >= this.window.devApplyWindow[0] &&
+          now < this.window.devApplyWindow[1]
+        ) {
+          return 'APPLY'
+        }
       }
       return 'IDLE'
     },
@@ -282,6 +320,7 @@ export default {
         }
       }
       //   this.$router.push(`/proposal/success/economy`)
+      this.$emit('clearVote')
       this.$ons.notification.alert('Your votes are submitted.')
     },
     async isVotingWindowOpen () {
@@ -291,31 +330,61 @@ export default {
           this.networkParameters = newNetworkParameters
         }
 
+        const WINDOW_TYPE =
+          this.voteType === 'economy' ? 'WINDOWS' : 'DEV_WINDOWS'
+
         if (!this.previousWindow) {
-          this.window = newNetworkParameters['WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters[WINDOW_TYPE]
+          this.previousWindow = newNetworkParameters[WINDOW_TYPE]
         } else if (
-          newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
+          this.voteType === 'economy' &&
+          newNetworkParameters[WINDOW_TYPE].proposalWindow[0] > Date.now()
         ) {
+          console.log('Using previous proposal window...')
+          console.log(
+            'proposal start:',
+            new Date(this.previousWindow.proposalWindow[0])
+          )
+          console.log(
+            'apply end:',
+            new Date(this.previousWindow.applyWindow[1])
+          )
+          this.window = { ...this.previousWindow }
+        } else if (
+          this.voteType === 'funding' &&
+          newNetworkParameters[WINDOW_TYPE].devProposalWindow[0] > Date.now()
+        ) {
+          console.log('Using previous dev proposal window...')
+          console.log(
+            'proposal start:',
+            new Date(this.previousWindow.devProposalWindow[0])
+          )
+          console.log(
+            'apply end:',
+            new Date(this.previousWindow.devApplyWindow[1])
+          )
           this.window = { ...this.previousWindow }
         } else {
-          this.window = newNetworkParameters['WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters[WINDOW_TYPE]
+          this.previousWindow = newNetworkParameters[WINDOW_TYPE]
         }
 
-        const votingWindow = this.window.votingWindow
-        if (
-          this.window.votingWindow &&
-          this.window.votingWindow[0] >= Date.now()
-        ) {
-          this.nextVotingStart = this.window.votingWindow[0]
+        const VOTING_WINDOW =
+          this.voteType === 'economy'
+            ? this.window.votingWindow
+            : this.window.devVotingWindow
+        if (VOTING_WINDOW && VOTING_WINDOW[0] >= Date.now()) {
+          this.nextVotingStart = VOTING_WINDOW[0]
         } else {
-          this.nextVotingStart = votingWindow[1] + 1000 * 60 * 4
+          const wholeCycleDuration = utils.calculateWholeCycleDuration(
+            this.window
+          )
+          this.nextVotingStart = VOTING_WINDOW[0] + wholeCycleDuration
         }
 
         let now = Date.now()
-        if (votingWindow[0] > now) this.nextVotingStart = votingWindow[0]
-        if (now > votingWindow[0] && now < votingWindow[1]) {
+        if (VOTING_WINDOW[0] > now) this.nextVotingStart = VOTING_WINDOW[0]
+        if (now > VOTING_WINDOW[0] && now < VOTING_WINDOW[1]) {
           return true
         }
         return false
@@ -326,15 +395,22 @@ export default {
       }
     },
     getRemainingSecondToVoting () {
-      if (this.window && this.window.votingWindow) {
+      if (
+        this.window &&
+        (this.window.votingWindow || this.window.devVotingWindow)
+      ) {
+        const VOTING_WINDOW =
+          this.voteType === 'economy'
+            ? this.window.votingWindow
+            : this.window.devVotingWindow
         let now = Date.now()
         if (!this.allowVote) {
-          if (now < this.window.votingWindow[0]) {
+          if (now < VOTING_WINDOW[0]) {
             this.remainingSecondToVotingWindow = Math.round(
-              (this.window.votingWindow[0] - now) / 1000
+              (VOTING_WINDOW[0] - now) / 1000
             )
           } else if (
-            now > this.window.votingWindow[0] &&
+            now > VOTING_WINDOW[0] &&
             this.nextVotingStart &&
             now < this.nextVotingStart
           ) {
@@ -343,9 +419,9 @@ export default {
             )
           }
         } else if (this.allowVote) {
-          if (this.window.votingWindow[1] >= now) {
+          if (VOTING_WINDOW[1] >= now) {
             this.remainingSecondToVotingWindow = Math.round(
-              (this.window.votingWindow[1] - now) / 1000
+              (VOTING_WINDOW[1] - now) / 1000
             )
           }
         }

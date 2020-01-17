@@ -273,8 +273,13 @@ export default {
   async mounted () {
     // if(this.proposal) this.otherPersonHandle = await utils.getHandle(this.proposal.otherPersonAddress)
     console.log(this.proposal)
+    this.$parent.$on('clearVote', this.clearVote)
   },
   methods: {
+    clearVote () {
+      console.log('clearing vote amount...')
+      this.voteAmount = ''
+    },
     redirect (url) {
       this.$router.push(url)
     },

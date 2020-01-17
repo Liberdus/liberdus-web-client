@@ -372,13 +372,12 @@ export default {
     },
     async isProposalWindowOpen () {
       try {
-        // this.loading = true;
         let newNetworkParameters = await utils.queryParameters()
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
           this.form = Object.assign({}, this.networkParameters.CURRENT)
-          this.form.title = ""
-          this.form.description = ""
+          this.form.title = ''
+          this.form.description = ''
         }
         if (!this.previousWindow) {
           this.window = newNetworkParameters['WINDOWS']
@@ -403,7 +402,10 @@ export default {
         ) {
           this.nextProposalStart = this.window.proposalWindow[0]
         } else {
-          this.nextProposalStart = proposalWindow[1] + 1000 * 60 * 4
+          const wholeCycleDuration = utils.calculateWholeCycleDuration(
+            this.window
+          )
+          this.nextProposalStart = proposalWindow[0] + wholeCycleDuration
         }
 
         let now = Date.now()
