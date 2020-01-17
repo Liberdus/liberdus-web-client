@@ -9,7 +9,7 @@
     </div>
     <div v-else class="proposal-list-container">
       <!-- {{ allProposalList }} -->
-      {{ window }}
+      <!-- {{ window }} -->
       <Title v-if="voteType === 'economy'" text="Vote Proposals" />
       <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
       <Title
