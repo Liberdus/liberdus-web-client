@@ -161,6 +161,7 @@
         class="text-input"
         v-model="voteAmount"
         v-on:keyup="onEnterVote"
+        v-if="currentWindowName === 'VOTING'"
       />
 
       <!-- <p class="proposal-description">{{proposal.description}}</p> -->
@@ -198,7 +199,12 @@
           </li>
         </ul>
       </section>
-      <div class="choice-list" v-if="!proposal.hasOwnProperty('approved')">
+      <div
+        class="choice-list"
+        v-if="
+          !proposal.hasOwnProperty('approved') && currentWindowName === 'VOTING'
+        "
+      >
         <button
           :class="{
             'choice-button': true,
@@ -227,7 +233,9 @@
         class="text-input"
         v-model="voteAmount"
         v-on:keyup="onEnterVote"
-        v-if="!proposal.hasOwnProperty('approved')"
+        v-if="
+          !proposal.hasOwnProperty('approved') && currentWindowName === 'VOTING'
+        "
       />
 
       <div class="proposal-footer">
@@ -256,7 +264,7 @@
 import moment from 'moment'
 import utils from '../assets/utils'
 export default {
-  props: ['proposal'],
+  props: ['proposal', 'currentWindowName'],
   data: function () {
     return {
       voteAmount: '',

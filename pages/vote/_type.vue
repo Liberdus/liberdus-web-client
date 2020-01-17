@@ -27,6 +27,7 @@
           v-for="proposal in activeProposalList"
           :key="proposal.id"
           :proposal="proposal"
+          :currentWindowName="currentWindowName"
           v-on:vote-enter="onVoteReceiveFromChild"
           :ref="proposal.id.slice(0, 6)"
         />
@@ -193,11 +194,47 @@ export default {
     },
     activeProposalList () {
       if (this.voteType === 'economy') {
-        return utils.sortByTimestamp(this.getActiveProposals, 'desc')
-        // return utils.sortByTimestamp(this.getCompletedProposals, 'desc')
+        if (
+          this.currentWindowName === 'GRACE' ||
+          this.currentWindowName === 'APPLY'
+        ) {
+          if (this.getActiveProposals.length > 0) {
+            return utils.sortByTimestamp(this.getActiveProposals, 'desc')
+          } else {
+            let THREE_MINUTE = 1000 * 60 * 3
+            let limitTimestamp = Date.now() - THREE_MINUTE
+            let completedProposalInCurrentCycle = this.getCompletedProposals.filter(
+              p => p.timestamp > limitTimestamp
+            )
+            return utils.sortByTimestamp(
+              completedProposalInCurrentCycle,
+              'desc'
+            )
+          }
+        } else {
+          return utils.sortByTimestamp(this.getActiveProposals, 'desc')
+        }
       } else if (this.voteType === 'funding') {
-        return utils.sortByTimestamp(this.getActiveDevProposals, 'desc')
-        // return utils.sortByTimestamp(this.getCompletedDevProposals, 'desc')
+        if (
+          this.currentWindowName === 'GRACE' ||
+          this.currentWindowName === 'APPLY'
+        ) {
+          if (this.getActiveDevProposals.length > 0) {
+            return utils.sortByTimestamp(this.getActiveDevProposals, 'desc')
+          } else {
+            let THREE_MINUTE = 1000 * 60 * 3
+            let limitTimestamp = Date.now() - THREE_MINUTE
+            let completedProposalInCurrentCycle = this.getCompletedDevProposals.filter(
+              p => p.timestamp > limitTimestamp
+            )
+            return utils.sortByTimestamp(
+              completedProposalInCurrentCycle,
+              'desc'
+            )
+          }
+        } else {
+          return utils.sortByTimestamp(this.getActiveDevProposals, 'desc')
+        }
       } else if (this.voteType === 'all') {
         return this.allProposalList
       } else return []

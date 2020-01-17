@@ -91,7 +91,10 @@
           >
             Invalid amount
           </p>
-          <p class="input-error-message" v-else-if="!hasEnoughBalance">
+          <p
+            class="input-error-message"
+            v-else-if="amount.length > 0 && !hasEnoughBalance"
+          >
             Not enough balance.
           </p>
         </div>
@@ -167,7 +170,6 @@ export default {
     hasEnoughBalance () {
       const totalCost =
         parseFloat(this.amount) + parseFloat(this.requiredTxFee || 0.001)
-      console.log(parseFloat(totalCost), this.getAppState.data.balance)
       return this.getAppState.data.balance >= parseFloat(totalCost)
     },
     isOwnName () {

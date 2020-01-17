@@ -165,7 +165,7 @@ export default {
   data: function () {
     return {
       selectedPaymentType: 'single',
-      amount: 10000,
+      amount: '',
       title: '',
       description: '',
       paymentType: [
