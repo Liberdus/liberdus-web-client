@@ -28,9 +28,12 @@
           />
 
           <div v-if="!allowSignIn">
+            <p class="input-error-message" v-if="!isNodeOnline">
+              Unable to connect to server node.
+            </p>
             <p
               class="input-error-message"
-              v-if="$v.username.required && !$v.username.alphaNum"
+              v-else-if="$v.username.required && !$v.username.alphaNum"
             >
               Username can contain only alphabets and numberic characters
             </p>
@@ -108,7 +111,8 @@ export default {
       creatingHandle: false,
       backgroundUrl,
       existingValidAccount: null,
-      allowSignIn: false
+      allowSignIn: false,
+      isNodeOnline: true
     }
   },
   filters: {
@@ -193,7 +197,7 @@ export default {
           this.checkingUsername = false
         }
       } catch (e) {
-        console.warn(e)
+        console.warn(e.message)
         this.isUsernameTaken = false
         this.checkingUsername = false
       }
@@ -207,6 +211,14 @@ export default {
       return false
     },
     async loadAccount () {
+      this.checkingUsername = true
+      // this.isNodeOnline = await utils.isNodeOnline()
+      // if (!this.isNodeOnline) {
+      //   console.log('Node is offline')
+      //   this.checkingUsername = false
+      //   this.allowSignIn = false
+      //   return
+      // }
       this.checkUsername()
       const localWallet = utils.loadWallet(this.username)
 
@@ -225,6 +237,7 @@ export default {
         this.existingValidAccount = null
         this.allowSignIn = false
       }
+      this.checkingUsername = false
     },
     onSignIn () {
       this.addWallet(this.existingValidAccount)

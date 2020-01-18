@@ -38,7 +38,7 @@
       <div class="setting-container">
         <h1 class="setting-title">Settings</h1>
         <ul>
-          <li>General</li>
+          <!-- <li>General</li> -->
           <li @click="redirect('/setting/export')">Export Account</li>
           <li @click="redirect('/email/register')">Register Email</li>
           <li @click="redirect('/setting/toll')">Toll</li>

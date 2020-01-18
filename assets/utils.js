@@ -238,7 +238,7 @@ async function getAddress (handle) {
       return address
     }
   } catch (e) {
-    // console.error(e.message)
+    console.error(e.message)
     console.warn(`Error while getting address for ${handle}`)
     return null
   }
@@ -985,6 +985,16 @@ utils.calculateWholeCycleDuration = function (window) {
     return window.devApplyWindow[1] - window.proposalWindow[0]
   } else {
     return 1000 * 60 * 7
+  }
+}
+
+utils.isNodeOnline = async function () {
+  try {
+    const res = await axios.get(`http://${host}/issues/count`)
+    if (res.status === 200) return true
+  } catch (e) {
+    console.warn(e.message)
+    if (e.message === 'Network Error') return false
   }
 }
 

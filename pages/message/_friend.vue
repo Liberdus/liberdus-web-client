@@ -10,7 +10,7 @@
       }"
     />
 
-    <div v-if="messages.length > 0" class="message-list-container">
+    <div class="message-list-container">
       <chat-text
         v-for="(message, index) in messages"
         :message="message"
@@ -58,7 +58,7 @@ export default {
   },
   data: function () {
     return {
-      messages: [null],
+      messages: [],
       refresher: null,
       pendingMessage: null,
       otherPersonAddress: null
@@ -100,6 +100,10 @@ export default {
             this.secretKey
           )
         })
+        // console.log('decrypted', decryptedMessages)
+        // console.log('PENDING => ', this.pendingMessage)
+        // console.log('MESSAGES => ', this.messages)
+        // console.log(decryptedMessages.length, this.messages.length)
 
         if (decryptedMessages.length > this.messages.length) {
           this.messages = decryptedMessages
@@ -116,6 +120,8 @@ export default {
           }
 
           if (this.pendingMessage) {
+            console.log('PENDING => ', this.pendingMessage)
+            console.log('LAST_MESSAGE => ', lastMessage)
             if (
               this.pendingMessage.handle === lastMessage.handle &&
               this.pendingMessage.body === lastMessage.body
