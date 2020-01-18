@@ -126,17 +126,6 @@ export default {
   },
   mounted: function () {
     this.refreshAppState()
-    // let originalMessage = 'liberdus is awesome'
-    // let encryptedMessage = utils.encryptMessage(
-    //   originalMessage,
-    //   this.getWallet.entry.keys
-    // )
-    // console.log(`Encrypt Message: `, encryptedMessage)
-    // let decryptedMessage = utils.decryptMessage(
-    //   'ca1bbfcd8e9ba12936ff91ae1b8c6959b0d9d9659949e8a2af55bf23a280c60a3238311a1de72e83acf8fcf476aed2f05d612cd4d52df8885b87beaff6f5504cecfbe7786c54890323120f173e',
-    //   this.getWallet.entry.keys
-    // )
-    // console.log(originalMessage === decryptedMessage) // return true
   },
   methods: {
     ...mapActions({
@@ -217,6 +206,68 @@ export default {
         console.log(myAccountData)
       }
     },
+    getActiveWindow (window, proposalType) {
+      if (!window || !proposalType) return
+      const now = Date.now()
+      if (proposalType === 'economy') {
+        if (now >= window.proposalWindow[0] && now < window.proposalWindow[1]) {
+          return 'PROPOSAL'
+        } else if (
+          now >= window.votingWindow[0] &&
+          now < window.votingWindow[1]
+        ) {
+          return 'VOTING'
+        } else if (
+          now >= window.graceWindow[0] &&
+          now < window.graceWindow[1]
+        ) {
+          return 'GRACE'
+        } else if (
+          now >= window.applyWindow[0] &&
+          now < window.applyWindow[1]
+        ) {
+          return 'APPLY'
+        }
+      } else if (proposalType === 'funding') {
+        if (
+          now >= window.devProposalWindow[0] &&
+          now < window.devProposalWindow[1]
+        ) {
+          return 'PROPOSAL'
+        } else if (
+          now >= window.devVotingWindow[0] &&
+          now < window.devVotingWindow[1]
+        ) {
+          return 'VOTING'
+        } else if (
+          now >= window.devGraceWindow[0] &&
+          now < window.devGraceWindow[1]
+        ) {
+          return 'GRACE'
+        } else if (
+          now >= window.devApplyWindow[0] &&
+          now < window.devApplyWindow[1]
+        ) {
+          return 'APPLY'
+        }
+      }
+      return 'IDLE'
+    },
+    async getWindowObj (proposalType) {
+      try {
+        let newNetworkParameters = await utils.queryParameters()
+        if (!this.networkParameters) {
+          this.networkParameters = newNetworkParameters
+        }
+        const WINDOW_TYPE =
+          proposalType === 'economy' ? 'WINDOWS' : 'DEV_WINDOWS'
+        let window = newNetworkParameters[WINDOW_TYPE]
+        return window
+      } catch (e) {
+        console.warn(e)
+        return null
+      }
+    },
     async refreshAppState () {
       let self = this
       if (self.getWallet && self.isUIReady) {
@@ -235,9 +286,91 @@ export default {
           this.lastTx.walletUsername = myHandle
           this.lastTx.timestamp = Date.now()
         }
+        this.refreshProposalList()
         setTimeout(this.refreshAppState, 10000)
       } else {
         setTimeout(this.refreshAppState, 5000)
+      }
+    },
+    async refreshProposalList () {
+      let allProposals = await utils.queryProposals()
+      let networkParameters = await utils.queryParameters()
+      this.networkParameters = networkParameters
+      allProposals = allProposals.map(proposal => {
+        let proposedParameters = utils.getDifferentParameter(
+          proposal.parameters,
+          networkParameters['CURRENT']
+        )
+        let obj = { ...proposal }
+        obj.proposedParameters = proposedParameters
+        obj.type = 'proposal'
+        return obj
+      })
+      let activeProposalList = allProposals.filter(proposal => {
+        return !proposal.hasOwnProperty('winner')
+      })
+      let completedProposalList = allProposals.filter(
+        proposal => proposal.winner === true || proposal.winner === false
+      )
+      let window = await this.getWindowObj('economy')
+      let activeEconomyWindow = this.getActiveWindow(window, 'economy')
+      // console.log('active economy window', activeEconomyWindow)
+
+      if (activeEconomyWindow === 'VOTING') {
+        const count = activeProposalList.length
+        let economyProposalCount =
+          JSON.parse(localStorage.getItem('economy_proposal_count')) || 0
+        if (count > economyProposalCount) {
+          let diff = count - economyProposalCount
+          for (let i = 0; i < diff; i++) {
+            utils.updateBadge('economy', 'increase')
+            localStorage.setItem('economy_proposal_count', count)
+          }
+        }
+      } else {
+        try {
+          utils.updateBadge('economy', 'reset')
+          localStorage.setItem('economy_proposal_count', 0)
+        } catch (e) {
+          // console.warn(e)
+        }
+      }
+
+      // Funding proposals start here
+      let allDevProposals = await utils.queryDevProposals()
+      if (!allDevProposals || allDevProposals.length === 0) return
+      allDevProposals = allDevProposals.map(proposal => {
+        let obj = { ...proposal }
+        obj.type = 'dev_proposal'
+        return obj
+      })
+
+      let activeDevProposalList = allDevProposals.filter(
+        proposal => proposal.approved !== true && proposal.approved !== false
+      )
+
+      let devWindow = await this.getWindowObj('funding')
+      let activeFundingWindow = this.getActiveWindow(devWindow, 'funding')
+      // console.log('active funding window', activeFundingWindow)
+
+      if (activeFundingWindow === 'VOTING') {
+        const count = activeDevProposalList.length
+        let fundingProposalCount =
+          JSON.parse(localStorage.getItem('funding_proposal_count')) || 0
+        if (count > fundingProposalCount) {
+          let diff = count - fundingProposalCount
+          for (let i = 0; i < diff; i++) {
+            utils.updateBadge('funding', 'increase')
+            localStorage.setItem('funding_proposal_count', count)
+          }
+        }
+      } else {
+        try {
+          utils.updateBadge('funding', 'reset')
+          localStorage.setItem('funding_proposal_count', 0)
+        } catch (e) {
+          // console.warn(e)
+        }
       }
     }
   }

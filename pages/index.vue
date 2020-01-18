@@ -104,12 +104,14 @@ export default {
           icon: this.md() ? null : 'ion-ios-filing',
           label: 'Funding',
           page: FundingList,
+          badge: '',
           key: 'funding'
         },
         {
           icon: this.md() ? null : 'ion-ios-people',
           label: 'Economy',
           page: ProposalList,
+          badge: '',
           key: 'economy'
         }
       ]

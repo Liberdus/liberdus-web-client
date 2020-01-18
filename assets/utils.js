@@ -958,6 +958,20 @@ utils.updateBadge = (tabName, type) => {
     } else if (type === 'reset') {
       badgeElementList[1].innerHTML = ''
     }
+  } else if (tabName === 'funding') {
+    if (type === 'increase') {
+      const currentBadgeCount = parseInt(badgeElementList[2].innerHTML || 0)
+      badgeElementList[2].innerHTML = currentBadgeCount + 1
+    } else if (type === 'reset') {
+      badgeElementList[2].innerHTML = ''
+    }
+  } else if (tabName === 'economy') {
+    if (type === 'increase') {
+      const currentBadgeCount = parseInt(badgeElementList[3].innerHTML || 0)
+      badgeElementList[3].innerHTML = currentBadgeCount + 1
+    } else if (type === 'reset') {
+      badgeElementList[3].innerHTML = ''
+    }
   }
 }
 
