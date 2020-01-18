@@ -81,7 +81,32 @@ export default {
         id: handle + Date.now(),
         timestamp: Date.now()
       })
-      utils.updateBadge('message', 'increase')
+      this.updateMessageBadge()
+    },
+    updateMessageBadge () {
+      let self = this
+      const lastMessageStored = utils.loadLastMessage(this.getWallet.handle)
+      const messagesInMemory = this.getAppState.data.chats
+      let messageList = []
+      for (let handle in messagesInMemory) {
+        messagesInMemory[handle].messages.forEach(m => {
+          messageList.push({ ...m })
+        })
+      }
+      let newMessageList = messageList.filter(
+        m =>
+          m.timestamp > lastMessageStored.timestamp &&
+          m.handle !== self.getWallet.handle
+      )
+      // console.log('lastMessageStored', lastMessageStored)
+      // console.log('messagesInMemory', messagesInMemory)
+      // console.log('messageList', messageList)
+      // console.log('newMessageList', newMessageList)
+      // console.log(`Receive ${newMessageList.length} new messages`)
+
+      for (let i = 0; i < newMessageList.length; i++) {
+        utils.updateBadge('message', 'increase')
+      }
     },
     async notifyNewTx (tx) {
       let textBody
