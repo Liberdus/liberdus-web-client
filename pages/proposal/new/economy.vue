@@ -157,7 +157,7 @@
           text="Submit Proposal"
           type="submit"
           :onClick="onSubmitProposal"
-          :isDisabled="false"
+          :isDisabled="!allowProposal"
         />
         <p
           v-if="
