@@ -17,7 +17,7 @@
       :tabs="tabs"
       :visible="true"
       :index.sync="activeIndex"
-    ></v-ons-tabbar> -->
+    ></v-ons-tabbar>-->
     <p style="display: none">{{ isUIReady }}</p>
     <v-ons-tabbar
       v-if="isUIReady"
@@ -121,7 +121,6 @@ export default {
     next(vm => {
       if (!from || !from.name) return
       vm.prevRoute = from
-      console.log(from)
       if (to && to.query.tabIndex) {
         vm.activeIndex = parseInt(to.query.tabIndex)
       } else if (from.path.split('/')[1] === 'vote') {
@@ -146,13 +145,7 @@ export default {
       }
     })
   },
-  beforeDestroy: function () {
-    console.log('Clearing health checker and rotator')
-    clearInterval(this.nodeHealthChecker)
-    clearInterval(this.nodeRotator)
-    this.nodeHealthChecker = null
-    this.nodeRotator = null
-  },
+  beforeDestroy: function () {},
   methods: {
     ...mapActions({
       updateAppState: 'chat/updateAppState',
@@ -173,14 +166,14 @@ export default {
       utils.updateBadge(tab.key, 'reset')
     },
     handleConnectivityChange (status) {
-      console.log(`Connectivity Status: ${status}`)
+      // console.log(`Connectivity Status: ${status}`)
       // this.updateConnection(status)
-      if (status === true) {
-        this.$ons.notification.toast('No internet connection', {
-          timeout: 1000,
-          animation: 'fall'
-        })
-      }
+      // if (status === true) {
+      //   this.$ons.notification.toast('No internet connection', {
+      //     timeout: 1000,
+      //     animation: 'fall'
+      //   })
+      // }
     }
   },
   computed: {
@@ -206,6 +199,7 @@ export default {
       this.$router.push('/loading')
     }
     if (!this.getTimers['nodeHealthChecker']) {
+      // create interval for checking node status
       const nodeHealthChecker = setInterval(async () => {
         if (
           this.$route.path === '/loading' ||
@@ -243,6 +237,7 @@ export default {
     }
 
     if (!this.getTimers['nodeRotator']) {
+      // create interval for changing node ip and port
       const nodeRotator = setInterval(async () => {
         if (
           this.$route.path === '/loading' ||

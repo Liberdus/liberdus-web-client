@@ -2,95 +2,92 @@
   <v-ons-page>
     <div id="loading-container">
       <img id="loading-logo" src="../assets/images/loading-logo.png" alt />
-      <!-- <v-ons-progress-bar indeterminate></v-ons-progress-bar> -->
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import utils from '../assets/utils'
-import { mapGetters, mapActions } from 'vuex'
-import CONFIG from '../config'
-let defaultHost = `${CONFIG.server.ip}:9001`
+import Vue from "vue";
+import "onsenui/css/onsenui.css";
+import "onsenui/css/onsen-css-components.css";
+import VueOnsen from "vue-onsenui/esm";
+import OnsenComponents from "~/components/Onsen";
+import utils from "../assets/utils";
+import { mapGetters, mapActions } from "vuex";
+import CONFIG from "../config";
+let defaultHost = `${CONFIG.server.ip}:9001`;
 
-Vue.use(VueOnsen)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Vue.use(VueOnsen);
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 export default {
-  data () {
+  data() {
     return {
       host: defaultHost
-    }
+    };
   },
 
   computed: {
     ...mapGetters({
-      getWallet: 'wallet/getWallet',
-      isUIReady: 'chat/isUIReady'
+      getWallet: "wallet/getWallet",
+      isUIReady: "chat/isUIReady"
     })
   },
   methods: {
     ...mapActions({
-      addWallet: 'wallet/addWallet',
-      setUIReady: 'chat/setUIReady',
-      updateNetwork: 'chat/updateNetwork',
-      updateAppState: 'chat/updateAppState',
-      removeWallet: 'wallet/removeWallet'
+      addWallet: "wallet/addWallet",
+      setUIReady: "chat/setUIReady",
+      updateNetwork: "chat/updateNetwork",
+      updateAppState: "chat/updateAppState",
+      removeWallet: "wallet/removeWallet"
     })
   },
-  async mounted () {
-    let self = this
-    let randomHost
+  async mounted() {
+    let self = this;
+    let randomHost;
     try {
-      console.log('GETTING RANDOM HOST...')
-      randomHost = await utils.getRandomHost()
+      randomHost = await utils.getRandomHost();
     } catch (e) {
-      console.log('Cannot get a random host')
-      console.warn(e)
+      console.log("Cannot get a random host");
+      console.warn(e);
       this.$ons.notification.alert(
-        'Seed Node server is offline. Please change the seed node from network settings.'
-      )
-      this.$router.push('/welcome')
+        "Seed Node server is offline. Please change the seed node from network settings."
+      );
+      this.$router.push("/welcome");
     }
-    this.host = `${randomHost.ip}:${randomHost.port}`
-    this.updateNetwork(Object.assign({}, randomHost))
+    this.host = `${randomHost.ip}:${randomHost.port}`;
+    this.updateNetwork(Object.assign({}, randomHost));
     utils.init(this.host).then(hash => {
-      console.log(`Crypto Library is initialised.`)
-      self.setUIReady()
-    })
+      console.log(`Crypto Library is initialised.`);
+      self.setUIReady();
+    });
     setTimeout(async () => {
-      console.log('checking UI ready...')
       if (self.isUIReady) {
         if (this.getWallet) {
           try {
-            let address = await utils.getAddress(this.getWallet.handle)
+            let remoteAddress = await utils.getAddress(this.getWallet.handle);
             if (
-              address &&
-              address.toLowerCase() === this.getWallet.entry.address
+              remoteAddress &&
+              remoteAddress.toLowerCase() === this.getWallet.entry.address
             )
-              self.$router.push('/?tabIndex=0')
+              self.$router.push("/?tabIndex=0");
             else {
-              this.updateAppState(null)
-              this.removeWallet()
-              self.$router.push('/welcome')
+              this.updateAppState(null);
+              this.removeWallet();
+              self.$router.push("/welcome");
             }
           } catch (e) {
-            console.warn(e)
-            this.updateAppState(null)
-            this.removeWallet()
-            self.$router.push('/welcome')
+            console.warn(e);
+            this.updateAppState(null);
+            this.removeWallet();
+            self.$router.push("/welcome");
           }
         } else {
-          self.$router.push('/welcome')
+          self.$router.push("/welcome");
         }
       }
-    }, 1000)
+    }, 1000);
   }
-}
+};
 </script>
 
 <style>

@@ -941,38 +941,40 @@ utils.playSoundFile = soundFile => {
 }
 
 utils.updateBadge = (tabName, type) => {
-  const badgeElementList = document.querySelectorAll(
-    '.tabbar__badge.notification'
-  )
-  if (tabName === 'home') {
-    if (type === 'increase') {
-      const currentBadgeCount = parseInt(badgeElementList[0].innerHTML || 0)
-      badgeElementList[0].innerHTML = currentBadgeCount + 1
-    } else if (type === 'reset') {
-      badgeElementList[0].innerHTML = ''
+  try {
+    const badgeElementList = document.querySelectorAll(
+      '.tabbar__badge.notification'
+    )
+    if (tabName === 'home') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[0].innerHTML || 0)
+        badgeElementList[0].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[0].innerHTML = ''
+      }
+    } else if (tabName === 'message') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[1].innerHTML || 0)
+        badgeElementList[1].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[1].innerHTML = ''
+      }
+    } else if (tabName === 'funding') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[2].innerHTML || 0)
+        badgeElementList[2].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[2].innerHTML = ''
+      }
+    } else if (tabName === 'economy') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[3].innerHTML || 0)
+        badgeElementList[3].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[3].innerHTML = ''
+      }
     }
-  } else if (tabName === 'message') {
-    if (type === 'increase') {
-      const currentBadgeCount = parseInt(badgeElementList[1].innerHTML || 0)
-      badgeElementList[1].innerHTML = currentBadgeCount + 1
-    } else if (type === 'reset') {
-      badgeElementList[1].innerHTML = ''
-    }
-  } else if (tabName === 'funding') {
-    if (type === 'increase') {
-      const currentBadgeCount = parseInt(badgeElementList[2].innerHTML || 0)
-      badgeElementList[2].innerHTML = currentBadgeCount + 1
-    } else if (type === 'reset') {
-      badgeElementList[2].innerHTML = ''
-    }
-  } else if (tabName === 'economy') {
-    if (type === 'increase') {
-      const currentBadgeCount = parseInt(badgeElementList[3].innerHTML || 0)
-      badgeElementList[3].innerHTML = currentBadgeCount + 1
-    } else if (type === 'reset') {
-      badgeElementList[3].innerHTML = ''
-    }
-  }
+  } catch (e) {}
 }
 
 utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
@@ -994,9 +996,9 @@ utils.queryEncryptedChats = async function (chatId) {
   return res.data.messages
 }
 
-utils.calculateWholeCycleDuration = function (window) {
-  if (window.proposalWindow && window.devApplyWindow) {
-    return window.devApplyWindow[1] - window.proposalWindow[0]
+utils.calculateWholeCycleDuration = function (window, devWindow) {
+  if (window.proposalWindow && devWindow.devApplyWindow) {
+    return devWindow.devApplyWindow[1] - window.proposalWindow[0]
   } else {
     return 1000 * 60 * 7
   }

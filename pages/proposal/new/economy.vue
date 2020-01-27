@@ -151,13 +151,16 @@
           Proposal window will expire in
           <strong>{{ secondsToDhms }}</strong
           >.
+          <span v-if="allowProposal && !issueGenerated">
+            Waiting network to create default proposal...
+          </span>
         </p>
 
         <Button
           text="Submit Proposal"
           type="submit"
           :onClick="onSubmitProposal"
-          :isDisabled="!allowProposal"
+          :isDisabled="!allowProposal || !issueGenerated"
         />
         <p
           v-if="
@@ -209,6 +212,7 @@ export default {
       networkParameters: null,
       selectedParameter: 'transactionFee',
       allowProposal: false,
+      issueGenerated: false,
       parameters: [
         {
           id: 1,
@@ -255,8 +259,10 @@ export default {
       nextProposalStart: null,
       proposalWindowChecker: null,
       proposalWindowTimer: null,
+      issueChecker: null,
       remainingSecondToProposalWindow: null,
       window: null,
+      devWindow: null,
       previousWindow: null,
       loading: true,
       form: {
@@ -330,15 +336,26 @@ export default {
       this.getRemainingSecondToProposal,
       1000
     )
+    this.issueChecker = setInterval(this.checkIssueGenerated, 1000)
   },
   beforeDestroy: function () {
     console.log('Clearing proposal window checker...')
     clearInterval(this.proposalWindowChecker)
     clearInterval(this.proposalWindowTimer)
+    clearInterval(this.issueChecker)
   },
   methods: {
     formatDate (ts) {
       return moment(ts)
+    },
+    async checkIssueGenerated () {
+      if (this.allowProposal) {
+        const proposalCount = await utils.getProposalCount()
+        if (proposalCount) this.issueGenerated = true
+        else this.issueGenerated = false
+      } else {
+        this.issueGenerated = false
+      }
     },
     async onSubmitProposal (e) {
       e.preventDefault()
@@ -381,6 +398,7 @@ export default {
         }
         if (!this.previousWindow) {
           this.window = newNetworkParameters['WINDOWS']
+          this.devWindow = newNetworkParameters['DEV_WINDOWS']
           this.previousWindow = newNetworkParameters['WINDOWS']
         } else if (
           newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
@@ -403,7 +421,8 @@ export default {
           this.nextProposalStart = this.window.proposalWindow[0]
         } else {
           const wholeCycleDuration = utils.calculateWholeCycleDuration(
-            this.window
+            this.window,
+            this.devWindow
           )
           this.nextProposalStart = proposalWindow[0] + wholeCycleDuration
         }
