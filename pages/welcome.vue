@@ -14,6 +14,9 @@
             ><strong>here</strong></nuxt-link
           >.
         </p>
+        <p class="version">
+          <em>V {{ version }}</em>
+        </p>
       </div>
     </div>
   </v-ons-page>
@@ -31,6 +34,7 @@ import Title from '~/components/baisc/Title'
 import Button from '~/components/baisc/Button'
 import ButtonOutline from '~/components/baisc/ButtonOutline'
 import backgroundUrl from '~/assets/images/liberdus_background.png'
+import config from '~/config'
 
 Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
@@ -39,7 +43,8 @@ export default {
   data: function () {
     return {
       username: '',
-      backgroundUrl
+      backgroundUrl,
+      version: config.version
     }
   },
   methods: {
@@ -96,5 +101,10 @@ export default {
   letter-spacing: -0.14px;
   text-align: center;
   margin-bottom: 5px;
+}
+.version {
+  margin: 0px auto;
+  text-align: center;
+  margin-top: 20px;
 }
 </style>
