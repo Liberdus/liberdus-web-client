@@ -8,8 +8,6 @@
       Unable to get voting window from server
     </div>
     <div v-else class="proposal-list-container">
-      <!-- {{ allProposalList }} -->
-      <!-- {{ window }} -->
       <Title v-if="voteType === 'economy'" text="Vote Proposals" />
       <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
       <Title
@@ -33,7 +31,9 @@
         />
       </div>
       <div v-else class="no-proposal-message">
-        No <strong>active</strong> {{ voteType }} proposals to vote
+        No
+        <strong>active</strong>
+        {{ voteType }} proposals to vote
       </div>
     </div>
     <div class="vote-footer">
@@ -51,9 +51,9 @@
       </p>
       <p v-if="!allowVote">
         Voting window will start in
-        <strong v-if="remainingSecondToVotingWindow">{{
-          secondsToDhms
-        }}</strong>
+        <strong v-if="remainingSecondToVotingWindow">
+          {{ secondsToDhms }}
+        </strong>
       </p>
       <button
         class="default-button new-proposal-button"
@@ -268,18 +268,16 @@ export default {
       let allProposals = await utils.queryProposals()
       let networkParameters = await utils.queryParameters()
       this.networkParameters = networkParameters
-      allProposals = allProposals
-        // .filter(proposal => proposal.winner === false)
-        .map(proposal => {
-          let proposedParameters = utils.getDifferentParameter(
-            proposal.parameters,
-            networkParameters['CURRENT']
-          )
-          let obj = { ...proposal }
-          obj.proposedParameters = proposedParameters
-          obj.type = 'proposal'
-          return obj
-        })
+      allProposals = allProposals.map(proposal => {
+        let proposedParameters = utils.getDifferentParameter(
+          proposal.parameters,
+          networkParameters['CURRENT']
+        )
+        let obj = { ...proposal }
+        obj.proposedParameters = proposedParameters
+        obj.type = 'proposal'
+        return obj
+      })
       // .filter(proposal => {
       //   if (
       //     proposal.proposedParameters &&
@@ -295,8 +293,6 @@ export default {
       let completedProposalList = allProposals.filter(
         proposal => proposal.winner === true || proposal.winner === false
       )
-      //   console.log(activeProposalList)
-      //   console.log(completedProposalList)
       this.updateActiveProposals(activeProposalList)
       this.updateCompletedProposals(completedProposalList)
     },
@@ -322,7 +318,6 @@ export default {
       let self = this
       this.propsalListSubscription = setInterval(() => {
         if (self.isUIReady) {
-          console.log('Refreshing proposal and dev proposal list')
           self.refreshProposalList()
           self.refreshDevProposalList()
         }
@@ -357,11 +352,9 @@ export default {
           console.log(res)
         }
       }
-      //   this.$router.push(`/proposal/success/economy`)
       let self = this
       let refList = this.$refs
       this.activeProposalList.forEach(function (p) {
-        // console.log(refList[p.id.slice(0, 6)][0])
         refList[p.id.slice(0, 6)][0].clearVote()
       })
       this.$ons.notification.alert('Your votes are submitted.')
@@ -372,10 +365,8 @@ export default {
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
         }
-
         const WINDOW_TYPE =
           this.voteType === 'economy' ? 'WINDOWS' : 'DEV_WINDOWS'
-
         if (!this.previousWindow) {
           this.window = newNetworkParameters[WINDOW_TYPE]
           this.previousWindow = newNetworkParameters[WINDOW_TYPE]
@@ -393,7 +384,6 @@ export default {
           this.window = newNetworkParameters[WINDOW_TYPE]
           this.previousWindow = newNetworkParameters[WINDOW_TYPE]
         }
-
         const VOTING_WINDOW =
           this.voteType === 'economy'
             ? this.window.votingWindow
@@ -406,7 +396,6 @@ export default {
           )
           this.nextVotingStart = VOTING_WINDOW[0] + wholeCycleDuration
         }
-
         let now = Date.now()
         if (VOTING_WINDOW[0] > now) this.nextVotingStart = VOTING_WINDOW[0]
         if (now > VOTING_WINDOW[0] && now < VOTING_WINDOW[1]) {
