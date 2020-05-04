@@ -74,8 +74,8 @@
         />
         <p class="already-registered">
           Already registered ? Please import your account
-          <nuxt-link class="link-to-import" to="/setting/import"
-            ><strong>here</strong></nuxt-link
+          <nuxt-link class="link-to-import" to="/setting/import">
+            <strong>here</strong> </nuxt-link
           >.
         </p>
       </div>
@@ -112,7 +112,9 @@ export default {
       backgroundUrl,
       existingValidAccount: null,
       allowSignIn: false,
-      isNodeOnline: true
+      isNodeOnline: true,
+      registerWithLocalAccountAddress: false,
+      localWallet: null
     }
   },
   filters: {
@@ -146,10 +148,15 @@ export default {
     async onCreateAccount () {
       let self = this
       if (!this.username || this.username.length === 0) return
-      let entry = utils.createWallet(this.username)
-      let wallet = {
-        handle: this.username,
-        entry: entry
+      let wallet
+      if (this.registerWithLocalAccountAddress) {
+        wallet = this.localWallet
+      } else {
+        let entry = utils.createWallet(this.username)
+        wallet = {
+          handle: this.username,
+          entry: entry
+        }
       }
       this.addWallet(wallet)
       let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry)
@@ -171,8 +178,8 @@ export default {
       this.username = this.username.toLowerCase()
       this.checkingUsername = true
       try {
-        let address = await utils.getAddress(this.username)
-        if (address) {
+        let remoteAddress = await utils.getAddress(this.username)
+        if (remoteAddress) {
           let wallets
           try {
             wallets = JSON.parse(localStorage.getItem('wallets'))
@@ -184,7 +191,7 @@ export default {
             this.isUsernameTaken = true
             return
           }
-          let foundWallet = wallets.find(w => w.address === address)
+          let foundWallet = wallets.find(w => w.address === remoteAddress)
           if (wallets && foundWallet) {
             this.allowSignIn = true
           } else {
@@ -212,13 +219,6 @@ export default {
     },
     async loadAccount () {
       this.checkingUsername = true
-      // this.isNodeOnline = await utils.isNodeOnline()
-      // if (!this.isNodeOnline) {
-      //   console.log('Node is offline')
-      //   this.checkingUsername = false
-      //   this.allowSignIn = false
-      //   return
-      // }
       this.checkUsername()
       const localWallet = utils.loadWallet(this.username)
 
@@ -231,6 +231,8 @@ export default {
         } else {
           this.existingValidAccount = null
           this.allowSignIn = false
+          this.registerWithLocalAccountAddress = true
+          this.localWallet = localWallet
         }
       } else {
         console.log('No local wallet found with username: ', this.username)
@@ -241,16 +243,12 @@ export default {
     },
     onSignIn () {
       this.addWallet(this.existingValidAccount)
-      console.log('Wallet added to vuex store.')
       const lastMessage = utils.loadLastMessage(this.username)
       const lastTx = utils.loadLastTx(this.username)
-
       if (lastMessage) {
-        console.log('Last message added to vuex store.')
         this.updateLastMessage(lastMessage)
       }
       if (lastTx) {
-        console.log('Last tx added to vuex store.')
         this.updateLastTx(lastTx)
       }
       this.$router.push('/')
