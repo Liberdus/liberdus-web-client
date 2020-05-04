@@ -14,6 +14,9 @@ import VOnsProgressBar from 'vue-onsenui/esm/components/VOnsProgressBar'
 import VOnsProgressCircular from 'vue-onsenui/esm/components/VOnsProgressCircular'
 import VOnsModal from 'vue-onsenui/esm/components/VOnsModal'
 import VOnsSelect from 'vue-onsenui/esm/components/VOnsSelect'
+import VOnsSwitch from 'vue-onsenui/esm/components/VOnsSwitch'
+import VOnsCheckbox from 'vue-onsenui/esm/components/VOnsCheckbox'
+import VOnsRadio from 'vue-onsenui/esm/components/VOnsRadio'
 
 const OnsenComponents = {
   VOnsButton,
@@ -31,6 +34,9 @@ const OnsenComponents = {
   VOnsProgressBar,
   VOnsProgressCircular,
   VOnsModal,
-  VOnsSelect
+  VOnsSelect,
+  VOnsSwitch,
+  VOnsCheckbox,
+  VOnsRadio
 }
 export default OnsenComponents

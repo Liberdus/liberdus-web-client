@@ -1,7 +1,7 @@
 <template>
   <div
     class="chat-text-container"
-    v-bind:class="{ isUser: isUser, isFriend: isFriend, isPending: isPending}"
+    v-bind:class="{ isUser: isUser, isFriend: isFriend, isPending: isPending }"
     v-if="message !== null"
   >
     <div class="chat">
@@ -12,35 +12,35 @@
 </template>
 
 <script>
-import MessageListItem from "~/components/MessageListItem";
-import { mapGetters } from "vuex";
-import moment from "moment";
+import MessageListItem from '~/components/MessageListItem'
+import { mapGetters } from 'vuex'
+import moment from 'moment'
 export default {
-  props: ["message"],
+  props: ['message'],
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady'
     }),
-    isUser() {
-      return this.message.handle === this.getWallet.handle;
+    isUser () {
+      return this.message.handle === this.getWallet.handle
     },
-    isFriend() {
-      return !this.isUser;
+    isFriend () {
+      return !this.isUser
     },
-    isPending() {
-      return this.message.timestamp === null;
+    isPending () {
+      return this.message.timestamp === null
     },
-    formattedTimestamp() {
-      if (this.isPending) return "pending...";
-      else return moment(this.message.timestamp).calendar();
+    formattedTimestamp () {
+      if (this.isPending) return 'pending...'
+      else return moment(this.message.timestamp).calendar()
     }
   },
-  mounted() {
-    console.log("mounted chat text...");
+  mounted () {
+    console.log('mounted chat text...')
   }
-};
+}
 </script>
 
 <style>

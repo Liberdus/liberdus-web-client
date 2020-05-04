@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true, backUrl: '/proposal/123'}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true, backUrl: '/proposal/123'}" />
     <div class="proposal-detail-container">
       <h2 class="proposal-title">Daily coins paid to node runners</h2>
       <div class="proposal-info-detail">

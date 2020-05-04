@@ -3,45 +3,86 @@ import axios from 'axios'
 import CONFIG from '../config'
 import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
+import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 let host
-let seedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`
-let utils = {}
-let walletEntries = {}
+const defaultSeedNode = `${CONFIG.server.ip}:${CONFIG.server.port}`
+const storedSeedNode = localStorage.getItem('seednode')
+const seedNodeHost = storedSeedNode || defaultSeedNode
+console.log('stored seednode: ', storedSeedNode)
+console.log('Seed node: ', seedNodeHost)
+
+const utils = {}
+const walletEntries = {}
 
 utils.init = async defaultHost => {
   host = defaultHost
   await crypto.initialize(
-    '64f152869ca2d473e4ba64ab53f49ccdb2edae22da192c126850970e788af347'
+    // '64f152869ca2d473e4ba64ab53f49ccdb2edae22da192c126850970e788af347'
+    '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
   )
-  let sampleHash = crypto.hash('Hello World')
+  const sampleHash = crypto.hash('Hello World')
   return sampleHash
 }
 
+utils.getCurrentSeedNode = function (host) {
+  return {
+    ip: host.split(':')[0],
+    port: parseInt(host.split(':')[1])
+  }
+}
+
+utils.hashVerificationCode = code => {
+  return crypto.hash(code)
+}
+
 utils.updateHost = newHost => {
+  console.log('Host is updated: ', newHost)
   host = newHost
   return true
 }
 utils.isServerActive = async () => {
   try {
-    let res = await axios.get(getAccountsUrl())
-    let isActive = res.status === 200 && res.data.accounts ? true : false
+    const res = await axios.get(getAccountsUrl())
+    const isActive = !!(res.status === 200 && res.data.accounts)
     return isActive
   } catch (e) {
     return false
   }
 }
 utils.getRandomHost = async () => {
-  let res = await axios.get(`http://${seedNodeHost}/nodelist`)
-  let nodeList = res.data.nodeList
-  let randIndex = Math.floor(Math.random() * nodeList.length)
-  let randHost = nodeList[randIndex]
-  if (randHost.ip === '127.0.0.1') randHost.ip = CONFIG.server.ip
-  console.log(randHost)
+  console.log(seedNodeHost)
+  const res = await axios.get(`http://${seedNodeHost}/nodelist`)
+  const nodeList = res.data.nodeList
+  const randIndex = Math.floor(Math.random() * nodeList.length)
+  const randHost = nodeList[randIndex]
+  if (!randHost) {
+    throw new Error('Unable to get random host')
+  }
+  if (randHost.ip === '127.0.0.1') {
+    randHost.ip = seedNodeHost.split(':')[0]
+  }
+  // console.log(randHost)
   return randHost
 }
-utils.updateSeedNodeHost = async (ip, port) => {
-  seedNodeHost = `${ip}:${port}`
-  return seedNodeHost
+utils.updateSeedNodeHostLocally = async (ip, port) => {
+  const seedNodeHost = `${ip}:${port}`
+  console.log('Seed node is updated locally')
+  localStorage.setItem('seednode', seedNodeHost)
+}
+utils.isSeedNodeOnline = async (ip, port) => {
+  try {
+    const seedNodeHost = `${ip}:${port}`
+    const res = await axios.get(`http://${seedNodeHost}/nodelist`, {
+      timeout: 15000
+    })
+    if (res.status === 200) {
+      return true
+    }
+    return false
+  } catch (e) {
+    console.warn(e)
+    return false
+  }
 }
 utils.getSeedNode = async (ip, port) => {
   return {
@@ -56,30 +97,56 @@ utils.createAccount = (keys = crypto.generateKeypair()) => {
   }
 }
 
-utils.saveWallet = entries => {
-  localStorage.setItem('account', JSON.stringify(entries))
+utils.saveWallet = newWalletEntry => {
+  try {
+    const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
+    // console.log('existing wallet list', existingWalletList)
+    // console.log('entries', newWalletEntry)
+    // console.log([...existingWalletList, newWalletEntry])
+    // console.log(JSON.stringify([...existingWalletList, newWalletEntry]))
+    const newWallet = [...existingWalletList]
+      .filter(w => w.handle !== newWalletEntry.handle)
+      .concat(newWalletEntry)
+    console.log('new wallet', newWallet)
+    localStorage.setItem('wallets', JSON.stringify(newWallet))
+  } catch (e) {
+    console.log(e)
+    console.log(JSON.stringify([newWalletEntry]))
+    localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
+  }
 }
 
-utils.loadWallet = () => {
+// utils.loadWallet = () => {
+//   try {
+//     const loadedEntries = localStorage.getItem('account')
+//     return JSON.parse(loadedEntries)
+//   } catch (e) {
+//     return null
+//   }
+// }
+utils.loadWallet = username => {
   try {
-    let loadedEntries = localStorage.getItem('account')
-    return JSON.parse(loadedEntries)
+    const loadedEntries = localStorage.getItem('wallets')
+    const walletList = JSON.parse(loadedEntries)
+    return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
   }
 }
-utils.loadLastMessage = () => {
+utils.loadLastMessage = username => {
   try {
-    let loadedEntries = localStorage.getItem('lastMessage')
-    return JSON.parse(loadedEntries)
+    const loadedEntries = localStorage.getItem('lastMessage')
+    const lastMessage = JSON.parse(loadedEntries)
+    return lastMessage[username]
   } catch (e) {
     return null
   }
 }
-utils.loadLastTx = () => {
+utils.loadLastTx = username => {
   try {
-    let loadedEntries = localStorage.getItem('lastTx')
-    return JSON.parse(loadedEntries)
+    const loadedEntries = localStorage.getItem('lastTx')
+    const lastTx = JSON.parse(loadedEntries)
+    return lastTx[username]
   } catch (e) {
     return null
   }
@@ -148,7 +215,7 @@ async function getAccountData (id) {
 
 async function getToll (friendId, yourId) {
   try {
-    let { toll } = await getJSON(
+    const { toll } = await getJSON(
       `http://${host}/account/${friendId}/${yourId}/toll`
     )
     return toll
@@ -171,15 +238,16 @@ async function getAddress (handle) {
       return address
     }
   } catch (e) {
-    // console.error(e.message)
-    console.log(`Error while getting address for ${handle}`)
+    console.error(e.message)
+    console.warn(`Error while getting address for ${handle}`)
+    return null
   }
 }
 
 async function pollMessages (from, to, timestamp) {
   try {
-    let url = `http://${host}/messages/${to}/${from}`
-    let { messages } = await getJSON(url)
+    const url = `http://${host}/messages/${to}/${from}`
+    const { messages } = await getJSON(url)
     return messages
   } catch (err) {
     return err.message
@@ -201,12 +269,12 @@ utils.createWallet = (name, id) => {
 }
 // import wallet
 utils.importWallet = async sk => {
-  let keys = {
+  const keys = {
     publicKey: sk.slice(64),
     secretKey: sk
   }
-  let handle = await utils.getHandle(keys.publicKey)
-  let entry = {
+  const handle = await utils.getHandle(keys.publicKey)
+  const entry = {
     address: keys.publicKey,
     id: crypto.hash(handle),
     keys
@@ -218,7 +286,7 @@ utils.importWallet = async sk => {
 }
 // wallet list [name]. Lists wallet for the given [name]. Otherwise, lists all wallets."
 utils.listWallet = name => {
-  let wallet = walletEntries[name]
+  const wallet = walletEntries[name]
   if (typeof wallet !== 'undefined' && wallet !== null) {
     console.log(`${JSON.stringify(wallet, null, 2)}`)
   } else {
@@ -329,12 +397,12 @@ utils.claimTokens = keys => {
 utils.setToll = (toll, keys) => {
   const tx = {
     type: 'toll',
-    srcAcc: keys.publicKey,
-    toll: toll,
-    amount: 1,
+    from: keys.publicKey,
+    toll: parseFloat(toll),
     timestamp: Date.now()
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -348,20 +416,6 @@ utils.setToll = (toll, keys) => {
 }
 
 utils.sendMessage = async (text, sourceAcc, targetHandle) => {
-  // { type: 'message',
-  // from:
-  //  'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
-  // to:
-  //  '506e25334cbc536fd3e96adcfed207cfa4290c70124ff7281b231a20c8a5dde0',
-  // message:
-  //  '{"body":"hi there","handle":"d53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f","timestamp":1574228614992}',
-  // timestamp: 1574228614992,
-  // sign:
-  //  { owner:
-  //     'd53f7c098076a5d9047d7e5a18266e299744b00123bb9357068cab8cec35c24f',
-  //    sig:
-  //     'ddac7d14966ee7e2d36e2d80e04027430f15426943de4deece6004339cb02ec274c1389fefc10afe2ad968c817bb201f731a4a4552c33ca6fe9d5dd47ccb610828f99d069099e7c49246c19969fc77789357e8b0d2414f4c899b2f2d9ba01d98' } }
-
   const source = sourceAcc.entry
   const targetAddress = await getAddress(targetHandle)
   if (targetAddress === undefined || targetAddress === null) {
@@ -373,18 +427,19 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
     timestamp: Date.now(),
     handle: sourceAcc.handle
   })
-  // const encryptedMsg = crypto.encrypt(
-  //   message,
-  //   crypto.convertSkToCurve(source.keys.secretKey),
-  //   crypto.convertPkToCurve(targetAddress)
-  // );
+  const encryptedMsg = utils.encryptMessage(
+    message,
+    targetAddress,
+    source.keys.secretKey
+  )
   return new Promise(resolve => {
     getToll(targetAddress, source.address).then(toll => {
       const tx = {
         type: 'message',
         from: source.address,
         to: targetAddress,
-        message: message,
+        chatId: crypto.hash([source.address, targetAddress].sort().join``),
+        message: encryptedMsg,
         amount: toll,
         timestamp: Date.now()
       }
@@ -401,19 +456,19 @@ utils.sendMessage = async (text, sourceAcc, targetHandle) => {
 // message broadcast <message> <source> [recipients...]" | "broadcasts a <message> from <source> to all the [recipients...]
 utils.broadcastMessage = async (text, sourceAcc, recipients) => {
   const source = walletEntries[sourceAcc]
-  let targetAccs = []
-  let messages = []
+  const targetAccs = []
+  const messages = []
   let requiredAmount = 0
   for (let i = 0; i < recipients.length; i++) {
     console.log('RECIP: ', recipients[i])
-    let tgtAddress = await getAddress(recipients[i])
+    const tgtAddress = await getAddress(recipients[i])
     targetAccs.push(tgtAddress)
-    let message = stringify({
+    const message = stringify({
       body: text,
       timestamp: Date.now(),
       handle: source
     })
-    let encryptedMsg = crypto.encrypt(
+    const encryptedMsg = crypto.encrypt(
       message,
       crypto.convertSkToCurve(source.keys.secretKey),
       crypto.convertPkToCurve(tgtAddress)
@@ -437,15 +492,18 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 }
 
 utils.getHandle = async publicKey => {
-  let { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
-  console.log(`http://${host}/account/${publicKey}/alias`)
+  const { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
   return handle
 }
 
 // Poll Messages function
 utils.getMessages = async (srcEntry, tgt, timestamp) => {
   const targetAddress = await getAddress(tgt)
-  let messages = await pollMessages(srcEntry.address, targetAddress, timestamp)
+  const messages = await pollMessages(
+    srcEntry.address,
+    targetAddress,
+    timestamp
+  )
   return messages
 }
 
@@ -459,7 +517,7 @@ utils.queryAccount = async handle => {
   //   address ? `'${handle}' wallet data` : "all data"
   //   }:`
   // );
-  let accountData = await getAccountData(address)
+  const accountData = await getAccountData(address)
   return accountData
 }
 
@@ -484,19 +542,43 @@ utils.queryLatestProposals = async function () {
 // QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
 utils.queryLatestDevProposals = async function () {
   const res = await axios.get(`http://${host}/proposals/dev/latest`)
-  return res.data.devProposals
+  // return res.data.devProposals
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
 utils.getProposalCount = async function () {
   const res = await axios.get(`http://${host}/proposals/count`)
-  return res.data.proposalCount
+  // return res.data.proposalCount
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
 utils.getDevProposalCount = async function () {
   const res = await axios.get(`http://${host}/proposals/dev/count`)
-  return res.data.devProposalCount
+  // return res.data.devProposalCount
+  return res.data.count
+}
+
+utils.isTransferTx = tx => tx.type === 'transfer'
+utils.isMessageTx = tx => tx.type === 'message'
+utils.isRegisterTx = tx => tx.type === 'register'
+utils.isSender = (tx, myAddress) => tx.from === myAddress
+utils.getTransferType = (tx, myAddress) =>
+  utils.isSender(tx, myAddress) ? 'send' : 'receive'
+utils.getMessageType = (tx, myAddress) =>
+  utils.isSender(tx, myAddress) ? 'send_message' : 'receive_message'
+utils.filterByTxType = (txList, type) => {
+  if (type === 'transfer') return filter(txList, utils.isTransferTx)
+  else if (type === 'message') return filter(txList, utils.isMessageTx)
+  else if (type === 'register') return filter(txList, utils.isRegisterTx)
+}
+utils.sortByTimestamp = (list, direction) => {
+  if (direction === 'desc') {
+    return orderBy(list, ['timestamp'], ['desc'])
+  } else {
+    return orderBy(list, ['timestamp'], ['asc'])
+  }
 }
 
 function isIosSafari () {
@@ -554,13 +636,15 @@ utils.queryLatestDevIssue = async function () {
 // QUERY'S THE CURRENT NETWORK ISSUE COUNT
 utils.getIssueCount = async function () {
   const res = await axios.get(`http://${host}/issues/count`)
-  return res.data.issueCount
+  // return res.data.issueCount
+  return res.data.count
 }
 
 // QUERY'S THE CURRENT NETWORK DEV_ISSUE COUNT
 utils.getDevIssueCount = async function () {
   const res = await axios.get(`http://${host}/issues/dev/count`)
-  return res.data.devIssueCount
+  // return res.data.devIssueCount
+  return res.data.count
 }
 
 function iosCopyClipboard (str) {
@@ -588,39 +672,34 @@ function iosCopyClipboard (str) {
   }
 }
 
-utils.createProposal = async function (sourceAcc, key, value) {
+utils.createProposal = async function (sourceAcc, newParameters) {
   const source = sourceAcc.entry
-  const issue = await utils.getIssueCount()
+  const issueCount = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
-  let currentParameter = await utils.queryParameters()
-  let newParameters = {
-    nodeRewardInterval: currentParameter.nodeRewardInterval,
-    nodeRewardAmount: currentParameter.nodeRewardAmount,
-    nodePenalty: currentParameter.nodePenalty,
-    transactionFee: currentParameter.transactionFee,
-    stakeRequired: currentParameter.stakeRequired,
-    maintenanceInterval: currentParameter.maintenanceInterval,
-    maintenanceFee: currentParameter.maintenanceFee,
-    proposalFee: currentParameter.proposalFee,
-    devProposalFee: currentParameter.devProposalFee
-  }
-  newParameters[key] = value
 
-  let proposalTx = {
-    type: 'proposal',
-    from: source.address,
-    proposal: crypto.hash(`issue-${issue}-proposal-${proposalCount + 1}`),
-    issue: crypto.hash(`issue-${issue}`),
-    parameters: newParameters,
-    description: '',
-    timestamp: Date.now()
+  if (issueCount >= 0 && proposalCount >= 0) {
+    const proposalTx = {
+      type: 'proposal',
+      from: source.address,
+      proposal: crypto.hash(
+        `issue-${issueCount}-proposal-${proposalCount + 1}`
+      ),
+      issue: crypto.hash(`issue-${issueCount}`),
+      parameters: newParameters,
+      description: newParameters.description || '',
+      timestamp: Date.now()
+    }
+    crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)
+    return proposalTx
+  } else {
+    if (!issueCount) throw new Error('Unable to get issue count')
+    else if (!proposalCount) throw new Error('Unable to get proposal count')
   }
-  crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)
-  return proposalTx
 }
 utils.createDevProposal = async function (sourceAcc, proposal) {
-  console.log(proposal)
   const source = sourceAcc.entry
+  let paymentCount
+  let delay
 
   if (proposal.paymentType === 'multiple') {
     paymentCount = proposal.paymentCount
@@ -631,36 +710,92 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   }
   console.log(proposal.paymentType, paymentCount, delay)
 
-  const latestIssue = await utils.getDevIssueCount()
-  const count = await utils.getDevProposalCount()
-  let paymentCount
-  let delay
+  const issueCount = await utils.getDevIssueCount()
+  const proposalCount = await utils.getDevProposalCount()
 
   const payments = new Array(paymentCount).fill(1).map((_, i) => ({
-    amount: proposal.totalAmount / paymentCount,
+    amount: 1 / paymentCount,
     delay: delay * i
   }))
+  console.log('Issue count:', issueCount)
+  console.log('Proposal count:', proposalCount)
+  if (issueCount >= 0 && proposalCount >= 0) {
+    const tx = {
+      type: 'dev_proposal',
+      from: source.address,
+      devIssue: crypto.hash(`dev-issue-${issueCount}`),
+      devProposal: crypto.hash(
+        `dev-issue-${issueCount}-dev-proposal-${proposalCount + 1}`
+      ),
+      totalAmount: proposal.totalAmount,
+      payments: payments,
+      description: proposal.description,
+      title: proposal.title,
+      payAddress: source.address,
+      timestamp: Date.now()
+    }
+    crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+    return tx
+  } else {
+    if (!issueCount) throw new Error('Unable to get issue count')
+    else if (!proposalCount && proposalCount !== 0) {
+      throw new Error('Unable to get dev proposal count')
+    }
+  }
+}
+
+utils.createEmailTx = function (email, sourceAcc) {
+  const source = sourceAcc.entry
+  console.log(source)
+  const signedTx = {
+    emailHash: crypto.hash(email),
+    from: source.address
+  }
+  crypto.signObj(signedTx, source.keys.secretKey, source.keys.publicKey)
   const tx = {
-    type: 'dev_proposal',
+    type: 'email',
+    signedTx,
+    email: email,
+    timestamp: Date.now()
+  }
+  return tx
+}
+utils.createVerifyTx = function (code, sourceAcc) {
+  const source = sourceAcc.entry
+  const tx = {
+    type: 'verify',
     from: source.address,
-    devIssue: crypto.hash(`dev-issue-${latestIssue}`),
-    devProposal: crypto.hash(
-      `dev-issue-${latestIssue}-dev-proposal-${count + 1}`
-    ),
-    totalAmount: proposal.totalAmount,
-    payments: payments,
-    description: proposal.title,
-    payAddress: source.address,
+    code: code,
     timestamp: Date.now()
   }
   crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
   return tx
 }
+utils.registerEmail = function (email, sourceAcc) {
+  const tx = utils.createEmailTx(email, sourceAcc)
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    })
+  })
+}
+utils.verifyEmail = function (code, sourceAcc) {
+  const tx = utils.createVerifyTx(code, sourceAcc)
+  return new Promise((resolve, reject) => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) resolve(true)
+      else resolve(false)
+    })
+  })
+}
 
 utils.getDifferentParameter = function (newParameters, currentParameters) {
-  let obj = {}
-  let excludeKeys = ['hash', 'id', 'timestamp']
-  for (let key in newParameters) {
+  const obj = {}
+  const excludeKeys = ['hash', 'id', 'timestamp']
+  for (const key in newParameters) {
     if (excludeKeys.indexOf(key) >= 0) continue
     if (
       currentParameters[key] &&
@@ -672,46 +807,6 @@ utils.getDifferentParameter = function (newParameters, currentParameters) {
   return obj
 }
 
-let diff = utils.getDifferentParameter(
-  {
-    devProposalFee: 20,
-    hash: 'afd968be6b0eb05ba02ef79746ea4a7dfbe1b55c454b400952193d5f846b46f8',
-    id: '9cc61afb96a7e7c2091166f0533f96cffb024e7fb9cebb97e0fbfb41e508aecd',
-    maintenanceFee: 0.0001,
-    maintenanceInterval: 120000,
-    nodePenalty: 100,
-    nodeRewardAmount: 10,
-    nodeRewardInterval: 60000,
-    number: 1,
-    power: 0,
-    proposalFee: 500,
-    stakeRequired: 500,
-    timestamp: 1573806674148,
-    totalVotes: 0,
-    transactionFee: 0.001,
-    winner: true
-  },
-  {
-    devProposalFee: 20,
-    hash: '484308e848ea13f1b56c0246faf95305a419e471e2059250a2019e73b51058c9',
-    id: 'd9fc101091e77c5d0f17f02ea302a7660807f7aff923cc1986bfbb10471ab990',
-    maintenanceFee: 0.0001,
-    maintenanceInterval: 120000,
-    nodePenalty: 100,
-    nodeRewardAmount: 10,
-    nodeRewardInterval: 60000,
-    number: 1,
-    power: 0,
-    proposalFee: 800,
-    stakeRequired: 500,
-    timestamp: 1573806944149,
-    totalVotes: 0,
-    transactionFee: 0.001,
-    winner: true
-  }
-)
-
-// console.log(diff)
 utils.submitProposl = function (tx) {
   return new Promise((resolve, reject) => {
     injectTx(tx).then(res => {
@@ -721,16 +816,44 @@ utils.submitProposl = function (tx) {
     })
   })
 }
-utils.createVote = async function (sourceAcc, proposalNumber = 1, amount = 50) {
+utils.createVote = async function (
+  sourceAcc,
+  proposalNumber = 1,
+  approve = true,
+  amount = 50
+) {
   const source = sourceAcc.entry
-  const latest = await utils.getIssueCount()
+  const issueCount = await utils.getIssueCount()
   const proposalCount = await utils.getProposalCount()
   const tx = {
     type: 'vote',
     from: source.address,
-    issue: crypto.hash(`issue-${latest}`),
-    proposal: crypto.hash(`issue-${latest}-proposal-${proposalNumber}`),
+    issue: crypto.hash(`issue-${issueCount}`),
+    proposal: crypto.hash(`issue-${issueCount}-proposal-${proposalNumber}`),
+    approve: approve,
     amount: amount,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  return tx
+}
+utils.createDevVote = async function (
+  sourceAcc,
+  proposalNumber = 1,
+  amount = 50,
+  approve = true
+) {
+  const source = sourceAcc.entry
+  const devIssueCount = await utils.getDevIssueCount()
+  const tx = {
+    type: 'dev_vote',
+    from: source.address,
+    devIssue: crypto.hash(`dev-issue-${devIssueCount}`),
+    devProposal: crypto.hash(
+      `dev-issue-${devIssueCount}-dev-proposal-${proposalNumber}`
+    ),
+    amount,
+    approve,
     timestamp: Date.now()
   }
   crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
@@ -766,7 +889,7 @@ function fallbackCopyTextToClipboard (text) {
 
 function copyTextToClipboard (text) {
   if (!navigator.clipboard) {
-    console.log(`Navigator.clipboard doesn't exist`)
+    console.log("Navigator.clipboard doesn't exist")
     fallbackCopyTextToClipboard(text)
     return
   }
@@ -792,12 +915,14 @@ utils.copyToClipboard = text => {
 // Transfer Token Function
 utils.transferTokens = async (tgtHandle, amount, keys) => {
   const targetAddress = await getAddress(tgtHandle)
+  const parameters = await utils.queryParameters()
   const tx = {
     type: 'transfer',
     from: keys.publicKey,
     to: targetAddress,
     amount: parseFloat(amount),
-    timestamp: Date.now()
+    timestamp: Date.now(),
+    fee: parameters.CURRENT.transactionFee || 0.001
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
   console.log(tx)
@@ -811,8 +936,82 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
 }
 
 utils.playSoundFile = soundFile => {
-  let audio = new Audio(soundFile)
+  const audio = new Audio(soundFile)
   audio.play()
+}
+
+utils.updateBadge = (tabName, type) => {
+  try {
+    const badgeElementList = document.querySelectorAll(
+      '.tabbar__badge.notification'
+    )
+    if (tabName === 'home') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[0].innerHTML || 0)
+        badgeElementList[0].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[0].innerHTML = ''
+      }
+    } else if (tabName === 'message') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[1].innerHTML || 0)
+        badgeElementList[1].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[1].innerHTML = ''
+      }
+    } else if (tabName === 'funding') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[2].innerHTML || 0)
+        badgeElementList[2].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[2].innerHTML = ''
+      }
+    } else if (tabName === 'economy') {
+      if (type === 'increase') {
+        const currentBadgeCount = parseInt(badgeElementList[3].innerHTML || 0)
+        badgeElementList[3].innerHTML = currentBadgeCount + 1
+      } else if (type === 'reset') {
+        badgeElementList[3].innerHTML = ''
+      }
+    }
+  } catch (e) {}
+}
+
+utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
+  return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
+}
+utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
+  // return {
+  //   handle: 'tester1',
+  //   body: encryptedMessage.substr(2, 10),
+  //   timestamp: Date.now()
+  // }
+  return JSON.parse(
+    crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
+  )
+}
+
+utils.queryEncryptedChats = async function (chatId) {
+  const res = await axios.get(`http://${host}/messages/${chatId}`)
+  return res.data.messages
+}
+
+utils.calculateWholeCycleDuration = function (window, devWindow) {
+  if (window.proposalWindow && devWindow.devApplyWindow) {
+    return devWindow.devApplyWindow[1] - window.proposalWindow[0]
+  } else {
+    return 1000 * 60 * 7
+  }
+}
+
+utils.isNodeOnline = async function () {
+  try {
+    const res = await axios.get(`http://${host}/issues/count`)
+    if (res.status === 200) return true
+  } catch (e) {
+    console.warn(e.message)
+    if (e.message === 'Network Error') return false
+  }
 }
 
 utils.getAddress = getAddress

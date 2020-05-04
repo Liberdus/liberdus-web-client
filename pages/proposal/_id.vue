@@ -1,10 +1,21 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true, redirectUrl: '/'}" />
+    <tool-bar
+      :option="{
+        menu: false,
+        notification: false,
+        back: true,
+        redirectUrl: '/'
+      }"
+    />
     <div class="proposal-detail-container">
       <h2 class="proposal-title">{{ proposalTitle }}</h2>
-      <h4 class="proposal-type" v-if="proposal.type === 'proposal'">Parameter Proposal</h4>
-      <h4 class="proposal-type" v-else-if="proposal.type === 'dev_proposal'">Development Proposal</h4>
+      <h4 class="proposal-type" v-if="proposal.type === 'proposal'">
+        Parameter Proposal
+      </h4>
+      <h4 class="proposal-type" v-else-if="proposal.type === 'dev_proposal'">
+        Development Proposal
+      </h4>
       <div class="proposal-info-detail">
         <div class="row-1">
           <div>
@@ -29,8 +40,12 @@
         <div class="row-3">
           <div>
             <p class="label">Proposal Status</p>
-            <p class="value success" v-if="status==='Success'">{{ status }}</p>
-            <p class="value fail" v-else-if="status==='Failed'">{{ status }}</p>
+            <p class="value success" v-if="status === 'Success'">
+              {{ status }}
+            </p>
+            <p class="value fail" v-else-if="status === 'Failed'">
+              {{ status }}
+            </p>
             <p class="value" v-else>{{ status }}</p>
           </div>
           <div>
@@ -46,7 +61,10 @@
             v-for="parameter in Object.keys(proposal.proposedParameters)"
             :key="parameter"
           >
-            <strong>{{ parameter }} - {{ proposal.proposedParameters[parameter] }}</strong>
+            <strong
+              >{{ parameter }} -
+              {{ proposal.proposedParameters[parameter] }}</strong
+            >
           </p>
         </div>
 
@@ -74,10 +92,14 @@
         />
       </div>
 
-      {{this.votingWindow}}
-
+      {{ this.votingWindow }}
       <!-- <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at </p> -->
-      <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at <strong v-if="this.votingWindow">{{ new Date(this.votingWindow[0]) }}</strong></p>
+      <p class="coin-usage-warning" v-if="!allowVoting">
+        Voting window will start at
+        <strong v-if="this.votingWindow">{{
+          new Date(this.votingWindow[0])
+        }}</strong>
+      </p>
       <p class="coin-usage-warning" v-else>Voting window is open now.</p>
 
       <Button text="Vote" :onClick="submitVote" :isDisabled="!allowVoting" />
@@ -86,24 +108,24 @@
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../assets/utils";
-import sentSoundFile from "../../assets/sent_sound.mp3";
-import ToolBar from "~/components/ToolBar";
-import ProposalListItem from "~/components/ProposalListItem";
-import Choice from "~/components/Choice";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import moment from "moment";
-Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters, mapActions } from 'vuex'
+import utils from '../../assets/utils'
+import sentSoundFile from '../../assets/sent_sound.mp3'
+import ToolBar from '~/components/ToolBar'
+import ProposalListItem from '~/components/ProposalListItem'
+import Choice from '~/components/Choice'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import moment from 'moment'
+Vue.use(VueOnsen)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -112,111 +134,112 @@ export default {
     Title,
     Choice
   },
-  validate({ params }) {
-    return true;
+  validate ({ params }) {
+    return true
   },
-  data: function() {
+  data: function () {
     return {
-      text: "",
+      text: '',
       tokenToVote: 50,
       votingWindowChecker: null,
       allowVoting: false,
       votingWindow: null
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getLastMessage: "chat/getLastMessage",
-      getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady",
-      getActiveProposals: "proposal/getActiveProposals",
-      getCompletedProposals: "proposal/getCompletedProposals",
-      getActiveDevProposals: "proposal/getActiveDevProposals",
-      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getLastMessage: 'chat/getLastMessage',
+      isUIReady: 'chat/isUIReady',
+      getActiveProposals: 'proposal/getActiveProposals',
+      getCompletedProposals: 'proposal/getCompletedProposals',
+      getActiveDevProposals: 'proposal/getActiveDevProposals',
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
     }),
-    id() {
-      return this.$route.params.id;
+    id () {
+      return this.$route.params.id
     },
-    proposalTitle() {
-      if (this.proposal.type === "proposal")
-        return this.proposal.id.slice(0, 8).toUpperCase();
-      if (this.proposal.type === "dev_proposal")
-        return this.proposal.description;
+    proposalTitle () {
+      if (this.proposal.type === 'proposal')
+        return this.proposal.id.slice(0, 8).toUpperCase()
+      if (this.proposal.type === 'dev_proposal')
+        return this.proposal.description
     },
-    status() {
-      if (this.proposal.type === "proposal") {
-        if (this.proposal.winner === true) return "Success";
-        else if (this.proposal.winner === false) return "Failed";
-        else return "Active";
-      } else if (this.proposal.type === "dev_proposal") {
-        if (this.proposal.approved === true) return "Success";
-        else if (this.proposal.approved === false) return "Failed";
-        else return "Active";
+    status () {
+      if (this.proposal.type === 'proposal') {
+        if (this.proposal.winner === true) return 'Success'
+        else if (this.proposal.winner === false) return 'Failed'
+        else return 'Active'
+      } else if (this.proposal.type === 'dev_proposal') {
+        if (this.proposal.approved === true) return 'Success'
+        else if (this.proposal.approved === false) return 'Failed'
+        else return 'Active'
       }
     },
-    timestamp() {
-      return moment(this.proposal.timestamp).calendar();
+    timestamp () {
+      return moment(this.proposal.timestamp).calendar()
     },
-    proposal() {
-      let foundProposal;
+    proposal () {
+      let foundProposal
       if (!foundProposal)
-        foundProposal = this.getActiveProposals.find(p => p.id === this.id);
+        foundProposal = this.getActiveProposals.find(p => p.id === this.id)
       if (!foundProposal)
-        foundProposal = this.getActiveDevProposals.find(p => p.id === this.id);
+        foundProposal = this.getActiveDevProposals.find(p => p.id === this.id)
       if (!foundProposal)
-        foundProposal = this.getCompletedProposals.find(p => p.id === this.id);
+        foundProposal = this.getCompletedProposals.find(p => p.id === this.id)
       if (!foundProposal)
         foundProposal = this.getCompletedDevProposals.find(
           p => p.id === this.id
-        );
-      return foundProposal;
+        )
+      return foundProposal
     }
   },
-  mounted: async function() {
-    if (this.proposal && this.status === "Active") this.votingWindowChecker = setInterval(async () => {
-      if(this.proposal) this.allowVoting = await this.isVotingWindowOpen(this.proposal.type);
-    }, 3000);
+  mounted: async function () {
+    if (this.proposal && this.status === 'Active')
+      this.votingWindowChecker = setInterval(async () => {
+        if (this.proposal)
+          this.allowVoting = await this.isVotingWindowOpen(this.proposal.type)
+      }, 3000)
   },
   methods: {
-    shortenAddress(address) {
-      return address.slice(0, 6) + "..." + address.slice(58, 64);
+    shortenAddress (address) {
+      return address.slice(0, 6) + '...' + address.slice(58, 64)
     },
-    async isVotingWindowOpen(type) {
-      let networkParameters = await utils.queryParameters();
-      let votingWindow = networkParameters.votingWindow;
-      let devVotingWindow = networkParameters.devVotingWindow;
-      let now = Date.now();
-      if (type === "proposal") {
+    async isVotingWindowOpen (type) {
+      let networkParameters = await utils.queryParameters()
+      let votingWindow = networkParameters.votingWindow
+      let devVotingWindow = networkParameters.devVotingWindow
+      let now = Date.now()
+      if (type === 'proposal') {
         this.votingWindow = votingWindow
         if (now > votingWindow[0] && now < votingWindow[1]) {
-          return true;
+          return true
         }
-      } else if (type === "dev_proposal") {
+      } else if (type === 'dev_proposal') {
         this.votingWindow = devVotingWindow
         if (now > devVotingWindow[0] && now < devVotingWindow[1]) {
-          return true;
+          return true
         }
       }
-      return false;
+      return false
     },
-    async submitVote() {
-      let myWallet = this.getWallet;
+    async submitVote () {
+      let myWallet = this.getWallet
       let voteTx = await utils.createVote(
         myWallet,
         this.proposal.number,
         this.tokenToVote
-      );
-      console.log(voteTx);
-      let isSubmitted = await utils.submitVote(voteTx);
+      )
+      console.log(voteTx)
+      let isSubmitted = await utils.submitVote(voteTx)
       if (isSubmitted) {
-        this.tokenToVote = 50;
-        this.$router.push(`/proposal/success/${this.id}`);
+        this.tokenToVote = 50
+        this.$router.push(`/proposal/success/${this.id}`)
       }
     }
   }
-};
+}
 </script>
 
 <style>
