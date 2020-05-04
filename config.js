@@ -1,7 +1,7 @@
 export default {
   server: {
-    ip: 'app.liberdus.com',
-    // ip: 'localhost',
+    ip: 'arc.liberdus.com',
     port: 4000
-  }
+  },
+  version: '1.0.0'
 }

@@ -1,8 +1,7 @@
-<template >
+<template>
   <v-ons-page>
     <div id="loading-container">
       <img id="loading-logo" src="../assets/images/loading-logo.png" alt />
-      <!-- <v-ons-progress-bar indeterminate></v-ons-progress-bar> -->
     </div>
   </v-ons-page>
 </template>
@@ -44,30 +43,42 @@ export default {
   },
   async mounted() {
     let self = this;
-    console.log("GETTING RANDOM HOST...");
-    let randomHost = await utils.getRandomHost();
+    let randomHost;
+    try {
+      randomHost = await utils.getRandomHost();
+    } catch (e) {
+      console.log("Cannot get a random host");
+      console.warn(e);
+      this.$ons.notification.alert(
+        "Seed Node server is offline. Please change the seed node from network settings."
+      );
+      this.$router.push("/welcome");
+    }
     this.host = `${randomHost.ip}:${randomHost.port}`;
-    this.updateNetwork({
-      ip: randomHost.ip,
-      port: randomHost.port
-    });
+    this.updateNetwork(Object.assign({}, randomHost));
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`);
       self.setUIReady();
     });
     setTimeout(async () => {
-      console.log("checking UI ready...");
       if (self.isUIReady) {
         if (this.getWallet) {
-          let accountExist = await utils.getAddress(this.getWallet.handle);
-          if (accountExist) self.$router.push("/?tabIndex=0");
-          else {
+          try {
+            let remoteAddress = await utils.getAddress(this.getWallet.handle);
+            if (
+              remoteAddress &&
+              remoteAddress.toLowerCase() === this.getWallet.entry.address
+            )
+              self.$router.push("/?tabIndex=0");
+            else {
+              this.updateAppState(null);
+              this.removeWallet();
+              self.$router.push("/welcome");
+            }
+          } catch (e) {
+            console.warn(e);
             this.updateAppState(null);
             this.removeWallet();
-            // TODO: to reconsider about removing account info.
-            localStorage.removeItem("account");
-            localStorage.removeItem("lastMessage");
-            localStorage.removeItem("lastTx");
             self.$router.push("/welcome");
           }
         } else {

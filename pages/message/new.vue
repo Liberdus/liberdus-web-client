@@ -1,6 +1,6 @@
 <template>
   <v-ons-page>
-    <tool-bar :option="{ menu: true, notification: true, back: true}" />
+    <tool-bar :option="{ menu: false, notification: false, back: true}" />
     <div class="new-message-input-container">
       <input
         type="text"
@@ -11,6 +11,7 @@
         autocorrect="off"
         autocomplete="off"
         autocapitalize="off"
+        ref="username-input"
       />
     </div>
     <v-ons-list class="found-alias-list">
@@ -83,7 +84,9 @@ export default {
       return this.$route.params.friend;
     }
   },
-  mounted() {},
+  mounted() {
+    this.$refs['username-input'].focus()
+  },
   methods: {
     async searchAlias() {
       if (this.alias) this.alias = this.alias.toLowerCase();

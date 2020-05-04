@@ -5,12 +5,12 @@
       v-if="!isFriend && notEnoughCoin"
     >Not Enough coin to pay toll</p>
     <p class="required-toll" v-else-if="!isFriend">
-      <strong>Total Cost</strong>
-      : {{ requiredToll }} coin (Toll) + {{ requiredFee }} coin (Tx Fee)
+      <strong>Total Cost: {{ requiredToll + requiredFee}} coins</strong>
+      (Toll {{ requiredToll }} coins + Tx fee {{ requiredFee }} coins)
     </p>
     <p class="required-toll" v-else-if="isFriend">
-      <strong>Total Cost</strong>
-      : {{ requiredFee }} coin (Tx Fee)
+      <strong>Total Cost: {{ requiredFee}} coins</strong>
+      (Tx Fee)
     </p>
     <input
       type="text"

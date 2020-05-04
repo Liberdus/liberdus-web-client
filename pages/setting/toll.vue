@@ -1,54 +1,69 @@
 <template>
   <v-ons-page>
-    <v-ons-toolbar>
-      <div class="left">
-        <v-ons-icon icon="ion-ios-arrow-back" size="lg" @click="redirect('/', {tab: 'setting'})"></v-ons-icon>
-      </div>
-      <div class="center">Toll Setting</div>
-      <div class="right">
-        <v-ons-toolbar-button icon="ion-navicon"></v-ons-toolbar-button>
-      </div>
-    </v-ons-toolbar>
+    <tool-bar :option="{ menu: false, notification: false, back: true }" />
 
     <div class="toll-container">
-      <p v-if="getAppState">Current Toll Amount: {{ getAppState.data.toll }} Coins</p>
+      <p v-if="getAppState">
+        Current Toll Amount:
+        <strong>{{ getAppState.data.toll }} Coins</strong>
+      </p>
       <p v-else>Current Toll Amount: -</p>
       <form @submit.prevent="onUpdateToll" class="toll-form">
         <div class="toll-amount-input-container">
-          <input type="text" placeholder="New toll amount" v-model="newToll" class="toll-input" />
+          <input
+            type="text"
+            placeholder="New toll amount"
+            v-model="newToll"
+            class="toll-input text-input"
+          />
+
           <p
             class="input-error-message"
             v-if="$v.newToll.required && !$v.newToll.between"
-          >Invalid toll amount</p>
+          >
+            Invalid toll amount
+          </p>
         </div>
-        <v-ons-button class="default-btn" :disabled="!isTollVaild" type="submit" @click="onUpdateToll">Update Toll</v-ons-button>
+        <Button
+          text="Update Toll Amount"
+          :onClick="onUpdateToll"
+          :isDisabled="!isTollVaild"
+        />
       </form>
     </div>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters } from "vuex";
-import utils from "../../assets/utils";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+import OnsenComponents from '~/components/Onsen'
+import ChatText from '~/components/ChatText'
+import ChatInput from '~/components/ChatInput'
+import { mapGetters } from 'vuex'
+import utils from '../../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
 
-import Vuelidate from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
-Vue.use(VueOnsen);
-Vue.use(Vuelidate);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+import Vuelidate from 'vuelidate'
+import { required, minLength, between } from 'vuelidate/lib/validators'
+Vue.use(VueOnsen)
+Vue.use(Vuelidate)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  data: function() {
+  components: {
+    Title,
+    Button,
+    ToolBar
+  },
+  data: function () {
     return {
-      newToll: ""
-    };
+      newToll: ''
+    }
   },
   validations: {
     newToll: {
@@ -58,45 +73,54 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady'
     }),
-    isTollVaild() {
-      if (this.$v.newToll.required && this.$v.newToll.between) return true;
+    isTollVaild () {
+      if (this.$v.newToll.required && this.$v.newToll.between) return true
     }
   },
   methods: {
-    async onUpdateToll() {
+    async onUpdateToll () {
       let isSubmitted = await utils.setToll(
         this.newToll,
         this.getWallet.entry.keys
-      );
+      )
       if (isSubmitted) {
-        this.newToll = "";
-        this.notify("Your transaction is submitted to network.");
+        this.newToll = ''
+        this.notify('Your transaction is submitted to network.')
       }
     },
-    redirect(url, option) {
-      this.$router.push(url);
-      if (url === "/" && option) {
+    redirect (url, option) {
+      this.$router.push(url)
+      if (url === '/' && option) {
       }
     },
-    notify(message) {
-      this.$ons.notification.alert(message);
+    notify (message) {
+      this.$ons.notification.alert(message)
     }
   }
-};
+}
 </script>
 
-<style>
+<style lang="scss">
 .toll-container {
-  width: 80%;
-  max-width: 300px;
+  width: 90%;
+  max-width: 600px;
   margin: 20px auto;
   text-align: center;
+  p {
+    text-align: left;
+    margin-bottom: 10px;
+    font-family: Poppins;
+    font-size: 14px;
+    color: #333333;
+    letter-spacing: -0.16px;
+    text-align: left;
+  }
 }
-.toll-input {
+/* .toll-input {
   height: 40px;
   width: 100%;
   padding: 5px 10px;
@@ -104,8 +128,8 @@ export default {
   border: 1px solid #dddddd;
   border-radius: 5px;
   margin: 20px auto;
-  margin-bottom: 5px;
-}
+  margin-top: 5px;
+} */
 .toll-form .input-error-message {
   text-align: left;
   color: red;

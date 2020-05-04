@@ -1,38 +1,73 @@
-<template >
+<template>
   <v-ons-page>
     <notifications
       group="new-message"
-      position="top left"
-      width="80%"
+      position="bottom left"
+      width="100%"
       classes="my-notification-style"
     />
-    <tool-bar :option="{ menu: true, notification: true, back: false}" />
-    <v-ons-tabbar swipeable position="top" :tabs="tabs" :visible="true" :index.sync="activeIndex"></v-ons-tabbar>
+    <!-- <v-offline @detected-condition="handleConnectivityChange"></v-offline> -->
+    <tool-bar
+      v-if="isUIReady"
+      :option="{ menu: true, notification: true, back: false }"
+    />
+    <!-- <v-ons-tabbar
+      swipeable
+      position="top"
+      :tabs="tabs"
+      :visible="true"
+      :index.sync="activeIndex"
+    ></v-ons-tabbar>-->
+    <p style="display: none">{{ isUIReady }}</p>
+    <v-ons-tabbar
+      v-if="isUIReady"
+      swipeable
+      position="top"
+      :visible="true"
+      :index.sync="activeIndex"
+    >
+      <template slot="pages">
+        <home></home>
+        <message></message>
+        <funding-list></funding-list>
+        <proposal-list></proposal-list>
+      </template>
+
+      <v-ons-tab
+        v-for="(tab, i) in tabs"
+        :icon="tabs[i].icon"
+        :label="tabs[i].label"
+        :badge="tabs[i].badge"
+        :key="tabs[i].label"
+        @click="onSelectTab($event, tabs[i])"
+      ></v-ons-tab>
+    </v-ons-tabbar>
   </v-ons-page>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import Message from "~/components/Message";
-import ToolBar from "~/components/ToolBar";
-import Home from "~/components/Home";
-import ProposalList from "~/components/ProposalList";
-import MyVoteList from "~/components/MyVoteList";
-import Setting from "~/components/Setting";
-import utils from "../assets/utils";
-import { mapGetters, mapActions } from "vuex";
-import Vuelidate from "vuelidate";
-import { required, minLength, between } from "vuelidate/lib/validators";
-import Notifications from "vue-notification";
+import Vue from 'vue'
+import 'onsenui/css/onsenui.css'
+import 'onsenui/css/onsen-css-components.css'
+import VueOnsen from 'vue-onsenui/esm'
+// import VOffline from 'v-offline'
+import OnsenComponents from '~/components/Onsen'
+import Message from '~/components/Message'
+import ToolBar from '~/components/ToolBar'
+import Home from '~/components/Home'
+import ProposalList from '~/components/ProposalList'
+import FundingList from '~/components/FundingList'
+import Setting from '~/components/Setting'
+import utils from '../assets/utils'
+import { mapGetters, mapActions } from 'vuex'
+import Vuelidate from 'vuelidate'
+import { required, minLength, between } from 'vuelidate/lib/validators'
+import Notifications from 'vue-notification'
 
-Vue.use(Vuelidate);
-Vue.use(VueOnsen);
-Vue.use(Notifications);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Vue.use(Vuelidate)
+Vue.use(VueOnsen)
+Vue.use(Notifications)
+Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
   components: {
@@ -40,137 +75,196 @@ export default {
     Home,
     Setting,
     ProposalList,
-    MyVoteList,
+    FundingList,
     ToolBar
   },
-  data() {
+  data () {
     return {
       activeIndex: 0,
+      onlineSlot: 'online',
+      offlineSlot: 'offline',
+      nodeHealthChecker: null,
+      nodeRotator: null,
       tabs: [
         {
-          icon: this.md() ? null : "ion-ios-home",
-          label: "Home",
+          icon: 'ion-ios-wallet',
+          label: 'Wallet',
           page: Home,
-
-          key: "home"
+          badge: '',
+          key: 'home'
         },
         {
-          icon: this.md() ? null : "ion-ios-filing",
-          label: "Active Proposals",
-          page: ProposalList,
-          // badge: 0,
-          key: "proposal"
-        },
-        {
-          icon: this.md() ? null : "ion-ios-people",
-          label: "Completed Proposals",
-          page: MyVoteList,
-          key: "vote"
-        },
-        {
-          icon: this.md() ? null : "ion-ios-chatboxes",
-          label: "Message",
+          icon: this.md() ? null : 'ion-ios-chatboxes',
+          label: 'Message',
           page: Message,
-          // badge: 2,
-          key: "message"
+          badge: '',
+          key: 'message'
+        },
+        {
+          icon: this.md() ? null : 'ion-ios-filing',
+          label: 'Funding',
+          page: FundingList,
+          badge: '',
+          key: 'funding'
+        },
+        {
+          icon: this.md() ? null : 'ion-ios-people',
+          label: 'Economy',
+          page: ProposalList,
+          badge: '',
+          key: 'economy'
         }
       ]
-    };
+    }
   },
-  beforeRouteEnter(to, from, next) {
+  beforeRouteEnter (to, from, next) {
     next(vm => {
-      if (!from || !from.name) return;
-      vm.prevRoute = from;
+      if (!from || !from.name) return
+      vm.prevRoute = from
       if (to && to.query.tabIndex) {
-        vm.activeIndex = parseInt(to.query.tabIndex);
-      } else if (from.name.split("-")[0] === "proposal") {
-        vm.activeIndex = 1;
-      } else if (from.name.split("-")[0] === "message") {
-        vm.activeIndex = 3;
-      } else if (from.name.split("-")[0] === "wallet") {
-        vm.activeIndex = 0;
+        vm.activeIndex = parseInt(to.query.tabIndex)
+      } else if (from.path.split('/')[1] === 'vote') {
+        if (
+          from.path.split('/')[2] === 'funding' ||
+          from.path.split('/')[2] === 'success'
+        ) {
+          vm.activeIndex = 2
+        } else if (from.path.split('/')[2] === 'economy') {
+          vm.activeIndex = 3
+        }
+      } else if (from.name.split('-')[0] === 'proposal') {
+        if (from.name.split('-')[2] === 'funding') {
+          vm.activeIndex = 2
+        } else {
+          vm.activeIndex = 3
+        }
+      } else if (from.name.split('-')[0] === 'message') {
+        vm.activeIndex = 1
+      } else if (from.name.split('-')[0] === 'wallet') {
+        vm.activeIndex = 0
       }
-    });
+    })
   },
+  beforeDestroy: function () {},
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx",
-      setUIReady: "chat/setUIReady",
-      addWallet: "wallet/addWallet",
-      updateActiveProposals: "proposal/updateActiveProposals",
-      updateCompletedProposals: "proposal/updateCompletedProposals",
-      updateActiveDevProposals: "proposal/updateActiveDevProposals",
-      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
+      updateAppState: 'chat/updateAppState',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx',
+      setUIReady: 'chat/setUIReady',
+      addWallet: 'wallet/addWallet',
+      updateActiveProposals: 'proposal/updateActiveProposals',
+      updateCompletedProposals: 'proposal/updateCompletedProposals',
+      updateActiveDevProposals: 'proposal/updateActiveDevProposals',
+      updateNetwork: 'chat/updateNetwork',
+      addTimer: 'chat/addTimer'
     }),
-    md() {
-      return this.$ons.platform.isAndroid();
+    md () {
+      return this.$ons.platform.isAndroid()
+    },
+    onSelectTab (e, tab) {
+      utils.updateBadge(tab.key, 'reset')
+    },
+    handleConnectivityChange (status) {
+      // console.log(`Connectivity Status: ${status}`)
+      // this.updateConnection(status)
+      // if (status === true) {
+      //   this.$ons.notification.toast('No internet connection', {
+      //     timeout: 1000,
+      //     animation: 'fall'
+      //   })
+      // }
     }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getLastMessage: "chat/getLastMessage",
-      getLastTx: "chat/getLastTx",
-      isUIReady: "chat/isUIReady",
-      getActiveProposals: "proposal/getActiveProposals",
-      getCompletedProposals: "proposal/getCompletedProposals",
-      getActiveDevProposals: "proposal/getActiveDevProposals",
-      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getLastMessage: 'chat/getLastMessage',
+      getNetwork: 'chat/getNetwork',
+      getTimers: 'chat/getTimers',
+      isUIReady: 'chat/isUIReady',
+      getActiveProposals: 'proposal/getActiveProposals',
+      getCompletedProposals: 'proposal/getCompletedProposals',
+      getActiveDevProposals: 'proposal/getActiveDevProposals',
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
     }),
-    title() {
-      return this.tabs[this.activeIndex].label;
+    title () {
+      return this.tabs[this.activeIndex].label
     }
   },
-  async mounted() {
-    let self = this;
+  async mounted () {
+    let self = this
     if (!this.isUIReady) {
-      this.$router.push("/loading");
-      // return;
+      this.$router.push('/loading')
     }
-    if (!this.getWallet) {
-      const wallet = utils.loadWallet();
-      const lastMessage = utils.loadLastMessage();
-      const lastTx = utils.loadLastTx();
-      if (wallet) {
-        this.addWallet(wallet);
-        console.log("Wallet added to vuex store.");
-      }
-      if (lastMessage) {
-        console.log("Last message added to vuex store.");
-        this.updateLastMessage(lastMessage);
-      }
-      if (lastTx) {
-        console.log("Last tx added to vuex store.");
-        this.updateLastTx(lastTx);
-      }
+    if (!this.getTimers['nodeHealthChecker']) {
+      // create interval for checking node status
+      const nodeHealthChecker = setInterval(async () => {
+        if (
+          this.$route.path === '/loading' ||
+          this.$route.path === '/welcome'
+        ) {
+          return
+        }
+        try {
+          let shouldUpdate = false
+          let isServerActive
+          try {
+            isServerActive = await utils.isServerActive()
+          } catch (e) {
+            console.error('Server is offline')
+          }
+
+          if (!isServerActive) {
+            shouldUpdate = true
+          }
+          if (shouldUpdate) {
+            let randomHost = await utils.getRandomHost()
+            if (randomHost) {
+              let now = Date.now()
+              console.log(`Change to a random Host: `, randomHost)
+
+              self.updateNetwork(randomHost)
+              utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+            }
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+      }, 2000)
+      this.addTimer({ key: 'nodeHealthChecker', value: nodeHealthChecker })
     }
 
-    // let checkServerStatus = setInterval(async () => {
-    //   try {
-    //     let shouldUpdate = false;
-    //     let isServerActive = await utils.isServerActive();
-    //     if (!isServerActive) shouldUpdate = true;
-    //     else {
-    //       let lastUpdatedTimestamp = this.getNetwork.timestamp;
-    //       if (lastUpdatedTimestamp < Date.now() - 120000) shouldUpdate = true;
-    //     }
-    //     console.log(`Should update server: ${shouldUpdate}`);
-
-    //     if (shouldUpdate) {
-    //       let randomHost = await utils.getRandomHost();
-    //       console.log("Updating Network");
-    //       self.updateNetwork(randomHost);
-    //       utils.updateHost(`${randomHost.ip}:${randomHost.port}`);
-    //     }
-    //   } catch (e) {
-    //     console.warn(e);
-    //   }
-    // }, 120000);
+    if (!this.getTimers['nodeRotator']) {
+      // create interval for changing node ip and port
+      const nodeRotator = setInterval(async () => {
+        if (
+          this.$route.path === '/loading' ||
+          this.$route.path === '/welcome'
+        ) {
+          return
+        }
+        try {
+          let randomHost = await utils.getRandomHost()
+          if (randomHost) {
+            let now = Date.now()
+            console.log(`Rotate to a random Host on ${new Date()}`)
+            console.log(randomHost)
+            self.updateNetwork(randomHost)
+            utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+          }
+        } catch (e) {
+          console.warn(e)
+        }
+      }, 1000 * 60 * 2)
+      this.addTimer({
+        key: 'nodeRotator',
+        value: nodeRotator
+      })
+    }
   }
-};
+}
 </script>
 
 <style lang="scss">
@@ -244,7 +338,7 @@ h1 {
   box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
   border-radius: 30px;
   font-family: Poppins;
-  font-size: 14px;
+  font-size: 16px;
   color: #484848;
   letter-spacing: 0.17px;
   line-height: 20px;
@@ -264,6 +358,7 @@ h1 {
   border-bottom: 1px solid #e8e8e8;
   border-top: 1px solid #e8e8e8;
   margin-bottom: 20px;
+  box-shadow: none;
   .tabbar__item {
     height: 64px;
 
@@ -284,7 +379,7 @@ h1 {
 .modal__content {
   background: #fff;
   font-family: Poppins;
-  font-size: 22px;
+  font-size: 20px;
   color: #0a2463;
   letter-spacing: 0;
   text-align: left;

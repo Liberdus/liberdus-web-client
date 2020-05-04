@@ -1,5 +1,7 @@
 <template>
-  <button class="default-button" @click="onClick" :disabled="isDisabled">{{ text }}</button>
+  <button class="default-button" @click="onClick" :disabled="isDisabled">
+    {{ text }}
+  </button>
 </template>
 <script>
 export default {
@@ -15,7 +17,7 @@ export default {
       default: false
     }
   }
-};
+}
 </script>
 <style scoped>
 .default-button {

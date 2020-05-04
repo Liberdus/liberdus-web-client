@@ -1,19 +1,17 @@
 export const state = () => ({
   appState: null,
   network: null,
-  lastMessage: {
-    message: null
-  },
-  lastTx: {
-    txId: null
-  },
+  lastMessage: null,
+  lastTx: null,
   isUIReady: false,
-  notificationQueue: []
+  notificationQueue: [],
+  timers: {}
 })
 
 export const getters = {
   getAppState: state => state.appState,
   getNetwork: state => state.network,
+  getTimers: state => state.timers,
   getLastMessage: state => state.lastMessage,
   getLastTx: state => state.lastTx,
   getNotificationQueue: state => state.notificationQueue,
@@ -24,20 +22,39 @@ export const mutations = {
   updateAppState (state, payload) {
     state.appState = payload
   },
+  addTimer (state, payload) {
+    state.timers[payload.key] = payload.value
+  },
   updateNetwork (state, payload) {
     state.network = payload
-    state.network.timestamp = Date.now()
   },
   setUIReady (state) {
     state.isUIReady = true
   },
   updateLastMessage (state, payload) {
     state.lastMessage = payload
-    localStorage.setItem('lastMessage', JSON.stringify(state.lastMessage))
+
+    const existingLastMessages = JSON.parse(localStorage.getItem('lastMessage'))
+    if (existingLastMessages) {
+      existingLastMessages[payload.walletUsername] = payload
+      localStorage.setItem('lastMessage', JSON.stringify(existingLastMessages))
+    } else {
+      const obj = {}
+      obj[payload.walletUsername] = payload
+      localStorage.setItem('lastMessage', JSON.stringify(obj))
+    }
   },
   updateLastTx (state, payload) {
     state.lastTx = payload
-    localStorage.setItem('lastTx', JSON.stringify(state.lastTx))
+    const existingLastTx = JSON.parse(localStorage.getItem('lastTx'))
+    if (existingLastTx) {
+      existingLastTx[payload.walletUsername] = payload
+      localStorage.setItem('lastTx', JSON.stringify(existingLastTx))
+    } else {
+      const obj = {}
+      obj[payload.walletUsername] = payload
+      localStorage.setItem('lastTx', JSON.stringify(obj))
+    }
   },
   addNotificationQueue (state, payload) {
     state.notificationQueue.push(payload)
@@ -50,6 +67,9 @@ export const mutations = {
 export const actions = {
   async updateAppState (store, payload) {
     store.commit('updateAppState', payload)
+  },
+  async addTimer (store, payload) {
+    store.commit('addTimer', payload)
   },
   async updateNetwork (store, payload) {
     store.commit('updateNetwork', payload)

@@ -52,11 +52,11 @@ export default {
   methods: {
     ...mapActions({
       updateAppState: "chat/updateAppState",
-      removeWallet: "wallet/removeWallet"
+      // removeWallet: "wallet/removeWallet"
     }),
     onSignOut() {
       this.updateAppState(null);
-      this.removeWallet();
+      // this.removeWallet();
       localStorage.removeItem("account");
       localStorage.removeItem("lastMessage");
       localStorage.removeItem("lastTx");
