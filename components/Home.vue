@@ -3,7 +3,7 @@
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <p style="display: none">{{ isUIReady }}</p>
     <div class="home-tab-container" v-if="isUIReady">
-      {{ getAppState.data }}
+      <!-- <p v-if="getAppState">{{ getAppState.data }}</p> -->
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance">
           {{ getAppState.data.balance.toFixed(3) }}

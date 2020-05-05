@@ -203,7 +203,8 @@ export default {
       const nodeHealthChecker = setInterval(async () => {
         if (
           this.$route.path === '/loading' ||
-          this.$route.path === '/welcome'
+          this.$route.path === '/welcome' ||
+          this.$route.path === '/setting/network'
         ) {
           return
         }
@@ -232,7 +233,7 @@ export default {
         } catch (e) {
           console.warn(e)
         }
-      }, 2000)
+      }, 5000)
       this.addTimer({ key: 'nodeHealthChecker', value: nodeHealthChecker })
     }
 
