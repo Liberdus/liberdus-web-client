@@ -14,6 +14,7 @@ console.log('Seed node: ', seedNodeHost)
 
 const utils = {}
 const walletEntries = {}
+const network = '0'.repeat(64)
 
 utils.init = async defaultHost => {
   host = defaultHost
@@ -243,12 +244,16 @@ async function getToll (friendId, yourId) {
 }
 
 async function getAddress (handle) {
+  // console.log('HANDLE TO CHECK: ', handle)
+  console.log(utils.getProxyUrl(`/address/${crypto.hash(handle)}`))
+  console.log(crypto.hash(handle))
   if (!handle) return
   if (handle.length === 64) return handle
   try {
     const data = await getJSON(
       utils.getProxyUrl(`/address/${crypto.hash(handle)}`)
     )
+
     const { address, error } = data
     if (error) {
       console.error(error)
@@ -257,8 +262,8 @@ async function getAddress (handle) {
       return address
     }
   } catch (e) {
-    console.error(e.message)
-    console.warn(`Error while getting address for ${handle}`)
+    // console.error(e.message)
+    // console.warn(`Error while getting address for ${handle}`)
     return null
   }
 }
@@ -943,6 +948,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
     to: targetAddress,
     amount: parseFloat(amount),
     timestamp: Date.now(),
+    network,
     fee: parameters.current.transactionFee || 0.001
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
