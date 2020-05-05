@@ -39,7 +39,7 @@
             <tr>
               <td class="parameter-name">Funding Proposal Fee</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.devProposalFee }}
+                {{ networkParameters.current.devProposalFee }}
               </td>
               <td class="new-value">
                 <input v-model="form.devProposalFee" required />
@@ -48,7 +48,7 @@
             <tr>
               <td class="parameter-name">Network Proposal Fee</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.proposalFee }}
+                {{ networkParameters.current.proposalFee }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.proposalFee" required />
@@ -57,7 +57,7 @@
             <tr>
               <td class="parameter-name">Min. Maintenance Fee</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.maintenanceFee }}
+                {{ networkParameters.current.maintenanceFee }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.maintenanceFee" required />
@@ -66,7 +66,7 @@
             <tr>
               <td class="parameter-name">Maintenance Interval</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.maintenanceInterval }}
+                {{ networkParameters.current.maintenanceInterval }}
               </td>
               <td class="new-value">
                 <input
@@ -79,7 +79,7 @@
             <tr>
               <td class="parameter-name">Node Penalty</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.nodePenalty }}
+                {{ networkParameters.current.nodePenalty }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.nodePenalty" required />
@@ -88,7 +88,7 @@
             <tr>
               <td class="parameter-name">Node Reward Amount</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.nodeRewardAmount }}
+                {{ networkParameters.current.nodeRewardAmount }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.nodeRewardAmount" required />
@@ -97,7 +97,7 @@
             <tr>
               <td class="parameter-name">Node Reward Interval</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.nodeRewardInterval }}
+                {{ networkParameters.current.nodeRewardInterval }}
               </td>
               <td class="new-value">
                 <input
@@ -111,7 +111,7 @@
             <tr>
               <td class="parameter-name">Stake Required</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.stakeRequired }}
+                {{ networkParameters.current.stakeRequired }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.stakeRequired" required />
@@ -120,7 +120,7 @@
             <tr>
               <td class="parameter-name">Transaction Fee</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.transactionFee }}
+                {{ networkParameters.current.transactionFee }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.transactionFee" required />
@@ -164,14 +164,14 @@
         />
         <p
           v-if="
-            networkParameters.CURRENT.proposalFee &&
-              networkParameters.CURRENT.transactionFee
+            networkParameters.current.proposalFee &&
+              networkParameters.current.transactionFee
           "
         >
           Submitting proposal will cost Proposal Fee:
-          <strong>{{ networkParameters.CURRENT.proposalFee }}</strong> coins +
+          <strong>{{ networkParameters.current.proposalFee }}</strong> coins +
           Transaction Fee:
-          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+          <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
     </form>
@@ -392,22 +392,22 @@ export default {
         let newNetworkParameters = await utils.queryParameters()
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
-          this.form = Object.assign({}, this.networkParameters.CURRENT)
+          this.form = Object.assign({}, this.networkParameters.current)
           this.form.title = ''
           this.form.description = ''
         }
         if (!this.previousWindow) {
-          this.window = newNetworkParameters['WINDOWS']
-          this.devWindow = newNetworkParameters['DEV_WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters['windows']
+          this.devWindow = newNetworkParameters['devWindows']
+          this.previousWindow = newNetworkParameters['windows']
         } else if (
-          newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
+          newNetworkParameters['windows'].proposalWindow[0] > Date.now()
         ) {
           // this.window = JSON.parse(JSON.stringify(this.previousWindow))
           this.window = { ...this.previousWindow }
         } else {
-          this.window = newNetworkParameters['WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters['windows']
+          this.previousWindow = newNetworkParameters['windows']
         }
 
         const proposalWindow = this.window.proposalWindow

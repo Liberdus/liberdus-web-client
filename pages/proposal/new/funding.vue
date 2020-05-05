@@ -8,6 +8,7 @@
         redirectUrl: '/'
       }"
     />
+    <!-- {{ window }} -->
     <div class="funding-create-container">
       <h2 class="title-2">New Funding Proposal</h2>
       <div v-if="loading" class="loading-status">
@@ -120,14 +121,14 @@
         />
         <p
           v-if="
-            networkParameters.CURRENT.devProposalFee &&
-              networkParameters.CURRENT.transactionFee
+            networkParameters.current.devProposalFee &&
+              networkParameters.current.transactionFee
           "
         >
           Submitting proposal will cost Proposal Fee:
-          <strong>{{ networkParameters.CURRENT.devProposalFee }}</strong> coins
+          <strong>{{ networkParameters.current.devProposalFee }}</strong> coins
           + Transaction Fee:
-          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+          <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
     </div>
@@ -262,17 +263,16 @@ export default {
         // this.loading = true
         let networkParameters = await utils.queryParameters()
         if (!this.networkParameters) this.networkParameters = networkParameters
-
         if (!this.previousWindow) {
-          this.window = networkParameters['DEV_WINDOWS']
-          this.previousWindow = networkParameters['DEV_WINDOWS']
+          this.window = networkParameters['devWindows']
+          this.previousWindow = networkParameters['devWindows']
         } else if (
-          networkParameters['DEV_WINDOWS'].devProposalWindow[0] > Date.now()
+          networkParameters['devWindows'].devProposalWindow[0] > Date.now()
         ) {
           this.window = { ...this.previousWindow }
         } else {
-          this.window = networkParameters['DEV_WINDOWS']
-          this.previousWindow = networkParameters['DEV_WINDOWS']
+          this.window = networkParameters['devWindows']
+          this.previousWindow = networkParameters['devWindows']
         }
 
         let proposalWindow = this.window.devProposalWindow

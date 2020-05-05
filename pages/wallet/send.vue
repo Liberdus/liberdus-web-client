@@ -198,8 +198,9 @@ export default {
   },
   mounted: async function () {
     const network = await utils.queryParameters()
-    if (network.CURRENT.transactionFee) {
-      this.requiredTxFee = network.CURRENT.transactionFee
+    console.log(network)
+    if (network.current.transactionFee) {
+      this.requiredTxFee = network.current.transactionFee
     }
     this.loading = false
   },

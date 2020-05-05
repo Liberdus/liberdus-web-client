@@ -166,7 +166,7 @@ export default {
         .map(proposal => {
           let proposedParameters = utils.getDifferentParameter(
             proposal.parameters,
-            networkParameters['CURRENT']
+            networkParameters['current']
           )
           let obj = { ...proposal }
           obj.proposedParameters = proposedParameters
@@ -260,15 +260,15 @@ export default {
         }
 
         if (!this.previousWindow) {
-          this.window = newNetworkParameters['WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters['windows']
+          this.previousWindow = newNetworkParameters['windows']
         } else if (
-          newNetworkParameters['WINDOWS'].proposalWindow[0] > Date.now()
+          newNetworkParameters['windows'].proposalWindow[0] > Date.now()
         ) {
           this.window = { ...this.previousWindow }
         } else {
-          this.window = newNetworkParameters['WINDOWS']
-          this.previousWindow = newNetworkParameters['WINDOWS']
+          this.window = newNetworkParameters['windows']
+          this.previousWindow = newNetworkParameters['windows']
         }
 
         const votingWindow = this.window.votingWindow

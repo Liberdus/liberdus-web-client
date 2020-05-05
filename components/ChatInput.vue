@@ -1,15 +1,14 @@
 <template>
   <div class="chat-input-container">
-    <p
-      class="required-toll not-enough-toll"
-      v-if="!isFriend && notEnoughCoin"
-    >Not Enough coin to pay toll</p>
+    <p class="required-toll not-enough-toll" v-if="!isFriend && notEnoughCoin">
+      Not Enough coin to pay toll
+    </p>
     <p class="required-toll" v-else-if="!isFriend">
-      <strong>Total Cost: {{ requiredToll + requiredFee}} coins</strong>
+      <strong>Total Cost: {{ requiredToll + requiredFee }} coins</strong>
       (Toll {{ requiredToll }} coins + Tx fee {{ requiredFee }} coins)
     </p>
     <p class="required-toll" v-else-if="isFriend">
-      <strong>Total Cost: {{ requiredFee}} coins</strong>
+      <strong>Total Cost: {{ requiredFee }} coins</strong>
       (Tx Fee)
     </p>
     <input
@@ -24,55 +23,55 @@
 </template>
 
 <script>
-import utils from "../assets/utils";
-import { mapGetters } from "vuex";
+import utils from '../assets/utils'
+import { mapGetters } from 'vuex'
 export default {
-  props: ["friend", "isFriend", "setPendingMessage"],
-  data: function() {
+  props: ['friend', 'isFriend', 'setPendingMessage'],
+  data: function () {
     return {
-      message: "",
+      message: '',
       requiredToll: null,
       requiredFee: 0.0
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState'
     }),
-    notEnoughCoin() {
+    notEnoughCoin () {
       // if (this.getAppState.data.balance < parseFloat(this.requiredToll))
       //   return true;
       // return false;
-      return false;
+      return false
     }
   },
   methods: {
-    async submitMessage() {
-      let messageToSend = this.message;
-      this.message = "";
-      let myWallet = this.getWallet;
+    async submitMessage () {
+      let messageToSend = this.message
+      this.message = ''
+      let myWallet = this.getWallet
       let isSubmitted = await utils.sendMessage(
         messageToSend,
         myWallet,
         this.friend
-      );
+      )
       this.setPendingMessage({
         handle: this.getWallet.handle,
         timestamp: null,
         body: messageToSend
-      });
+      })
     }
   },
-  async mounted() {
-    const to = await utils.getAddress(this.friend);
-    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address);
-    const network = await utils.queryParameters();
-    if (network.CURRENT.transactionFee) {
-      this.requiredFee = network.CURRENT.transactionFee;
+  async mounted () {
+    const to = await utils.getAddress(this.friend)
+    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address)
+    const network = await utils.queryParameters()
+    if (network.current.transactionFee) {
+      this.requiredFee = network.current.transactionFee
     }
   }
-};
+}
 </script>
 
 <style>
@@ -109,8 +108,8 @@ export default {
 .chat-input-container .required-toll.not-enough-toll {
   color: red;
 }
-input[type="text"],
-input[type="number"],
+input[type='text'],
+input[type='number'],
 textarea {
   font-size: 16px !important;
 }

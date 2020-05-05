@@ -3,5 +3,9 @@ export default {
     ip: 'arc.liberdus.com',
     port: 4000
   },
-  version: '1.0.0'
+  proxy: {
+    ip: 'app.liberdus.com',
+    port: 8443
+  },
+  version: '1.1.0'
 }

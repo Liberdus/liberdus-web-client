@@ -41,12 +41,12 @@
         v-if="
           allowVote &&
             networkParameters &&
-            networkParameters.CURRENT.transactionFee
+            networkParameters.current.transactionFee
         "
       >
         Submitting votes will cost vote amount total:
         <strong>{{ totalVoteAmount }}</strong> coins + Transaction Fee:
-        <strong>{{ networkParameters.CURRENT.transactionFee }}</strong>
+        <strong>{{ networkParameters.current.transactionFee }}</strong>
         coins
       </p>
       <p v-if="!allowVote">
@@ -271,7 +271,7 @@ export default {
       allProposals = allProposals.map(proposal => {
         let proposedParameters = utils.getDifferentParameter(
           proposal.parameters,
-          networkParameters['CURRENT']
+          networkParameters['current']
         )
         let obj = { ...proposal }
         obj.proposedParameters = proposedParameters
@@ -366,9 +366,10 @@ export default {
           this.networkParameters = newNetworkParameters
         }
         const WINDOW_TYPE =
-          this.voteType === 'economy' ? 'WINDOWS' : 'DEV_WINDOWS'
+          this.voteType === 'economy' ? 'windows' : 'devWindows'
         if (!this.previousWindow) {
           this.window = newNetworkParameters[WINDOW_TYPE]
+          this.devWindow = newNetworkParameters['devWindows']
           this.previousWindow = newNetworkParameters[WINDOW_TYPE]
         } else if (
           this.voteType === 'economy' &&
@@ -392,7 +393,8 @@ export default {
           this.nextVotingStart = VOTING_WINDOW[0]
         } else {
           const wholeCycleDuration = utils.calculateWholeCycleDuration(
-            this.window
+            this.window,
+            this.devWindow
           )
           this.nextVotingStart = VOTING_WINDOW[0] + wholeCycleDuration
         }

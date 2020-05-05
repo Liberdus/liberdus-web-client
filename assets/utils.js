@@ -4,6 +4,7 @@ import CONFIG from '../config'
 import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
+import config from '../config'
 let host
 const defaultSeedNode = `${CONFIG.server.ip}:${CONFIG.server.port}`
 const storedSeedNode = localStorage.getItem('seednode')
@@ -49,9 +50,26 @@ utils.isServerActive = async () => {
     return false
   }
 }
+utils.getProxyUrl = function (url, option) {
+  let ip, port
+  if (!option) {
+    ip = host.split(':')[0]
+    port = host.split(':')[1]
+  } else if (option) {
+    ip = option.ip
+    port = option.port
+  }
+  const proxyUrl = `https://${config.proxy.ip}:${config.proxy.port}/r/http_${ip}_${port}${url}`
+  return proxyUrl
+}
+
 utils.getRandomHost = async () => {
   console.log(seedNodeHost)
-  const res = await axios.get(`http://${seedNodeHost}/nodelist`)
+  let ip = seedNodeHost.split(':')[0]
+  let port = seedNodeHost.split(':')[1]
+  const res = await axios.get(utils.getProxyUrl(`/nodelist`, { ip, port }), {
+    timeout: 10000
+  })
   const nodeList = res.data.nodeList
   const randIndex = Math.floor(Math.random() * nodeList.length)
   const randHost = nodeList[randIndex]
@@ -72,8 +90,8 @@ utils.updateSeedNodeHostLocally = async (ip, port) => {
 utils.isSeedNodeOnline = async (ip, port) => {
   try {
     const seedNodeHost = `${ip}:${port}`
-    const res = await axios.get(`http://${seedNodeHost}/nodelist`, {
-      timeout: 15000
+    const res = await axios.get(utils.getProxyUrl(`/nodelist`, { ip, port }), {
+      timeout: 10000
     })
     if (res.status === 200) {
       return true
@@ -162,13 +180,13 @@ utils.createAccountAndStoreInWallet = (name, id) => {
 }
 
 function getInjectUrl () {
-  return `http://${host}/inject`
+  return utils.getProxyUrl('/inject')
 }
 function getAccountsUrl () {
-  return `http://${host}/accounts`
+  return utils.getProxyUrl('/accounts')
 }
 function getAccountUrl (id) {
-  return `http://${host}/account/${id}`
+  return utils.getProxyUrl(`/account/${id}`)
 }
 
 async function getJSON (url) {
@@ -216,7 +234,7 @@ async function getAccountData (id) {
 async function getToll (friendId, yourId) {
   try {
     const { toll } = await getJSON(
-      `http://${host}/account/${friendId}/${yourId}/toll`
+      utils.getProxyUrl(`/account/${friendId}/${yourId}/toll`)
     )
     return toll
   } catch (err) {
@@ -228,11 +246,12 @@ async function getAddress (handle) {
   if (!handle) return
   if (handle.length === 64) return handle
   try {
-    const data = await getJSON(`http://${host}/address/${crypto.hash(handle)}`)
+    const data = await getJSON(
+      utils.getProxyUrl(`/address/${crypto.hash(handle)}`)
+    )
     const { address, error } = data
     if (error) {
       console.error(error)
-      console.log(`http://${host}/address/${crypto.hash(handle)}`)
       console.log(`Error while getting address for ${handle}`)
     } else {
       return address
@@ -246,7 +265,7 @@ async function getAddress (handle) {
 
 async function pollMessages (from, to, timestamp) {
   try {
-    const url = `http://${host}/messages/${to}/${from}`
+    const url = utils.getProxyUrl(`/messages/${to}/${from}`)
     const { messages } = await getJSON(url)
     return messages
   } catch (err) {
@@ -492,7 +511,9 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
 }
 
 utils.getHandle = async publicKey => {
-  const { handle } = await getJSON(`http://${host}/account/${publicKey}/alias`)
+  const { handle } = await getJSON(
+    utils.getProxyUrl(`/account/${publicKey}/alias`)
+  )
   return handle
 }
 
@@ -523,39 +544,39 @@ utils.queryAccount = async handle => {
 
 // QUERY'S ALL NETWORK PROPOSALS
 utils.queryProposals = async function () {
-  const res = await axios.get(`http://${host}/proposals`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals`))
   return res.data.proposals
 }
 
 // QUERY'S ALL NETWORK DEV_PROPOSALS
 utils.queryDevProposals = async function () {
-  const res = await axios.get(`http://${host}/proposals/dev`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals/dev`))
   return res.data.devProposals
 }
 
 // QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
 utils.queryLatestProposals = async function () {
-  const res = await axios.get(`http://${host}/proposals/latest`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals/latest`))
   return res.data.proposals
 }
 
 // QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
 utils.queryLatestDevProposals = async function () {
-  const res = await axios.get(`http://${host}/proposals/dev/latest`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals/dev/latest`))
   // return res.data.devProposals
   return res.data.count
 }
 
-// QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
+// QUERY'S THE current ISSUE'S PROPOSAL COUNT
 utils.getProposalCount = async function () {
-  const res = await axios.get(`http://${host}/proposals/count`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals/count`))
   // return res.data.proposalCount
   return res.data.count
 }
 
-// QUERY'S THE CURRENT ISSUE'S PROPOSAL COUNT
+// QUERY'S THE current ISSUE'S PROPOSAL COUNT
 utils.getDevProposalCount = async function () {
-  const res = await axios.get(`http://${host}/proposals/dev/count`)
+  const res = await axios.get(utils.getProxyUrl(`/proposals/dev/count`))
   // return res.data.devProposalCount
   return res.data.count
 }
@@ -589,9 +610,9 @@ function isIosSafari () {
   return iOSSafari
 }
 
-// QUERY'S THE CURRENT NETWORK PARAMETERS
+// QUERY'S THE current NETWORK PARAMETERS
 utils.queryParameters = async function () {
-  const res = await axios.get(`http://${host}/network/parameters`)
+  const res = await axios.get(utils.getProxyUrl(`/network/parameters`))
   if (res.data.error) {
     return res.data.error
   } else {
@@ -599,9 +620,9 @@ utils.queryParameters = async function () {
   }
 }
 
-// QUERY'S THE CURRENT NETWORK PARAMETERS ON HOST NODE (TESTING)
+// QUERY'S THE current NETWORK PARAMETERS ON HOST NODE (TESTING)
 utils.queryNodeParameters = async function () {
-  const res = await axios.get(`http://${host}/network/parameters/node`)
+  const res = await axios.get(utils.getProxyUrl(`/network/parameters/node`))
   if (res.data.error) {
     return res.data.error
   } else {
@@ -611,38 +632,38 @@ utils.queryNodeParameters = async function () {
 
 // QUERY'S ALL NETWORK ISSUES
 utils.queryIssues = async function () {
-  const res = await axios.get(`http://${host}/issues`)
+  const res = await axios.get(utils.getProxyUrl(`/issues`))
   return res.data.issues
 }
 
-// QUERY'S ALL NETWORK DEV_ISSUES
+// QUERY'S ALL NETWORK dev_issueS
 utils.queryDevIssues = async function () {
-  const res = await axios.get(`http://${host}/issues/dev`)
+  const res = await axios.get(utils.getProxyUrl(`/issues/dev`))
   return res.data.devIssues
 }
 
 // QUERY'S THE MOST RECENT NETWORK ISSUE
 utils.queryLatestIssue = async function () {
-  const res = await axios.get(`http://${host}/issues/latest`)
+  const res = await axios.get(utils.getProxyUrl(`/issues/latest`))
   return res.data.issue
 }
 
-// QUERY'S THE MOST RECENT NETWORK DEV_ISSUE
+// QUERY'S THE MOST RECENT NETWORK dev_issue
 utils.queryLatestDevIssue = async function () {
-  const res = await axios.get(`http://${host}/issues/dev/latest`)
+  const res = await axios.get(utils.getProxyUrl(`/issues/dev/latest`))
   return res.data.devIssue
 }
 
-// QUERY'S THE CURRENT NETWORK ISSUE COUNT
+// QUERY'S THE current NETWORK ISSUE COUNT
 utils.getIssueCount = async function () {
-  const res = await axios.get(`http://${host}/issues/count`)
+  const res = await axios.get(utils.getProxyUrl(`/issues/count`))
   // return res.data.issueCount
   return res.data.count
 }
 
-// QUERY'S THE CURRENT NETWORK DEV_ISSUE COUNT
+// QUERY'S THE current NETWORK dev_issue COUNT
 utils.getDevIssueCount = async function () {
-  const res = await axios.get(`http://${host}/issues/dev/count`)
+  const res = await axios.get(utils.getProxyUrl(`/issues/dev/count`))
   // return res.data.devIssueCount
   return res.data.count
 }
@@ -922,7 +943,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
     to: targetAddress,
     amount: parseFloat(amount),
     timestamp: Date.now(),
-    fee: parameters.CURRENT.transactionFee || 0.001
+    fee: parameters.current.transactionFee || 0.001
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
   console.log(tx)
@@ -992,7 +1013,7 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
 }
 
 utils.queryEncryptedChats = async function (chatId) {
-  const res = await axios.get(`http://${host}/messages/${chatId}`)
+  const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
   return res.data.messages
 }
 
@@ -1006,7 +1027,7 @@ utils.calculateWholeCycleDuration = function (window, devWindow) {
 
 utils.isNodeOnline = async function () {
   try {
-    const res = await axios.get(`http://${host}/issues/count`)
+    const res = await axios.get(utils.getProxyUrl(`/issues/count`))
     if (res.status === 200) return true
   } catch (e) {
     console.warn(e.message)

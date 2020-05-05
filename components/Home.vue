@@ -3,6 +3,7 @@
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <p style="display: none">{{ isUIReady }}</p>
     <div class="home-tab-container" v-if="isUIReady">
+      {{ getAppState.data }}
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance">
           {{ getAppState.data.balance.toFixed(3) }}
@@ -40,15 +41,15 @@
 </template>
 
 <script>
-import TransactionListItem from "~/components/TransactionListItem";
-import { mapGetters, mapActions } from "vuex";
-import { map, filter, concat, flow, chain } from "lodash";
-import * as _ from "lodash";
-import utils from "../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
-import Notification from "~/components/Notification";
+import TransactionListItem from '~/components/TransactionListItem'
+import { mapGetters, mapActions } from 'vuex'
+import { map, filter, concat, flow, chain } from 'lodash'
+import * as _ from 'lodash'
+import utils from '../assets/utils'
+import ToolBar from '~/components/ToolBar'
+import Title from '~/components/baisc/Title'
+import Button from '~/components/baisc/Button'
+import Notification from '~/components/Notification'
 export default {
   components: {
     TransactionListItem,
@@ -57,32 +58,32 @@ export default {
     Button,
     Notification
   },
-  data: function() {
+  data: function () {
     return {
       lastMessage: null,
       lastTx: null
-    };
+    }
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getNetwork: "chat/getNetwork",
-      getTimers: "chat/getTimers",
-      getLastMessage: "chat/getLastMessage",
-      isUIReady: "chat/isUIReady",
-      getActiveProposals: "proposal/getActiveProposals",
-      getCompletedProposals: "proposal/getCompletedProposals",
-      getActiveDevProposals: "proposal/getActiveDevProposals",
-      getCompletedDevProposals: "proposal/getCompletedDevProposals"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      getNetwork: 'chat/getNetwork',
+      getTimers: 'chat/getTimers',
+      getLastMessage: 'chat/getLastMessage',
+      isUIReady: 'chat/isUIReady',
+      getActiveProposals: 'proposal/getActiveProposals',
+      getCompletedProposals: 'proposal/getCompletedProposals',
+      getActiveDevProposals: 'proposal/getActiveDevProposals',
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
     }),
-    transactions() {
-      if (!this.getWallet || !this.getAppState) return [];
-      let myAddress = this.getWallet.entry.address;
-      let txs = this.getAppState.data.transactions;
-      const RawTransferTxs = utils.filterByTxType(txs, "transfer");
-      const RawMessageTxs = utils.filterByTxType(txs, "message");
-      const RawRegisterTxs = utils.filterByTxType(txs, "register");
+    transactions () {
+      if (!this.getWallet || !this.getAppState) return []
+      let myAddress = this.getWallet.entry.address
+      let txs = this.getAppState.data.transactions
+      const RawTransferTxs = utils.filterByTxType(txs, 'transfer')
+      const RawMessageTxs = utils.filterByTxType(txs, 'message')
+      const RawRegisterTxs = utils.filterByTxType(txs, 'register')
       const processRawTransferTxs = txList =>
         map(txList, tx => {
           return {
@@ -94,8 +95,8 @@ export default {
             timestamp: tx.timestamp,
             amount: tx.amount,
             fee: tx.fee
-          };
-        });
+          }
+        })
       const processRawMessageTxs = txList =>
         map(txList, tx => {
           return {
@@ -103,271 +104,270 @@ export default {
             otherPersonAddress: tx.to,
             timestamp: tx.timestamp,
             amount: tx.amount
-          };
-        });
+          }
+        })
       const processRegisterTxs = txList =>
         map(txList, tx => {
           return {
-            type: "register",
+            type: 'register',
             alias: tx.alias,
             timestamp: tx.timestamp,
             // TODO:
             amount: 0.001
-          };
-        });
-      const transferTxs = processRawTransferTxs(RawTransferTxs);
-      const messageeTxs = processRawMessageTxs(RawMessageTxs);
-      const registerTx = processRegisterTxs(RawRegisterTxs);
-      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx);
-      return utils.sortByTimestamp(allProcessedTxs, "desc");
+          }
+        })
+      const transferTxs = processRawTransferTxs(RawTransferTxs)
+      const messageeTxs = processRawMessageTxs(RawMessageTxs)
+      const registerTx = processRegisterTxs(RawRegisterTxs)
+      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx)
+      return utils.sortByTimestamp(allProcessedTxs, 'desc')
     }
   },
-  mounted: function() {
-    this.refreshAppState();
+  mounted: function () {
+    this.refreshAppState()
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      updateLastTx: "chat/updateLastTx",
-      setUIReady: "chat/setUIReady",
-      updateActiveProposals: "proposal/updateActiveProposals",
-      updateCompletedProposals: "proposal/updateCompletedProposals",
-      updateActiveDevProposals: "proposal/updateActiveDevProposals",
-      updateCompletedDevProposals: "proposal/updateCompletedDevProposals"
+      updateAppState: 'chat/updateAppState',
+      updateLastMessage: 'chat/updateLastMessage',
+      updateLastTx: 'chat/updateLastTx',
+      setUIReady: 'chat/setUIReady',
+      updateActiveProposals: 'proposal/updateActiveProposals',
+      updateCompletedProposals: 'proposal/updateCompletedProposals',
+      updateActiveDevProposals: 'proposal/updateActiveDevProposals',
+      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
     }),
-    getLastTxFromAPI() {
-      if (!this.getAppState) return;
-      let txs = this.getAppState.data.transactions;
-      return txs[txs.length - 1];
+    getLastTxFromAPI () {
+      if (!this.getAppState) return
+      let txs = this.getAppState.data.transactions
+      return txs[txs.length - 1]
     },
-    getLatestMessageFromServer(processedState) {
-      let chats = processedState.data.chats;
-      let messageList = [];
+    getLatestMessageFromServer (processedState) {
+      let chats = processedState.data.chats
+      let messageList = []
       for (let handle in chats) {
-        chats[handle].messages.forEach(m => messageList.push(m));
+        chats[handle].messages.forEach(m => messageList.push(m))
       }
       if (messageList.length > 0) {
         let sortedMessageList = messageList.sort(
           (a, b) => b.timestamp - a.timestamp
-        );
+        )
         return {
           body: sortedMessageList[0].body,
           timestamp: sortedMessageList[0].timestamp,
           handle: sortedMessageList[0].handle
-        };
+        }
       } else
         return {
           body: null,
           timestamp: null,
           handle: null
-        };
+        }
     },
-    async processData(myAccountData) {
-      let self = this;
+    async processData (myAccountData) {
+      let self = this
       try {
-        let { account } = myAccountData;
-        let processed = { ...account };
+        let { account } = myAccountData
+        let processed = { ...account }
 
         for (let otherPersonPk in processed.data.chats) {
-          const chatId = processed.data.chats[otherPersonPk];
-          const encryptedChatList = await utils.queryEncryptedChats(chatId);
+          const chatId = processed.data.chats[otherPersonPk]
+          const encryptedChatList = await utils.queryEncryptedChats(chatId)
           const decryptedChatList = encryptedChatList.map(data => {
             return utils.decryptMessage(
               data,
               otherPersonPk,
               self.getWallet.entry.keys.secretKey
-            );
-          });
+            )
+          })
           processed.data.chats[otherPersonPk] = {
             messages: decryptedChatList
-          };
+          }
         }
 
-        let keys = Object.keys(account.data.chats);
-        let modifiedChats = {};
+        let keys = Object.keys(account.data.chats)
+        let modifiedChats = {}
         for (let i = 0; i < keys.length; i++) {
-          let handle = await utils.getHandle(keys[i]);
-          modifiedChats[handle] = account.data.chats[keys[i]];
+          let handle = await utils.getHandle(keys[i])
+          modifiedChats[handle] = account.data.chats[keys[i]]
         }
 
-        processed.data.chats = modifiedChats;
-        let friendList = Object.values(processed.data.friends);
-        friendList = friendList.filter(f => f !== null);
-        processed.data.friends = friendList;
-        return processed;
+        processed.data.chats = modifiedChats
+        let friendList = Object.values(processed.data.friends)
+        friendList = friendList.filter(f => f !== null)
+        processed.data.friends = friendList
+        return processed
       } catch (e) {
-        console.warn(`Unable to process account state data...`);
-        console.warn(e);
+        console.warn(`Unable to process account state data...`)
+        console.warn(e)
       }
     },
-    getActiveWindow(window, proposalType) {
-      if (!window || !proposalType) return;
-      const now = Date.now();
-      if (proposalType === "economy") {
+    getActiveWindow (window, proposalType) {
+      if (!window || !proposalType) return
+      const now = Date.now()
+      if (proposalType === 'economy') {
         if (now >= window.proposalWindow[0] && now < window.proposalWindow[1]) {
-          return "PROPOSAL";
+          return 'PROPOSAL'
         } else if (
           now >= window.votingWindow[0] &&
           now < window.votingWindow[1]
         ) {
-          return "VOTING";
+          return 'VOTING'
         } else if (
           now >= window.graceWindow[0] &&
           now < window.graceWindow[1]
         ) {
-          return "GRACE";
+          return 'GRACE'
         } else if (
           now >= window.applyWindow[0] &&
           now < window.applyWindow[1]
         ) {
-          return "APPLY";
+          return 'APPLY'
         }
-      } else if (proposalType === "funding") {
+      } else if (proposalType === 'funding') {
         if (
           now >= window.devProposalWindow[0] &&
           now < window.devProposalWindow[1]
         ) {
-          return "PROPOSAL";
+          return 'PROPOSAL'
         } else if (
           now >= window.devVotingWindow[0] &&
           now < window.devVotingWindow[1]
         ) {
-          return "VOTING";
+          return 'VOTING'
         } else if (
           now >= window.devGraceWindow[0] &&
           now < window.devGraceWindow[1]
         ) {
-          return "GRACE";
+          return 'GRACE'
         } else if (
           now >= window.devApplyWindow[0] &&
           now < window.devApplyWindow[1]
         ) {
-          return "APPLY";
+          return 'APPLY'
         }
       }
-      return "IDLE";
+      return 'IDLE'
     },
-    async getWindowObj(proposalType) {
+    async getWindowObj (proposalType) {
       try {
-        let newNetworkParameters = await utils.queryParameters();
+        let newNetworkParameters = await utils.queryParameters()
         if (!this.networkParameters) {
-          this.networkParameters = newNetworkParameters;
+          this.networkParameters = newNetworkParameters
         }
         const WINDOW_TYPE =
-          proposalType === "economy" ? "WINDOWS" : "DEV_WINDOWS";
-        let window = newNetworkParameters[WINDOW_TYPE];
-        return window;
+          proposalType === 'economy' ? 'windows' : 'devWindows'
+        let window = newNetworkParameters[WINDOW_TYPE]
+        return window
       } catch (e) {
-        console.warn(e);
-        return null;
+        console.warn(e)
+        return null
       }
     },
-    async refreshAppState() {
-      let self = this;
+    async refreshAppState () {
+      let self = this
       if (self.getWallet && self.isUIReady) {
-        let myHandle = this.getWallet.handle;
-        let myAccountData = await utils.queryAccount(myHandle);
-        let processedState = await this.processData(myAccountData);
-        self.updateAppState(processedState);
+        let myHandle = this.getWallet.handle
+        let myAccountData = await utils.queryAccount(myHandle)
+        let processedState = await this.processData(myAccountData)
+        self.updateAppState(processedState)
         let lastMessageFromServer = this.getLatestMessageFromServer(
           processedState
-        );
-        if (lastMessageFromServer.body)
-          this.lastMessage = lastMessageFromServer;
-        let lastTxFromAPI = this.getLastTxFromAPI();
+        )
+        if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
+        let lastTxFromAPI = this.getLastTxFromAPI()
         if (lastTxFromAPI) {
-          this.lastTx = { ...lastTxFromAPI };
-          this.lastTx.walletUsername = myHandle;
-          this.lastTx.timestamp = Date.now();
+          this.lastTx = { ...lastTxFromAPI }
+          this.lastTx.walletUsername = myHandle
+          this.lastTx.timestamp = Date.now()
         }
-        this.refreshProposalList();
-        setTimeout(this.refreshAppState, 10000);
+        this.refreshProposalList()
+        setTimeout(this.refreshAppState, 10000)
       } else {
-        setTimeout(this.refreshAppState, 5000);
+        setTimeout(this.refreshAppState, 5000)
       }
     },
-    async refreshProposalList() {
-      let allProposals = await utils.queryProposals();
-      let networkParameters = await utils.queryParameters();
-      this.networkParameters = networkParameters;
+    async refreshProposalList () {
+      let allProposals = await utils.queryProposals()
+      let networkParameters = await utils.queryParameters()
+      this.networkParameters = networkParameters
       allProposals = allProposals.map(proposal => {
         let proposedParameters = utils.getDifferentParameter(
           proposal.parameters,
-          networkParameters["CURRENT"]
-        );
-        let obj = { ...proposal };
-        obj.proposedParameters = proposedParameters;
-        obj.type = "proposal";
-        return obj;
-      });
+          networkParameters['current']
+        )
+        let obj = { ...proposal }
+        obj.proposedParameters = proposedParameters
+        obj.type = 'proposal'
+        return obj
+      })
       let activeProposalList = allProposals.filter(proposal => {
-        return !proposal.hasOwnProperty("winner");
-      });
+        return !proposal.hasOwnProperty('winner')
+      })
       let completedProposalList = allProposals.filter(
         proposal => proposal.winner === true || proposal.winner === false
-      );
-      let window = await this.getWindowObj("economy");
-      let activeEconomyWindow = this.getActiveWindow(window, "economy");
+      )
+      let window = await this.getWindowObj('economy')
+      let activeEconomyWindow = this.getActiveWindow(window, 'economy')
 
-      if (activeEconomyWindow === "VOTING") {
-        const count = activeProposalList.length;
+      if (activeEconomyWindow === 'VOTING') {
+        const count = activeProposalList.length
         let economyProposalCount =
-          JSON.parse(localStorage.getItem("economy_proposal_count")) || 0;
+          JSON.parse(localStorage.getItem('economy_proposal_count')) || 0
         if (count > economyProposalCount) {
-          let diff = count - economyProposalCount;
+          let diff = count - economyProposalCount
           for (let i = 0; i < diff; i++) {
-            utils.updateBadge("economy", "increase");
-            localStorage.setItem("economy_proposal_count", count);
+            utils.updateBadge('economy', 'increase')
+            localStorage.setItem('economy_proposal_count', count)
           }
         }
       } else {
         try {
-          utils.updateBadge("economy", "reset");
-          localStorage.setItem("economy_proposal_count", 0);
+          utils.updateBadge('economy', 'reset')
+          localStorage.setItem('economy_proposal_count', 0)
         } catch (e) {
           // console.warn(e);
         }
       }
 
       // Funding proposals start here
-      let allDevProposals = await utils.queryDevProposals();
-      if (!allDevProposals || allDevProposals.length === 0) return;
+      let allDevProposals = await utils.queryDevProposals()
+      if (!allDevProposals || allDevProposals.length === 0) return
       allDevProposals = allDevProposals.map(proposal => {
-        let obj = { ...proposal };
-        obj.type = "dev_proposal";
-        return obj;
-      });
+        let obj = { ...proposal }
+        obj.type = 'dev_proposal'
+        return obj
+      })
 
       let activeDevProposalList = allDevProposals.filter(
         proposal => proposal.approved !== true && proposal.approved !== false
-      );
+      )
 
-      let devWindow = await this.getWindowObj("funding");
-      let activeFundingWindow = this.getActiveWindow(devWindow, "funding");
+      let devWindow = await this.getWindowObj('funding')
+      let activeFundingWindow = this.getActiveWindow(devWindow, 'funding')
 
-      if (activeFundingWindow === "VOTING") {
-        const count = activeDevProposalList.length;
+      if (activeFundingWindow === 'VOTING') {
+        const count = activeDevProposalList.length
         let fundingProposalCount =
-          JSON.parse(localStorage.getItem("funding_proposal_count")) || 0;
+          JSON.parse(localStorage.getItem('funding_proposal_count')) || 0
         if (count > fundingProposalCount) {
-          let diff = count - fundingProposalCount;
+          let diff = count - fundingProposalCount
           for (let i = 0; i < diff; i++) {
-            utils.updateBadge("funding", "increase");
-            localStorage.setItem("funding_proposal_count", count);
+            utils.updateBadge('funding', 'increase')
+            localStorage.setItem('funding_proposal_count', count)
           }
         }
       } else {
         try {
-          utils.updateBadge("funding", "reset");
-          localStorage.setItem("funding_proposal_count", 0);
+          utils.updateBadge('funding', 'reset')
+          localStorage.setItem('funding_proposal_count', 0)
         } catch (e) {
           // console.warn(e)
         }
       }
     }
   }
-};
+}
 </script>
 
 <style>
