@@ -330,19 +330,22 @@ export default {
   mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isProposalWindowOpen()
-    }, 1000)
+    }, 3000)
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
       1000
     )
-    this.issueChecker = setInterval(this.checkIssueGenerated, 1000)
+    this.issueChecker = setInterval(this.checkIssueGenerated, 3000)
   },
   beforeDestroy: function () {
     console.log('Clearing proposal window checker...')
     clearInterval(this.proposalWindowChecker)
     clearInterval(this.proposalWindowTimer)
     clearInterval(this.issueChecker)
+    this.proposalWindowChecker = null
+    this.proposalWindowTimer = null
+    this.issueChecker = null
   },
   methods: {
     formatDate (ts) {
@@ -389,7 +392,7 @@ export default {
     },
     async isProposalWindowOpen () {
       try {
-        let newNetworkParameters = await utils.queryParameters()
+        let newNetworkParameters = await utils.queryParameters('/proposal/new')
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
           this.form = Object.assign({}, this.networkParameters.current)

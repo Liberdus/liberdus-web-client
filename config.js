@@ -1,11 +1,11 @@
 export default {
   server: {
-    ip: 'arc.liberdus.com',
+    ip: '173.255.195.137',
     port: 4000
   },
   proxy: {
     ip: 'app.liberdus.com',
-    port: 8443
+    port: 443
   },
   version: '1.1.0'
 }

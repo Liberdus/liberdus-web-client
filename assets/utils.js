@@ -43,15 +43,16 @@ utils.updateHost = newHost => {
   return true
 }
 utils.isServerActive = async () => {
-  try {
-    // const res = await axios.get(getAccountsUrl())
-    const res = await axios.get(utils.getProxyUrl('/network/parameters'))
-    // const isActive = !!(res.status === 200 && res.data.accounts)
-    const isActive = !!(res.status === 200)
-    return isActive
-  } catch (e) {
-    return false
-  }
+  // try {
+  //   // const res = await axios.get(getAccountsUrl())
+  //   const res = await axios.get(utils.getProxyUrl('/network/parameters'))
+  //   // const isActive = !!(res.status === 200 && res.data.accounts)
+  //   const isActive = !!(res.status === 200)
+  //   return isActive
+  // } catch (e) {
+  //   return false
+  // }
+  return true
 }
 utils.getProxyUrl = function (url, option) {
   let ip, port
@@ -62,8 +63,9 @@ utils.getProxyUrl = function (url, option) {
     ip = option.ip
     port = option.port
   }
-  const proxyUrl = `http://${config.proxy.ip}:${config.proxy.port}/r/http_${ip}_${port}${url}`
-  return proxyUrl
+  // const proxyUrl = `http://${config.proxy.ip}:${config.proxy.port}/r/http_${ip}_${port}${url}`
+  // return proxyUrl
+  return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
 }
 
 utils.getRandomHost = async () => {
@@ -624,7 +626,8 @@ function isIosSafari () {
 }
 
 // QUERY'S THE current NETWORK PARAMETERS
-utils.queryParameters = async function () {
+utils.queryParameters = async function (component) {
+  // console.log(`Calling from ${component}`)
   const res = await axios.get(utils.getProxyUrl('/network/parameters'))
   if (res.data.error) {
     return res.data.error

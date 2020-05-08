@@ -251,7 +251,9 @@ export default {
     },
     async getWindowObj (proposalType) {
       try {
-        let newNetworkParameters = await utils.queryParameters()
+        let newNetworkParameters = await utils.queryParameters(
+          `/home, getWindowObj`
+        )
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
         }
@@ -288,8 +290,10 @@ export default {
       }
     },
     async refreshProposalList () {
-      let allProposals = await utils.queryProposals()
-      let networkParameters = await utils.queryParameters()
+      let allProposals = await utils.queryLatestProposals()
+      let networkParameters = await utils.queryParameters(
+        `/home, refreshProposalList`
+      )
       this.networkParameters = networkParameters
       allProposals = allProposals.map(proposal => {
         let proposedParameters = utils.getDifferentParameter(
@@ -301,12 +305,10 @@ export default {
         obj.type = 'proposal'
         return obj
       })
-      let activeProposalList = allProposals.filter(proposal => {
-        return !proposal.hasOwnProperty('winner')
-      })
-      let completedProposalList = allProposals.filter(
-        proposal => proposal.winner === true || proposal.winner === false
-      )
+      // let activeProposalList = allProposals.filter(proposal => {
+      //   return !proposal.hasOwnProperty('winner')
+      // })
+      let activeProposalList = [...allProposals]
       let window = await this.getWindowObj('economy')
       let activeEconomyWindow = this.getActiveWindow(window, 'economy')
 

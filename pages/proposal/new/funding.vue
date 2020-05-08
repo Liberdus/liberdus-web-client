@@ -246,7 +246,7 @@ export default {
   mounted: async function () {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isDevProposalWindowOpen()
-    }, 1000)
+    }, 2000)
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
@@ -256,6 +256,8 @@ export default {
   beforeDestroy: function () {
     clearInterval(this.proposalWindowChecker)
     clearInterval(this.proposalWindowTimer)
+    this.proposalWindowTimer = null
+    this.proposalWindowTimer = null
   },
   methods: {
     async isDevProposalWindowOpen () {

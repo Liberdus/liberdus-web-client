@@ -265,8 +265,11 @@ export default {
       this.$router.push(url)
     },
     async refreshProposalList () {
-      let allProposals = await utils.queryProposals()
-      let networkParameters = await utils.queryParameters()
+      let allProposals = await utils.queryLatestProposals()
+      console.log(allProposals)
+      let networkParameters = await utils.queryParameters(
+        `/vote/_type, refreshProposalList`
+      )
       this.networkParameters = networkParameters
       allProposals = allProposals.map(proposal => {
         let proposedParameters = utils.getDifferentParameter(
@@ -287,9 +290,9 @@ export default {
       //   else return false
       // })
 
-      let activeProposalList = allProposals.filter(proposal => {
-        return !proposal.hasOwnProperty('winner')
-      })
+      let activeProposalList = allProposals.filter(
+        proposal => proposal.winner === true || proposal.winner === false
+      )
       let completedProposalList = allProposals.filter(
         proposal => proposal.winner === true || proposal.winner === false
       )
@@ -297,7 +300,7 @@ export default {
       this.updateCompletedProposals(completedProposalList)
     },
     async refreshDevProposalList () {
-      let allProposals = await utils.queryDevProposals()
+      let allProposals = await utils.queryLatestDevProposals()
       if (!allProposals || allProposals.length === 0) return
       allProposals = allProposals.map(proposal => {
         let obj = { ...proposal }
@@ -326,7 +329,10 @@ export default {
     unsubscribeProposalList () {
       let self = this
       clearInterval(this.propsalListSubscription)
+      clearInterval(this.votingWindowChecker)
       this.propsalListSubscription = null
+      this.votingWindowChecker = null
+      return true
     },
     async onSubmitVotes () {
       let myWallet = this.getWallet
@@ -361,7 +367,9 @@ export default {
     },
     async isVotingWindowOpen () {
       try {
-        let newNetworkParameters = await utils.queryParameters()
+        let newNetworkParameters = await utils.queryParameters(
+          `/vote/_type, isVotingWindowsOpen`
+        )
         if (!this.networkParameters) {
           this.networkParameters = newNetworkParameters
         }
@@ -411,55 +419,65 @@ export default {
       }
     },
     getRemainingSecondToVoting () {
-      if (
-        this.window &&
-        (this.window.votingWindow || this.window.devVotingWindow)
-      ) {
-        const VOTING_WINDOW =
-          this.voteType === 'economy'
-            ? this.window.votingWindow
-            : this.window.devVotingWindow
-        let now = Date.now()
-        if (!this.allowVote) {
-          if (now < VOTING_WINDOW[0]) {
-            this.remainingSecondToVotingWindow = Math.round(
-              (VOTING_WINDOW[0] - now) / 1000
-            )
-          } else if (
-            now > VOTING_WINDOW[0] &&
-            this.nextVotingStart &&
-            now < this.nextVotingStart
-          ) {
-            this.remainingSecondToVotingWindow = Math.round(
-              (this.nextVotingStart - now) / 1000
-            )
-          }
-        } else if (this.allowVote) {
-          if (VOTING_WINDOW[1] >= now) {
-            this.remainingSecondToVotingWindow = Math.round(
-              (VOTING_WINDOW[1] - now) / 1000
-            )
+      try {
+        if (
+          this.window &&
+          (this.window.votingWindow || this.window.devVotingWindow)
+        ) {
+          const VOTING_WINDOW =
+            this.voteType === 'economy'
+              ? this.window.votingWindow
+              : this.window.devVotingWindow
+          let now = Date.now()
+          if (!this.allowVote) {
+            if (now < VOTING_WINDOW[0]) {
+              this.remainingSecondToVotingWindow = Math.round(
+                (VOTING_WINDOW[0] - now) / 1000
+              )
+            } else if (
+              now > VOTING_WINDOW[0] &&
+              this.nextVotingStart &&
+              now < this.nextVotingStart
+            ) {
+              this.remainingSecondToVotingWindow = Math.round(
+                (this.nextVotingStart - now) / 1000
+              )
+            }
+          } else if (this.allowVote) {
+            if (VOTING_WINDOW[1] >= now) {
+              this.remainingSecondToVotingWindow = Math.round(
+                (VOTING_WINDOW[1] - now) / 1000
+              )
+            }
           }
         }
+      } catch (e) {
+        console.warn('Unable to get remaining seconds to voting')
       }
     }
   },
-  mounted: function () {
+  mounted: async function () {
     this.refreshProposalList()
     this.refreshDevProposalList()
-    this.subscribeProposalList()
+    await this.subscribeProposalList()
 
     this.votingWindowChecker = setInterval(async () => {
       this.allowVote = await this.isVotingWindowOpen()
     }, 1000)
 
-    this.votingWindowTimer = setInterval(this.getRemainingSecondToVoting, 1000)
+    this.votingWindowTimer = setInterval(this.getRemainingSecondToVoting, 3000)
   },
-  beforeDestroy: function () {
-    this.unsubscribeProposalList()
-    console.log('Clearing proposal window checker...')
-    clearInterval(this.proposalWindowChecker)
-    clearInterval(this.proposalWindowTimer)
+  beforeDestroy: async function () {
+    await this.unsubscribeProposalList()
+    console.log('Clearing timers from voting page...')
+    try {
+      clearInterval(this.proposalWindowChecker)
+      clearInterval(this.proposalWindowTimer)
+      clearInterval(this.votingWindowChecker)
+      clearInterval(this.votingWindowTimer)
+    } catch (e) {
+      console.warn(e)
+    }
   }
 }
 </script>

@@ -194,7 +194,7 @@ export default {
       this.updateCompletedProposals(completedProposalList)
     },
     async refreshDevProposalList () {
-      let allProposals = await utils.queryDevProposals()
+      let allProposals = await utils.queryLatestDevProposals()
       if (!allProposals || allProposals.length === 0) return
       allProposals = allProposals.map(proposal => {
         let obj = { ...proposal }
@@ -213,13 +213,13 @@ export default {
     },
     subscribeProposalList () {
       let self = this
-      this.propsalListSubscription = setInterval(() => {
-        if (self.isUIReady) {
-          console.log('Refreshing proposal and dev proposal list')
-          self.refreshProposalList()
-          self.refreshDevProposalList()
-        }
-      }, 10000)
+      // this.propsalListSubscription = setInterval(() => {
+      //   if (self.isUIReady) {
+      //     console.log('Refreshing proposal and dev proposal list')
+      //     self.refreshProposalList()
+      //     self.refreshDevProposalList()
+      //   }
+      // }, 10000)
     },
     unsubscribeProposalList () {
       let self = this

@@ -33,13 +33,13 @@
             </p>
             <p
               class="input-error-message"
-              v-else-if="$v && $v.username.required && !$v.username.alphaNum"
+              v-else-if="$v.username.required && !$v.username.alphaNum"
             >
               Username can contain only alphabets and numberic characters
             </p>
             <p
               class="input-error-message"
-              v-else-if="$v && $v.username.required && !$v.username.minLength"
+              v-else-if="$v.username.required && !$v.username.minLength"
             >
               Username must be at least 3 characters long
             </p>
@@ -114,7 +114,8 @@ export default {
       allowSignIn: false,
       isNodeOnline: true,
       registerWithLocalAccountAddress: false,
-      localWallet: null
+      localWallet: null,
+      nameCheckerTimeout: null
     }
   },
   filters: {
@@ -175,6 +176,7 @@ export default {
       }
     },
     async checkUsername () {
+      console.log('Checking username for: ', this.username)
       this.username = this.username.toLowerCase()
       this.checkingUsername = true
       try {
@@ -219,7 +221,12 @@ export default {
     },
     async loadAccount () {
       this.checkingUsername = true
-      this.checkUsername()
+      if (this.nameCheckerTimeout) {
+        console.log('Clearing existing timeout first...')
+        clearTimeout(this.nameCheckerTimeout)
+        this.nameCheckerTimeout = null
+      }
+      this.nameCheckerTimeout = setTimeout(this.checkUsername, 1000)
       const localWallet = utils.loadWallet(this.username)
 
       if (localWallet) {
@@ -317,7 +324,7 @@ export default {
 .create-username-input-container .input-checking-message {
   color: #333;
   font-size: 12px;
-  text-align: center;
+  text-align: left;
 }
 .link-to-import {
   color: #43b8e7 !important;
