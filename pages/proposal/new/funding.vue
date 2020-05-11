@@ -245,13 +245,16 @@ export default {
     }
   },
   mounted: async function () {
+    this.allowProposal = await this.isDevProposalWindowOpen()
+    this.getRemainingSecondToProposal()
+
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isDevProposalWindowOpen()
-    }, 2000)
+    }, 10000)
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
-      1000
+      10000
     )
   },
   beforeDestroy: function () {
@@ -264,8 +267,10 @@ export default {
     async isDevProposalWindowOpen () {
       try {
         if (!this.getWindowFocus) return
+        console.log('Checking if dev proposal window is opened')
         // this.loading = true
         let networkParameters = await utils.queryParameters()
+        console.log(networkParameters)
         if (!this.networkParameters) this.networkParameters = networkParameters
         if (!this.previousWindow) {
           this.window = networkParameters['devWindows']

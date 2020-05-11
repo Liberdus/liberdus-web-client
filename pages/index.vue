@@ -177,6 +177,7 @@ export default {
       // }
     },
     async rotateNode () {
+      let self = this
       if (this.$route.path === '/loading' || this.$route.path === '/welcome') {
         return
       }
@@ -194,6 +195,7 @@ export default {
       }
     },
     async checkNodeHealth () {
+      let self = this
       if (
         this.$route.path === '/loading' ||
         this.$route.path === '/welcome' ||
@@ -262,7 +264,7 @@ export default {
     })
 
     if (!this.getTimers['nodeHealthChecker']) {
-      const nodeHealthChecker = setInterval(this.checkNodeHealth, 5000)
+      const nodeHealthChecker = setInterval(this.checkNodeHealth, 10000)
       this.addTimer({ key: 'nodeHealthChecker', value: nodeHealthChecker })
     }
     if (!this.getTimers['nodeRotator']) {

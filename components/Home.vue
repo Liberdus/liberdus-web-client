@@ -126,6 +126,10 @@ export default {
   },
   mounted: function () {
     this.refreshAppState()
+    if (!this.getTimers['appRefresher']) {
+      const appRefresher = setInterval(this.refreshAppState, 10000)
+      this.addTimer({ key: 'appRefresher', value: appRefresher })
+    }
   },
   methods: {
     ...mapActions({
@@ -136,7 +140,8 @@ export default {
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
-      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
+      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
+      addTimer: 'chat/addTimer'
     }),
     getLastTxFromAPI () {
       if (!this.getAppState) return
@@ -268,6 +273,7 @@ export default {
       }
     },
     async refreshAppState () {
+      console.log('Refreshing app state...')
       let self = this
       if (!this.getWindowFocus) return
       if (self.getWallet && self.isUIReady) {
@@ -286,9 +292,6 @@ export default {
           this.lastTx.timestamp = Date.now()
         }
         this.refreshProposalList()
-        setTimeout(this.refreshAppState, 10000)
-      } else {
-        setTimeout(this.refreshAppState, 5000)
       }
     },
     async refreshProposalList () {

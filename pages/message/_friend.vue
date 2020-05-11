@@ -176,7 +176,8 @@ export default {
   },
   mounted: async function () {
     let self = this
-    this.refresher = setInterval(self.refreshMessages, 2000)
+    this.refreshMessages()
+    this.refresher = setInterval(self.refreshMessages, 10000)
   },
   updated: function () {
     if (messagesChanged) {

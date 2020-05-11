@@ -308,9 +308,8 @@ export default {
         obj.type = 'dev_proposal'
         return obj
       })
-
       let activeDevProposalList = allProposals.filter(
-        proposal => proposal.approved !== true && proposal.approved !== false
+        proposal => proposal.approved === true || proposal.approved === false
       )
       let completedDevProposalList = allProposals.filter(
         proposal => proposal.approved === true || proposal.approved === false
@@ -463,12 +462,14 @@ export default {
     this.refreshProposalList()
     this.refreshDevProposalList()
     await this.subscribeProposalList()
+    this.allowVote = await this.isVotingWindowOpen()
+    this.getRemainingSecondToVoting()
 
     this.votingWindowChecker = setInterval(async () => {
       this.allowVote = await this.isVotingWindowOpen()
-    }, 1000)
+    }, 10000)
 
-    this.votingWindowTimer = setInterval(this.getRemainingSecondToVoting, 3000)
+    this.votingWindowTimer = setInterval(this.getRemainingSecondToVoting, 10000)
   },
   beforeDestroy: async function () {
     await this.unsubscribeProposalList()
@@ -476,6 +477,8 @@ export default {
     try {
       clearInterval(this.votingWindowChecker)
       clearInterval(this.votingWindowTimer)
+      clearInterval(this.propsalListSubscription)
+      clearInterval(this.votingWindowChecker)
     } catch (e) {
       console.warn(e)
     }

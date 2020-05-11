@@ -329,15 +329,17 @@ export default {
     }
   },
   mounted: async function () {
+    this.allowProposal = await this.isProposalWindowOpen()
+    this.getRemainingSecondToProposal()
+
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isProposalWindowOpen()
-    }, 3000)
-
+    }, 10000)
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
-      1000
+      10000
     )
-    this.issueChecker = setInterval(this.checkIssueGenerated, 3000)
+    this.issueChecker = setInterval(this.checkIssueGenerated, 10000)
   },
   beforeDestroy: function () {
     console.log('Clearing proposal window checker...')
