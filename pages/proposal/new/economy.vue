@@ -283,7 +283,8 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState'
+      getAppState: 'chat/getAppState',
+      getWindowFocus: 'chat/getWindowFocus'
     }),
     secondsToDhms () {
       let seconds = this.remainingSecondToProposalWindow
@@ -391,6 +392,7 @@ export default {
       this.$router.push(url)
     },
     async isProposalWindowOpen () {
+      if (!this.getWindowFocus) return
       try {
         let newNetworkParameters = await utils.queryParameters('/proposal/new')
         if (!this.networkParameters) {
@@ -443,6 +445,7 @@ export default {
       }
     },
     getRemainingSecondToProposal () {
+      if (!this.getWindowFocus) return
       if (this.window && this.window.proposalWindow) {
         let now = Date.now()
         if (!this.allowProposal) {

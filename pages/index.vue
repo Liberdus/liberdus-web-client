@@ -152,6 +152,7 @@ export default {
       updateLastMessage: 'chat/updateLastMessage',
       updateLastTx: 'chat/updateLastTx',
       setUIReady: 'chat/setUIReady',
+      updateWindowFocus: 'chat/updateWindowFocus',
       addWallet: 'wallet/addWallet',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
@@ -174,6 +175,58 @@ export default {
       //     animation: 'fall'
       //   })
       // }
+    },
+    async rotateNode () {
+      if (this.$route.path === '/loading' || this.$route.path === '/welcome') {
+        return
+      }
+      try {
+        let randomHost = await utils.getRandomHost()
+        if (randomHost) {
+          let now = Date.now()
+          console.log(`Rotate to a random Host on ${new Date()}`)
+          console.log(randomHost)
+          self.updateNetwork(randomHost)
+          utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+        }
+      } catch (e) {
+        console.warn(e)
+      }
+    },
+    async checkNodeHealth () {
+      if (
+        this.$route.path === '/loading' ||
+        this.$route.path === '/welcome' ||
+        this.$route.path === '/setting/network'
+      ) {
+        return
+      }
+      if (!this.getWindowFocus) return
+      try {
+        let shouldUpdate = false
+        let isServerActive
+        try {
+          isServerActive = await utils.isServerActive()
+        } catch (e) {
+          console.error('Server is offline')
+        }
+
+        if (!isServerActive) {
+          shouldUpdate = true
+        }
+        if (shouldUpdate) {
+          let randomHost = await utils.getRandomHost()
+          if (randomHost) {
+            let now = Date.now()
+            console.log(`Change to a random Host: `, randomHost)
+
+            self.updateNetwork(randomHost)
+            utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
+          }
+        }
+      } catch (e) {
+        console.warn(e)
+      }
     }
   },
   computed: {
@@ -184,6 +237,7 @@ export default {
       getNetwork: 'chat/getNetwork',
       getTimers: 'chat/getTimers',
       isUIReady: 'chat/isUIReady',
+      getWindowFocus: 'chat/getWindowFocus',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
@@ -198,67 +252,21 @@ export default {
     if (!this.isUIReady) {
       this.$router.push('/loading')
     }
+    window.addEventListener('focus', () => {
+      self.updateWindowFocus(true)
+      console.log(`Is window focused: ${self.getWindowFocus}`)
+    })
+    window.addEventListener('blur', () => {
+      self.updateWindowFocus(false)
+      console.log(`Is window focused: ${self.getWindowFocus}`)
+    })
+
     if (!this.getTimers['nodeHealthChecker']) {
-      // create interval for checking node status
-      const nodeHealthChecker = setInterval(async () => {
-        if (
-          this.$route.path === '/loading' ||
-          this.$route.path === '/welcome' ||
-          this.$route.path === '/setting/network'
-        ) {
-          return
-        }
-        try {
-          let shouldUpdate = false
-          let isServerActive
-          try {
-            isServerActive = await utils.isServerActive()
-          } catch (e) {
-            console.error('Server is offline')
-          }
-
-          if (!isServerActive) {
-            shouldUpdate = true
-          }
-          if (shouldUpdate) {
-            let randomHost = await utils.getRandomHost()
-            if (randomHost) {
-              let now = Date.now()
-              console.log(`Change to a random Host: `, randomHost)
-
-              self.updateNetwork(randomHost)
-              utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
-            }
-          }
-        } catch (e) {
-          console.warn(e)
-        }
-      }, 5000)
+      const nodeHealthChecker = setInterval(this.checkNodeHealth, 5000)
       this.addTimer({ key: 'nodeHealthChecker', value: nodeHealthChecker })
     }
-
     if (!this.getTimers['nodeRotator']) {
-      // create interval for changing node ip and port
-      const nodeRotator = setInterval(async () => {
-        if (
-          this.$route.path === '/loading' ||
-          this.$route.path === '/welcome'
-        ) {
-          return
-        }
-        try {
-          let randomHost = await utils.getRandomHost()
-          if (randomHost) {
-            let now = Date.now()
-            console.log(`Rotate to a random Host on ${new Date()}`)
-            console.log(randomHost)
-            self.updateNetwork(randomHost)
-            utils.updateHost(`${randomHost.ip}:${randomHost.port}`)
-          }
-        } catch (e) {
-          console.warn(e)
-        }
-      }, 1000 * 60 * 2)
+      const nodeRotator = setInterval(this.rotateNode, 1000 * 60 * 2)
       this.addTimer({
         key: 'nodeRotator',
         value: nodeRotator

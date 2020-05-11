@@ -108,6 +108,7 @@ export default {
       getAppState: 'chat/getAppState',
       getLastMessage: 'chat/getLastMessage',
       isUIReady: 'chat/isUIReady',
+      getWindowFocus: 'chat/getWindowFocus',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
@@ -366,6 +367,7 @@ export default {
       this.$ons.notification.alert('Your votes are submitted.')
     },
     async isVotingWindowOpen () {
+      if (!this.getWindowFocus) return
       try {
         let newNetworkParameters = await utils.queryParameters(
           `/vote/_type, isVotingWindowsOpen`
@@ -419,6 +421,7 @@ export default {
       }
     },
     getRemainingSecondToVoting () {
+      if (!this.getWindowFocus) return
       try {
         if (
           this.window &&
@@ -471,8 +474,6 @@ export default {
     await this.unsubscribeProposalList()
     console.log('Clearing timers from voting page...')
     try {
-      clearInterval(this.proposalWindowChecker)
-      clearInterval(this.proposalWindowTimer)
       clearInterval(this.votingWindowChecker)
       clearInterval(this.votingWindowTimer)
     } catch (e) {

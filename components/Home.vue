@@ -72,6 +72,7 @@ export default {
       getTimers: 'chat/getTimers',
       getLastMessage: 'chat/getLastMessage',
       isUIReady: 'chat/isUIReady',
+      getWindowFocus: 'chat/getWindowFocus',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
@@ -268,6 +269,7 @@ export default {
     },
     async refreshAppState () {
       let self = this
+      if (!this.getWindowFocus) return
       if (self.getWallet && self.isUIReady) {
         let myHandle = this.getWallet.handle
         let myAccountData = await utils.queryAccount(myHandle)
@@ -290,6 +292,7 @@ export default {
       }
     },
     async refreshProposalList () {
+      if (!this.getWindowFocus) return
       let allProposals = await utils.queryLatestProposals()
       let networkParameters = await utils.queryParameters(
         `/home, refreshProposalList`
