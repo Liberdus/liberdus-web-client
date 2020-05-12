@@ -578,8 +578,8 @@ utils.queryLatestProposals = async function () {
 // QUERY'S ALL PROPOSALS ON THE LATEST ISSUE
 utils.queryLatestDevProposals = async function () {
   const res = await axios.get(utils.getProxyUrl('/proposals/dev/latest'))
-  // return res.data.devProposals
-  return res.data.count
+  return res.data.devProposals
+  // return res.data.count
 }
 
 // QUERY'S THE current ISSUE'S PROPOSAL COUNT
