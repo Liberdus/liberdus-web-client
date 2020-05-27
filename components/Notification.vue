@@ -94,10 +94,13 @@ export default {
         })
       }
       let newMessageList = messageList.filter(
-        m =>
-          m.timestamp > lastMessageStored.timestamp &&
-          m.handle !== self.getWallet.handle
+        m => m.handle !== self.getWallet.handle
       )
+      if (lastMessageStored) {
+        newMessageList = messageList.filter(
+          m => m.timestamp > lastMessageStored.timestamp
+        )
+      }
       // console.log('lastMessageStored', lastMessageStored)
       // console.log('messagesInMemory', messagesInMemory)
       // console.log('messageList', messageList)

@@ -267,7 +267,7 @@ export default {
     },
     async refreshProposalList () {
       let allProposals = await utils.queryLatestProposals()
-      console.log(allProposals)
+      console.log('Economy Proposals', allProposals)
       let networkParameters = await utils.queryParameters(
         `/vote/_type, refreshProposalList`
       )

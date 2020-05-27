@@ -43,15 +43,15 @@ utils.updateHost = newHost => {
   return true
 }
 utils.isServerActive = async () => {
-  // try {
-  //   // const res = await axios.get(getAccountsUrl())
-  //   const res = await axios.get(utils.getProxyUrl('/network/parameters'))
-  //   // const isActive = !!(res.status === 200 && res.data.accounts)
-  //   const isActive = !!(res.status === 200)
-  //   return isActive
-  // } catch (e) {
-  //   return false
-  // }
+  try {
+    // const res = await axios.get(getAccountsUrl())
+    const res = await axios.get(utils.getProxyUrl('/network/parameters'))
+    // const isActive = !!(res.status === 200 && res.data.accounts)
+    const isActive = !!(res.status === 200)
+    return isActive
+  } catch (e) {
+    return false
+  }
   return true
 }
 utils.getProxyUrl = function (url, option) {
@@ -62,6 +62,9 @@ utils.getProxyUrl = function (url, option) {
   } else if (option) {
     ip = option.ip
     port = option.port
+  }
+  if (ip === 'localhost' || ip === '127.0.0.1') {
+    return `http://localhost:${port}${url}`
   }
   // const proxyUrl = `http://${config.proxy.ip}:${config.proxy.port}/r/http_${ip}_${port}${url}`
   // return proxyUrl
@@ -593,7 +596,8 @@ utils.getProposalCount = async function () {
 utils.getDevProposalCount = async function () {
   const res = await axios.get(utils.getProxyUrl('/proposals/dev/count'))
   // return res.data.devProposalCount
-  return res.data.count
+  if (res.data.count) return res.data.count
+  else return 0
 }
 
 utils.isTransferTx = tx => tx.type === 'transfer'
