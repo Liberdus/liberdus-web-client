@@ -5,7 +5,7 @@
     <div class="home-tab-container" v-if="isUIReady">
       <!-- <p v-if="getAppState">{{ getAppState.data }}</p> -->
       <div class="total-balance">
-        <h1 v-if="getAppState && getAppState.data.balance">
+        <h1 v-if="getAppState && getAppState.data.balance >= 0">
           {{ getAppState.data.balance.toFixed(3) }}
           <span class="total-unit">LBD</span>
         </h1>

@@ -129,6 +129,32 @@
               <span v-else> {{ proposal.parameters.transactionFee }}</span>
             </td>
           </tr>
+          <tr>
+            <td class="parameter-name">Faucet Amount</td>
+
+            <td class="new-value">
+              <span
+                v-if="proposal.proposedParameters.faucetAmount"
+                class="new-parameter"
+              >
+                {{ proposal.parameters.faucetAmount }}</span
+              >
+              <span v-else> {{ proposal.parameters.faucetAmount }}</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="parameter-name">Default Toll</td>
+
+            <td class="new-value">
+              <span
+                v-if="proposal.proposedParameters.defaultToll"
+                class="new-parameter"
+              >
+                {{ proposal.parameters.defaultToll }}</span
+              >
+              <span v-else> {{ proposal.parameters.defaultToll }}</span>
+            </td>
+          </tr>
         </tbody>
       </table>
 

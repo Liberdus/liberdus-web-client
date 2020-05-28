@@ -126,6 +126,24 @@
                 <input type="number" v-model="form.transactionFee" required />
               </td>
             </tr>
+            <tr>
+              <td class="parameter-name">Faucet Amount</td>
+              <td class="current-value">
+                {{ networkParameters.current.faucetAmount }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.faucetAmount" required />
+              </td>
+            </tr>
+            <tr>
+              <td class="parameter-name">Default Toll</td>
+              <td class="current-value">
+                {{ networkParameters.current.defaultToll }}
+              </td>
+              <td class="new-value">
+                <input type="number" v-model="form.defaultToll" required />
+              </td>
+            </tr>
           </tbody>
         </table>
         <div>
@@ -276,7 +294,9 @@ export default {
         stakeRequired: '',
         transactionFee: '',
         description: '',
-        title: ''
+        title: '',
+        faucetAmount: '',
+        defaultToll: ''
       }
     }
   },

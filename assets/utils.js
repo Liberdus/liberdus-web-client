@@ -194,6 +194,7 @@ function getAccountsUrl () {
   return utils.getProxyUrl('/accounts')
 }
 function getAccountUrl (id) {
+  console.log(utils.getProxyUrl(`/account/${id}`))
   return utils.getProxyUrl(`/account/${id}`)
 }
 

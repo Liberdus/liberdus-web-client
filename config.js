@@ -4,7 +4,7 @@ export default {
     port: 4000
   },
   proxy: {
-    ip: 'app.liberdus.com',
+    ip: 'test.liberdus.com',
     port: 443
   },
   version: '1.1.0'
