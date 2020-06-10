@@ -450,6 +450,49 @@ utils.setToll = (toll, keys) => {
     })
   })
 }
+// Set stale Function
+utils.addStake = (stake, keys) => {
+  const tx = {
+    type: 'stake',
+    network,
+    from: keys.publicKey,
+    stake: stake,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  console.log(tx)
+  return new Promise(resolve => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
+utils.removeStake = (stake, keys) => {
+  const tx = {
+    type: 'remove_stake',
+    network,
+    from: keys.publicKey,
+    stake: stake,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  console.log(tx)
+  return new Promise(resolve => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
 
 utils.sendMessage = async (text, sourceAcc, targetHandle) => {
   const source = sourceAcc.entry
@@ -604,6 +647,8 @@ utils.getDevProposalCount = async function () {
 utils.isTransferTx = tx => tx.type === 'transfer'
 utils.isMessageTx = tx => tx.type === 'message'
 utils.isRegisterTx = tx => tx.type === 'register'
+utils.isStakeTx = tx => tx.type === 'stake'
+utils.isRewardTx = tx => tx.type === 'node_reward'
 utils.isSender = (tx, myAddress) => tx.from === myAddress
 utils.getTransferType = (tx, myAddress) =>
   utils.isSender(tx, myAddress) ? 'send' : 'receive'
@@ -613,6 +658,8 @@ utils.filterByTxType = (txList, type) => {
   if (type === 'transfer') return filter(txList, utils.isTransferTx)
   else if (type === 'message') return filter(txList, utils.isMessageTx)
   else if (type === 'register') return filter(txList, utils.isRegisterTx)
+  else if (type === 'stake') return filter(txList, utils.isStakeTx)
+  else if (type === 'node_reward') return filter(txList, utils.isRewardTx)
 }
 utils.sortByTimestamp = (list, direction) => {
   if (direction === 'desc') {

@@ -10,11 +10,19 @@ export default {
       type: String
     },
     onClick: {
-      type: Function
+      type: Function,
+      default: function () {
+        console.log('click')
+      }
     },
     isDisabled: {
       type: Boolean,
       default: false
+    }
+  },
+  methods: {
+    defaultOnClick () {
+      console.log('Click')
     }
   }
 }

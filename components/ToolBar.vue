@@ -44,6 +44,7 @@
           <li @click="redirect('/setting/toll')">Toll</li>
           <li @click="redirect('/setting/friends')">Friends</li>
           <li @click="redirect('/setting/network')">Network</li>
+          <li @click="redirect('/setting/stake')">Stake</li>
           <li @click="redirect('/setting/about')">About</li>
           <li @click="onSignOut">Sign Out</li>
         </ul>

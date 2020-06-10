@@ -2,6 +2,7 @@
   <v-ons-page>
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <p style="display: none">{{ isUIReady }}</p>
+    <!-- {{ networkParameters }} -->
     <div class="home-tab-container" v-if="isUIReady">
       <!-- <p v-if="getAppState">{{ getAppState.data }}</p> -->
       <div class="total-balance">
@@ -85,6 +86,8 @@ export default {
       const RawTransferTxs = utils.filterByTxType(txs, 'transfer')
       const RawMessageTxs = utils.filterByTxType(txs, 'message')
       const RawRegisterTxs = utils.filterByTxType(txs, 'register')
+      const RawStakeTxs = utils.filterByTxType(txs, 'stake')
+      const RawRewardTxs = utils.filterByTxType(txs, 'node_reward')
       const processRawTransferTxs = txList =>
         map(txList, tx => {
           return {
@@ -96,6 +99,28 @@ export default {
             timestamp: tx.timestamp,
             amount: tx.amount,
             fee: tx.fee
+          }
+        })
+      const processRawStakeTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'stake',
+            timestamp: tx.timestamp,
+            otherPersonAddress: 'NETWORK',
+            amount: tx.stake,
+            fee: 0
+          }
+        })
+      const processRawRewardTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'node_reward',
+            timestamp: tx.timestamp,
+            otherPersonAddress: 'NETWORK',
+            amount: this.networkParameters
+              ? this.networkParameters.current.nodeRewardAmount
+              : 1,
+            fee: 0
           }
         })
       const processRawMessageTxs = txList =>
@@ -118,9 +143,17 @@ export default {
           }
         })
       const transferTxs = processRawTransferTxs(RawTransferTxs)
+      const stakeTxs = processRawStakeTxs(RawStakeTxs)
+      const rewardTxs = processRawRewardTxs(RawRewardTxs)
       const messageeTxs = processRawMessageTxs(RawMessageTxs)
       const registerTx = processRegisterTxs(RawRegisterTxs)
-      const allProcessedTxs = concat(transferTxs, messageeTxs, registerTx)
+      const allProcessedTxs = concat(
+        transferTxs,
+        messageeTxs,
+        registerTx,
+        stakeTxs,
+        rewardTxs
+      )
       return utils.sortByTimestamp(allProcessedTxs, 'desc')
     }
   },

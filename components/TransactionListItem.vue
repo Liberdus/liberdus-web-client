@@ -1,12 +1,20 @@
 <template>
   <div class="transaction-list-item">
-    <!-- {{ transaction }} -->
     <div class="type-plus-address">
       <div class="transaction-type" v-if="transaction.type === 'receive'">
         Received coins from
       </div>
       <div class="transaction-type" v-else-if="transaction.type === 'send'">
         Sent coins to
+      </div>
+      <div class="transaction-type" v-else-if="transaction.type === 'stake'">
+        Add stake
+      </div>
+      <div
+        class="transaction-type"
+        v-else-if="transaction.type === 'node_reward'"
+      >
+        Received reward from
       </div>
       <div
         class="transaction-type"
@@ -47,6 +55,18 @@
         class="transaction-amount send-amount"
       >
         - {{ transaction.amount + (transaction.fee || 0.001) }}
+      </div>
+      <div
+        v-else-if="transaction.type === 'stake'"
+        class="transaction-amount send-amount"
+      >
+        - {{ transaction.amount }}
+      </div>
+      <div
+        v-else-if="transaction.type === 'node_reward'"
+        class="transaction-amount receive-amount"
+      >
+        + {{ transaction.amount }}
       </div>
       <div
         v-else-if="transaction.type === 'send_message'"
@@ -115,14 +135,14 @@ export default {
 .transaction-list-item .type-plus-address .transaction-type {
   font-family: Poppins;
   font-size: 12px;
-  color: #9a9a9a;
+  color: #5b5a5a;
   letter-spacing: -0.13px;
   text-align: left;
 }
 .transaction-list-item .timestamp {
   font-family: Poppins;
   font-size: 12px;
-  color: #9a9a9a;
+  color: #5b5a5a;
   letter-spacing: -0.13px;
   text-align: right;
 }
