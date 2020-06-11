@@ -5,7 +5,8 @@
     <div class="toll-container">
       <p v-if="getAppState">
         Current Staked Amount:
-        <strong>{{ currentStakedAmount }} Coins</strong>
+        <strong>{{ currentStakedAmount }} Coins</strong
+        ><span v-if="pendingStakeRemoval"> (pending for removal)</span>
       </p>
       <p v-else>Current Staked Amount: -</p>
       <p v-if="stakeRequired">
@@ -23,7 +24,10 @@
         @submit.prevent="onSubmitRemoveStake"
         class="toll-form"
       >
-        <Button text="Remove Stake" />
+        <Button
+          :isDisabled="pendingStakeRemoval === true"
+          text="Remove Stake"
+        />
       </form>
     </div>
   </v-ons-page>
@@ -79,6 +83,10 @@ export default {
     currentStakedAmount () {
       if (this.getAppState) return this.getAppState.data.stake || 0
       else return 0
+    },
+    pendingStakeRemoval () {
+      if (this.getAppState) return this.getAppState.data.remove_stake_request
+      else false
     }
   },
   mounted: async function () {

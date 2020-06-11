@@ -87,6 +87,7 @@ export default {
       const RawMessageTxs = utils.filterByTxType(txs, 'message')
       const RawRegisterTxs = utils.filterByTxType(txs, 'register')
       const RawStakeTxs = utils.filterByTxType(txs, 'stake')
+      const RawRemoveStakeTxs = utils.filterByTxType(txs, 'remove_stake')
       const RawRewardTxs = utils.filterByTxType(txs, 'node_reward')
       const processRawTransferTxs = txList =>
         map(txList, tx => {
@@ -105,6 +106,16 @@ export default {
         map(txList, tx => {
           return {
             type: 'stake',
+            timestamp: tx.timestamp,
+            otherPersonAddress: 'NETWORK',
+            amount: tx.stake,
+            fee: 0
+          }
+        })
+      const processRawRemoveStakeTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'remove_stake',
             timestamp: tx.timestamp,
             otherPersonAddress: 'NETWORK',
             amount: tx.stake,
@@ -144,6 +155,7 @@ export default {
         })
       const transferTxs = processRawTransferTxs(RawTransferTxs)
       const stakeTxs = processRawStakeTxs(RawStakeTxs)
+      const removeStakeTxs = processRawRemoveStakeTxs(RawRemoveStakeTxs)
       const rewardTxs = processRawRewardTxs(RawRewardTxs)
       const messageeTxs = processRawMessageTxs(RawMessageTxs)
       const registerTx = processRegisterTxs(RawRegisterTxs)
@@ -152,6 +164,7 @@ export default {
         messageeTxs,
         registerTx,
         stakeTxs,
+        removeStakeTxs,
         rewardTxs
       )
       return utils.sortByTimestamp(allProcessedTxs, 'desc')

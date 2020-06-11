@@ -8,7 +8,13 @@
         Sent coins to
       </div>
       <div class="transaction-type" v-else-if="transaction.type === 'stake'">
-        Add stake
+        Add stake to
+      </div>
+      <div
+        class="transaction-type"
+        v-else-if="transaction.type === 'remove_stake'"
+      >
+        Remove stake from
       </div>
       <div
         class="transaction-type"
@@ -61,6 +67,12 @@
         class="transaction-amount send-amount"
       >
         - {{ transaction.amount }}
+      </div>
+      <div
+        v-else-if="transaction.type === 'remove_stake'"
+        class="transaction-amount receive-amount"
+      >
+        + {{ transaction.amount }}
       </div>
       <div
         v-else-if="transaction.type === 'node_reward'"

@@ -648,6 +648,7 @@ utils.isTransferTx = tx => tx.type === 'transfer'
 utils.isMessageTx = tx => tx.type === 'message'
 utils.isRegisterTx = tx => tx.type === 'register'
 utils.isStakeTx = tx => tx.type === 'stake'
+utils.isRemoveStakeTx = tx => tx.type === 'remove_stake'
 utils.isRewardTx = tx => tx.type === 'node_reward'
 utils.isSender = (tx, myAddress) => tx.from === myAddress
 utils.getTransferType = (tx, myAddress) =>
@@ -659,6 +660,7 @@ utils.filterByTxType = (txList, type) => {
   else if (type === 'message') return filter(txList, utils.isMessageTx)
   else if (type === 'register') return filter(txList, utils.isRegisterTx)
   else if (type === 'stake') return filter(txList, utils.isStakeTx)
+  else if (type === 'remove_stake') return filter(txList, utils.isRemoveStakeTx)
   else if (type === 'node_reward') return filter(txList, utils.isRewardTx)
 }
 utils.sortByTimestamp = (list, direction) => {
