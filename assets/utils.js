@@ -493,6 +493,27 @@ utils.removeStake = (stake, keys) => {
     })
   })
 }
+utils.requestRemoveStake = (stake, keys) => {
+  const tx = {
+    type: 'remove_stake_request',
+    network,
+    from: keys.publicKey,
+    stake: stake,
+    timestamp: Date.now()
+  }
+  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  console.log(tx)
+  return new Promise(resolve => {
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success) {
+        resolve(true)
+      } else {
+        resolve(false)
+      }
+    })
+  })
+}
 
 utils.sendMessage = async (text, sourceAcc, targetHandle) => {
   const source = sourceAcc.entry

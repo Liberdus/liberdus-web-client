@@ -20,14 +20,24 @@
         <Button text="Add Stake" />
       </form>
       <form
-        v-if="currentStakedAmount > 0"
+        v-if="currentStakedAmount > 0 && !pendingStakeRemoval"
+        @submit.prevent="onSubmitRequestRemoveStake"
+        class="toll-form"
+      >
+        <Button v-if="!pendingStakeRemoval" text="Request to remove stake" />
+      </form>
+      <form
+        v-if="currentStakedAmount > 0 && pendingStakeRemoval"
         @submit.prevent="onSubmitRemoveStake"
         class="toll-form"
       >
-        <Button
-          :isDisabled="pendingStakeRemoval === true"
-          text="Remove Stake"
-        />
+        <div v-if="pendingStakeRemoval">
+          <Button text="Remove stake" :isDisabled="!isReadyToRemoveStake" />
+          <p style="font-size: 13px">
+            Your stake can be removed at
+            <strong v-if="timeToRemoveStake">{{ timeToRemoveStake }}</strong>
+          </p>
+        </div>
       </form>
     </div>
   </v-ons-page>
@@ -42,6 +52,7 @@ import OnsenComponents from '~/components/Onsen'
 import ChatText from '~/components/ChatText'
 import ChatInput from '~/components/ChatInput'
 import { mapGetters } from 'vuex'
+import moment from 'moment'
 import utils from '../../assets/utils'
 import ToolBar from '~/components/ToolBar'
 import Title from '~/components/baisc/Title'
@@ -61,6 +72,7 @@ export default {
   },
   data: function () {
     return {
+      network: null,
       amount: '',
       stakeRequired: null
     }
@@ -85,13 +97,36 @@ export default {
       else return 0
     },
     pendingStakeRemoval () {
-      if (this.getAppState) return this.getAppState.data.remove_stake_request
+      if (this.getAppState)
+        return this.getAppState.data.remove_stake_request !== null
       else false
+    },
+    timestampToRemoveStake () {
+      if (this.pendingStakeRemoval && this.network) {
+        let nodeRewardInterval = this.network.current.nodeRewardInterval
+        return (
+          this.getAppState.data.remove_stake_request + 2 * nodeRewardInterval
+        )
+      }
+    },
+    timeToRemoveStake () {
+      if (this.timestampToRemoveStake) {
+        return moment(this.timestampToRemoveStake).format(
+          'MMMM Do YYYY, h:mm:ss a'
+        )
+      }
+    },
+    isReadyToRemoveStake () {
+      if (this.timestampToRemoveStake) {
+        return Date.now() >= this.timestampToRemoveStake
+      }
     }
   },
   mounted: async function () {
     let network = await utils.queryParameters()
     console.log(network)
+    this.network = network
+
     this.stakeRequired = network.current.stakeRequired
   },
   methods: {
@@ -107,6 +142,16 @@ export default {
     },
     async onSubmitRemoveStake () {
       let isSubmitted = await utils.removeStake(
+        this.stakeRequired,
+        this.getWallet.entry.keys
+      )
+      if (isSubmitted) {
+        this.amount = ''
+        this.notify('Your transaction is submitted to network.')
+      }
+    },
+    async onSubmitRequestRemoveStake () {
+      let isSubmitted = await utils.requestRemoveStake(
         this.stakeRequired,
         this.getWallet.entry.keys
       )
