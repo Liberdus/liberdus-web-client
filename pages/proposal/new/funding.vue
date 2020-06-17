@@ -114,10 +114,13 @@
           <strong>{{ secondsToDhms }}</strong
           >.
         </p>
+        <p v-if="allowProposal && !isDevIssueGenerated">
+          Waiting to get developer issue number.
+        </p>
         <Button
           text="Submit Proposal"
           :onClick="onSubmitProposal"
-          :isDisabled="!allowProposal"
+          :isDisabled="!allowProposal || !isDevIssueGenerated"
         />
         <p
           v-if="
@@ -191,7 +194,8 @@ export default {
       remainingSecondToProposalWindow: null,
       loading: true,
       window: null,
-      previousWindow: null
+      previousWindow: null,
+      isDevIssueGenerated: null
     }
   },
   computed: {
@@ -250,6 +254,7 @@ export default {
 
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isDevProposalWindowOpen()
+      this.isDevIssueGenerated = await this.checkDevIssue()
     }, 10000)
 
     this.proposalWindowTimer = setInterval(
@@ -264,6 +269,11 @@ export default {
     this.proposalWindowTimer = null
   },
   methods: {
+    async checkDevIssue () {
+      if (!this.getWindowFocus) return
+      let latestDevIssue = await utils.queryLatestDevIssue()
+      if (latestDevIssue) return true
+    },
     async isDevProposalWindowOpen () {
       try {
         if (!this.getWindowFocus) return

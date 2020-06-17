@@ -227,9 +227,7 @@
       </section>
       <div
         class="choice-list"
-        v-if="
-          !proposal.hasOwnProperty('approved') && currentWindowName === 'VOTING'
-        "
+        v-if="proposal.approved === null && currentWindowName === 'VOTING'"
       >
         <button
           :class="{
@@ -259,9 +257,7 @@
         class="text-input"
         v-model="voteAmount"
         v-on:keyup="onEnterVote"
-        v-if="
-          !proposal.hasOwnProperty('approved') && currentWindowName === 'VOTING'
-        "
+        v-if="proposal.approved === null && currentWindowName === 'VOTING'"
       />
 
       <div class="proposal-footer">

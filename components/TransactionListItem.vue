@@ -1,103 +1,9 @@
 <template>
   <div class="transaction-list-item">
-    <div class="type-plus-address">
-      <div class="transaction-type" v-if="transaction.type === 'receive'">
-        Received coins from
-      </div>
-      <div class="transaction-type" v-else-if="transaction.type === 'send'">
-        Sent coins to
-      </div>
-      <div class="transaction-type" v-else-if="transaction.type === 'stake'">
-        Add stake to
-      </div>
-      <div
-        class="transaction-type"
-        v-else-if="transaction.type === 'remove_stake'"
-      >
-        Remove stake from
-      </div>
-      <div
-        class="transaction-type"
-        v-else-if="transaction.type === 'node_reward'"
-      >
-        Received reward from
-      </div>
-      <div
-        class="transaction-type"
-        v-else-if="transaction.type === 'send_message'"
-      >
-        Sent message to
-      </div>
-      <div
-        class="transaction-type"
-        v-else-if="transaction.type === 'receive_message'"
-      >
-        Receive message from
-      </div>
-      <div class="transaction-type" v-else-if="transaction.type === 'register'">
-        Register as
-      </div>
-
-      <p v-if="transaction.type === 'register'" class="other-person-address">
-        @{{ transaction.alias }}
-      </p>
-      <p v-else-if="otherPersonHandle" class="other-person-address">
-        @{{ otherPersonHandle }}
-      </p>
-      <p v-else class="other-person-address">
-        {{ transaction.otherPersonAddress }}
-      </p>
-    </div>
+    <transaction-message :transaction="transaction" />
     <div class="timestamp-plus-amount">
       <div class="timestamp">{{ timestamp }}</div>
-      <div
-        v-if="transaction.type === 'receive'"
-        class="transaction-amount receive-amount"
-      >
-        + {{ transaction.amount.toFixed(3) }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'send'"
-        class="transaction-amount send-amount"
-      >
-        - {{ transaction.amount + (transaction.fee || 0.001) }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'stake'"
-        class="transaction-amount send-amount"
-      >
-        - {{ transaction.amount }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'remove_stake'"
-        class="transaction-amount receive-amount"
-      >
-        + {{ transaction.amount }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'node_reward'"
-        class="transaction-amount receive-amount"
-      >
-        + {{ transaction.amount }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'send_message'"
-        class="transaction-amount send-amount"
-      >
-        - {{ transaction.amount + (transaction.fee || 0.001) }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'receive_message'"
-        class="transaction-amount receive-amount"
-      >
-        + {{ transaction.amount.toFixed(3) }}
-      </div>
-      <div
-        v-else-if="transaction.type === 'register'"
-        class="transaction-amount send-amount"
-      >
-        - {{ transaction.amount.toFixed(3) }}
-      </div>
+      <transaction-amount :transaction="transaction" />
     </div>
   </div>
 </template>
@@ -105,7 +11,13 @@
 <script>
 import moment from 'moment'
 import utils from '../assets/utils'
+import TransactionMessage from './TransactionMessage'
+import TransactionAmount from './TransactionAmount'
 export default {
+  components: {
+    TransactionMessage,
+    TransactionAmount
+  },
   props: ['transaction'],
   data: function () {
     return {
@@ -135,7 +47,7 @@ export default {
   align-items: flex-start;
 }
 .transaction-list-item .type-plus-address {
-  width: 140px;
+  width: 180px;
 }
 .transaction-list-item .timestamp-plus-amount {
   width: 50%;

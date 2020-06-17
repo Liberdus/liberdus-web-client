@@ -666,6 +666,11 @@ utils.getDevProposalCount = async function () {
 }
 
 utils.isTransferTx = tx => tx.type === 'transfer'
+utils.isProposalTx = tx => tx.type === 'proposal'
+utils.isDevProposalTx = tx => tx.type === 'dev_proposal'
+utils.isVoteTx = tx => tx.type === 'vote'
+utils.isDevVoteTx = tx => tx.type === 'dev_vote'
+utils.isDevPaymentTx = tx => tx.type === 'developer_payment'
 utils.isMessageTx = tx => tx.type === 'message'
 utils.isRegisterTx = tx => tx.type === 'register'
 utils.isStakeTx = tx => tx.type === 'stake'
@@ -678,6 +683,12 @@ utils.getMessageType = (tx, myAddress) =>
   utils.isSender(tx, myAddress) ? 'send_message' : 'receive_message'
 utils.filterByTxType = (txList, type) => {
   if (type === 'transfer') return filter(txList, utils.isTransferTx)
+  else if (type === 'proposal') return filter(txList, utils.isProposalTx)
+  else if (type === 'dev_proposal') return filter(txList, utils.isDevProposalTx)
+  else if (type === 'vote') return filter(txList, utils.isVoteTx)
+  else if (type === 'dev_vote') return filter(txList, utils.isDevVoteTx)
+  else if (type === 'developer_payment')
+    return filter(txList, utils.isDevPaymentTx)
   else if (type === 'message') return filter(txList, utils.isMessageTx)
   else if (type === 'register') return filter(txList, utils.isRegisterTx)
   else if (type === 'stake') return filter(txList, utils.isStakeTx)

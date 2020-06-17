@@ -89,6 +89,11 @@ export default {
       const RawStakeTxs = utils.filterByTxType(txs, 'stake')
       const RawRemoveStakeTxs = utils.filterByTxType(txs, 'remove_stake')
       const RawRewardTxs = utils.filterByTxType(txs, 'node_reward')
+      const RawProposalTxs = utils.filterByTxType(txs, 'proposal')
+      const RawDevProposalTxs = utils.filterByTxType(txs, 'dev_proposal')
+      const RawVoteTxs = utils.filterByTxType(txs, 'vote')
+      const RawDevVoteTxs = utils.filterByTxType(txs, 'dev_vote')
+      const RawDevPaymentTxs = utils.filterByTxType(txs, 'developer_payment')
       const processRawTransferTxs = txList =>
         map(txList, tx => {
           return {
@@ -153,19 +158,78 @@ export default {
             amount: 0.001
           }
         })
+      const processProposalTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'proposal',
+            otherPersonAddress: 'NETWORK',
+            timestamp: tx.timestamp,
+            amount: this.networkParameters
+              ? this.networkParameters.current.proposalFee
+              : 1
+          }
+        })
+      const processDevProposalTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'dev_proposal',
+            otherPersonAddress: 'NETWORK',
+            timestamp: tx.timestamp,
+            amount: this.networkParameters
+              ? this.networkParameters.current.devProposalFee
+              : 1
+          }
+        })
+      const processVoteTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'vote',
+            otherPersonAddress: 'NETWORK',
+            timestamp: tx.timestamp,
+            amount: tx.amount
+          }
+        })
+      const processDevVoteTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'dev_vote',
+            otherPersonAddress: 'NETWORK',
+            timestamp: tx.timestamp,
+            amount: tx.amount
+          }
+        })
+      const processDevPaymentTxs = txList =>
+        map(txList, tx => {
+          return {
+            type: 'developer_payment',
+            otherPersonAddress: 'NETWORK',
+            timestamp: tx.timestamp,
+            amount: tx.payment.amount
+          }
+        })
       const transferTxs = processRawTransferTxs(RawTransferTxs)
       const stakeTxs = processRawStakeTxs(RawStakeTxs)
       const removeStakeTxs = processRawRemoveStakeTxs(RawRemoveStakeTxs)
       const rewardTxs = processRawRewardTxs(RawRewardTxs)
       const messageeTxs = processRawMessageTxs(RawMessageTxs)
       const registerTx = processRegisterTxs(RawRegisterTxs)
+      const proposalTxs = processProposalTxs(RawProposalTxs)
+      const devProposalTxs = processDevProposalTxs(RawDevProposalTxs)
+      const voteTxs = processVoteTxs(RawVoteTxs)
+      const devVoteTxs = processDevVoteTxs(RawDevVoteTxs)
+      const devPaymentTxs = processDevPaymentTxs(RawDevPaymentTxs)
       const allProcessedTxs = concat(
         transferTxs,
         messageeTxs,
         registerTx,
         stakeTxs,
         removeStakeTxs,
-        rewardTxs
+        rewardTxs,
+        proposalTxs,
+        devProposalTxs,
+        voteTxs,
+        devVoteTxs,
+        devPaymentTxs
       )
       return utils.sortByTimestamp(allProcessedTxs, 'desc')
     }
