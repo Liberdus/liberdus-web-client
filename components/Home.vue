@@ -2,9 +2,8 @@
   <v-ons-page>
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <p style="display: none">{{ isUIReady }}</p>
-    <!-- {{ networkParameters }} -->
     <div class="home-tab-container" v-if="isUIReady">
-      <!-- <p v-if="getAppState">{{ getAppState.data }}</p> -->
+      <!-- <p v-if="getAppState">{{ getAppState }}</p> -->
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
           {{ getAppState.data.balance.toFixed(3) }}
@@ -13,6 +12,10 @@
         <h1 v-else>
           <v-ons-progress-circular indeterminate></v-ons-progress-circular>
         </h1>
+        <p class="register-reminder" v-if="!getAppState.emailHash">
+          <nuxt-link to="/email/register"><strong>Register</strong></nuxt-link>
+          your email to earn some coins
+        </p>
       </div>
       <div>
         <h4 v-if="getAppState" class="user-alias">@{{ getWallet.handle }}</h4>
@@ -62,7 +65,8 @@ export default {
   data: function () {
     return {
       lastMessage: null,
-      lastTx: null
+      lastTx: null,
+      previousUrl: null
     }
   },
   computed: {
@@ -253,6 +257,11 @@ export default {
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
       addTimer: 'chat/addTimer'
     }),
+    notifyToRegisterEmail () {
+      this.$ons.notification.alert(
+        'Please register your email to earn some initial coins.'
+      )
+    },
     getLastTxFromAPI () {
       if (!this.getAppState) return
       let txs = this.getAppState.data.transactions
@@ -516,6 +525,14 @@ export default {
   position: relative;
   top: -15px;
   left: -10px;
+}
+.register-reminder {
+  text-align: center;
+  color: #ff6c00;
+  margin-bottom: 15px;
+}
+.register-reminder a {
+  text-decoration: underline;
 }
 .new-message-btn {
   margin: 20px auto;

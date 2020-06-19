@@ -85,6 +85,7 @@ export default {
       offlineSlot: 'offline',
       nodeHealthChecker: null,
       nodeRotator: null,
+      prevRoute: null,
       tabs: [
         {
           icon: 'ion-ios-wallet',
