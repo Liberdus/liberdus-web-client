@@ -12,7 +12,7 @@
         <h1 v-else>
           <v-ons-progress-circular indeterminate></v-ons-progress-circular>
         </h1>
-        <p class="register-reminder" v-if="!getAppState.emailHash">
+        <p class="register-reminder" v-if="getAppState && !getAppState.emailHash">
           <nuxt-link to="/email/register"><strong>Register</strong></nuxt-link>
           your email to earn some coins
         </p>
