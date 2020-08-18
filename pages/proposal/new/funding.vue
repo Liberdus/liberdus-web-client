@@ -121,13 +121,13 @@
         <p
           v-if="
             networkParameters.CURRENT.devProposalFee &&
-              networkParameters.CURRENT.transactionFee
+              networkParameters.current.transactionFee
           "
         >
           Submitting proposal will cost Proposal Fee:
           <strong>{{ networkParameters.CURRENT.devProposalFee }}</strong> coins
           + Transaction Fee:
-          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+          <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
     </div>
