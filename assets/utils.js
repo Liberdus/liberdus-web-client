@@ -922,7 +922,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
     to: targetAddress,
     amount: parseFloat(amount),
     timestamp: Date.now(),
-    fee: parameters.CURRENT.transactionFee || 0.001
+    fee: parameters.current.transactionFee || 0.001
   }
   crypto.signObj(tx, keys.secretKey, keys.publicKey)
   console.log(tx)

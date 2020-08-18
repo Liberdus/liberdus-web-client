@@ -68,8 +68,8 @@ export default {
     const to = await utils.getAddress(this.friend);
     this.requiredToll = await utils.getToll(to, this.getWallet.entry.address);
     const network = await utils.queryParameters();
-    if (network.CURRENT.transactionFee) {
-      this.requiredFee = network.CURRENT.transactionFee;
+    if (network.current.transactionFee) {
+      this.requiredFee = network.current.transactionFee;
     }
   }
 };

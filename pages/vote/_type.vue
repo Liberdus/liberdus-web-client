@@ -41,12 +41,12 @@
         v-if="
           allowVote &&
             networkParameters &&
-            networkParameters.CURRENT.transactionFee
+            networkParameters.current.transactionFee
         "
       >
         Submitting votes will cost vote amount total:
         <strong>{{ totalVoteAmount }}</strong> coins + Transaction Fee:
-        <strong>{{ networkParameters.CURRENT.transactionFee }}</strong>
+        <strong>{{ networkParameters.current.transactionFee }}</strong>
         coins
       </p>
       <p v-if="!allowVote">

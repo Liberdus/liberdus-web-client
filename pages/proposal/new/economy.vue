@@ -120,7 +120,7 @@
             <tr>
               <td class="parameter-name">Transaction Fee</td>
               <td class="current-value">
-                {{ networkParameters.CURRENT.transactionFee }}
+                {{ networkParameters.current.transactionFee }}
               </td>
               <td class="new-value">
                 <input type="number" v-model="form.transactionFee" required />
@@ -165,13 +165,13 @@
         <p
           v-if="
             networkParameters.CURRENT.proposalFee &&
-              networkParameters.CURRENT.transactionFee
+              networkParameters.current.transactionFee
           "
         >
           Submitting proposal will cost Proposal Fee:
           <strong>{{ networkParameters.CURRENT.proposalFee }}</strong> coins +
           Transaction Fee:
-          <strong>{{ networkParameters.CURRENT.transactionFee }}</strong> coins
+          <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
     </form>

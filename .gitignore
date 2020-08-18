@@ -3,3 +3,4 @@ node_modules/
 dist/
 static/sw.*
 .vscode/
+.DS_Store
