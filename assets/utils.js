@@ -1,12 +1,13 @@
 /* eslint-disable no-console */
 import axios from 'axios'
-import CONFIG from '../config'
 import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
+// eslint-disable-next-line no-unused-vars
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 import config from '../config'
 let host
-const defaultSeedNode = `${CONFIG.server.ip}:${CONFIG.server.port}`
+const defaultSeedNode = `${config.server.ip}:${config.server.port}`
+// eslint-disable-next-line no-undef
 const storedSeedNode = localStorage.getItem('seednode')
 const seedNodeHost = storedSeedNode || defaultSeedNode
 const utils = {}
@@ -47,7 +48,6 @@ utils.isServerActive = async () => {
   } catch (e) {
     return false
   }
-  return true
 }
 
 utils.getProxyUrl = function (url, option) {
@@ -78,7 +78,7 @@ utils.getRandomHost = async () => {
   if (!randHost) {
     throw new Error('Unable to get random host')
   }
-  if (randHost.ip === '127.0.0.1') {
+  if (randHost.ip === '127.0.0.1' || randHost.ip === 'localhost') {
     randHost.ip = seedNodeHost.split(':')[0]
   }
   return randHost
@@ -87,12 +87,13 @@ utils.getRandomHost = async () => {
 utils.updateSeedNodeHostLocally = async (ip, port) => {
   const seedNodeHost = `${ip}:${port}`
   console.log('Seed node is updated locally')
+  // eslint-disable-next-line no-undef
   localStorage.setItem('seednode', seedNodeHost)
 }
 
 utils.isSeedNodeOnline = async (ip, port) => {
   try {
-    const seedNodeHost = `${ip}:${port}`
+    // const seedNodeHost = `${ip}:${port}`
     const res = await axios.get(utils.getProxyUrl('/nodelist', { ip, port }), {
       timeout: 10000
     })
@@ -122,21 +123,25 @@ utils.createAccount = (keys = crypto.generateKeypair()) => {
 
 utils.saveWallet = newWalletEntry => {
   try {
+    // eslint-disable-next-line no-undef
     const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
     const newWallet = [...existingWalletList]
       .filter(w => w.handle !== newWalletEntry.handle)
       .concat(newWalletEntry)
     console.log('new wallet', newWallet)
+    // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify(newWallet))
   } catch (e) {
     console.log(e)
     console.log(JSON.stringify([newWalletEntry]))
+    // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
   }
 }
 
 utils.loadWallet = username => {
   try {
+    // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('wallets')
     const walletList = JSON.parse(loadedEntries)
     return walletList.find(w => w.handle === username)
@@ -147,6 +152,7 @@ utils.loadWallet = username => {
 
 utils.loadLastMessage = username => {
   try {
+    // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastMessage')
     const lastMessage = JSON.parse(loadedEntries)
     return lastMessage[username]
@@ -157,6 +163,7 @@ utils.loadLastMessage = username => {
 
 utils.loadLastTx = username => {
   try {
+    // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastTx')
     const lastTx = JSON.parse(loadedEntries)
     return lastTx[username]
@@ -643,8 +650,7 @@ utils.filterByTxType = (txList, type) => {
   else if (type === 'dev_proposal') return filter(txList, utils.isDevProposalTx)
   else if (type === 'vote') return filter(txList, utils.isVoteTx)
   else if (type === 'dev_vote') return filter(txList, utils.isDevVoteTx)
-  else if (type === 'developer_payment')
-    return filter(txList, utils.isDevPaymentTx)
+  else if (type === 'developer_payment') return filter(txList, utils.isDevPaymentTx)
   else if (type === 'message') return filter(txList, utils.isMessageTx)
   else if (type === 'register') return filter(txList, utils.isRegisterTx)
   else if (type === 'stake') return filter(txList, utils.isStakeTx)
@@ -905,7 +911,7 @@ utils.createVote = async function (
 ) {
   const source = sourceAcc.entry
   const issueCount = await utils.getIssueCount()
-  const proposalCount = await utils.getProposalCount()
+  // const proposalCount = await utils.getProposalCount()
   const tx = {
     type: 'vote',
     network,
@@ -1021,6 +1027,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
 }
 
 utils.playSoundFile = soundFile => {
+  // eslint-disable-next-line no-undef
   const audio = new Audio(soundFile)
   audio.play()
 }

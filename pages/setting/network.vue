@@ -206,6 +206,7 @@ export default {
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
+  margin-top: 80px;
   text-align: center;
   p {
     text-align: left;

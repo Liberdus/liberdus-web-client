@@ -1,3 +1,7 @@
 module.exports = {
-    "extends": "standard"
+    "extends": "standard",
+    "globals": {
+        "localStorage": true,
+        "fetch": true
+    }
 };

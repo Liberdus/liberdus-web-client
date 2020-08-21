@@ -102,6 +102,7 @@ export default {
   width: 100%;
   max-width: 600px;
   margin: 0 auto;
+  margin-top: 50px;
   height: auto;
   text-align: center;
   padding: 20px;
