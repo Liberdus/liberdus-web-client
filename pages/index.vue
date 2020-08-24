@@ -1,5 +1,6 @@
 <template>
-  <v-ons-page>
+  <!-- <v-ons-page> -->
+  <div>
     <notifications
       group="new-message"
       position="bottom left"
@@ -7,10 +8,10 @@
       classes="my-notification-style"
     />
     <!-- <v-offline @detected-condition="handleConnectivityChange"></v-offline> -->
-    <tool-bar
+    <!-- <tool-bar
       v-if="isUIReady"
       :option="{ menu: true, notification: true, back: false }"
-    />
+    /> -->
     <!-- <v-ons-tabbar
       swipeable
       position="top"
@@ -19,7 +20,7 @@
       :index.sync="activeIndex"
     ></v-ons-tabbar>-->
     <p style="display: none">{{ isUIReady }}</p>
-    <v-ons-tabbar
+    <!-- <v-ons-tabbar
       v-if="isUIReady"
       swipeable
       position="top"
@@ -41,8 +42,31 @@
         :key="tabs[i].label"
         @click="onSelectTab($event, tabs[i])"
       ></v-ons-tab>
-    </v-ons-tabbar>
-  </v-ons-page>
+    </v-ons-tabbar> -->
+    <a-tabs default-active-key="wallet" size="large">
+      <a-tab-pane 
+        key="wallet" 
+        tab="Wallet">
+          <home />
+      </a-tab-pane>
+      <a-tab-pane 
+        key="message" 
+        tab="Message">
+          <message />
+      </a-tab-pane>
+      <a-tab-pane 
+        key="funding-list" 
+        tab="Funding">
+          <funding-list />
+      </a-tab-pane>
+      <a-tab-pane 
+        key="proosal-list" 
+        tab="Proposal">
+          <proposal-list />
+      </a-tab-pane>
+    </a-tabs>
+  </div>
+  <!-- </v-ons-page> -->
 </template>
 
 <script>
@@ -70,6 +94,7 @@ Vue.use(Notifications)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     Message,
     Home,

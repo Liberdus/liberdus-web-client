@@ -1,5 +1,6 @@
 <template>
-  <v-ons-page>
+  <!-- <v-ons-page> -->
+  <div>
     <notification :lastMessage="lastMessage" :lastTx="lastTx" />
     <p style="display: none">{{ isUIReady }}</p>
     <div class="home-tab-container" v-if="isUIReady">
@@ -41,7 +42,8 @@
         </v-ons-list-item>
       </v-ons-list>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>

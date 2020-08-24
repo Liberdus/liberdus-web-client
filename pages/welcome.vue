@@ -5,18 +5,42 @@
       :style="{ backgroundImage: `url(${backgroundUrl})` }"
     >
       <div class="welcome-content">
-        <Title text="Getting Started" />
+        <!-- <Title text="Getting Started" /> -->
+        <a-row type="flex" justify="space-around" :gutter="[20,20]">
+          <a-col :span="24">
+            <h1>Get Started</h1>
+          </a-col>
+          <a-col :span="24">
+            <h2>Welcome to the Liberdus web wallet v{{ version }}</h2>
+          </a-col>
+          <a-col :span="12">
+            <a-button type="primary" size="large" @click="onCreateAccount">
+              Sign In
+            </a-button>
+          </a-col>
+          <a-col :span="12">
+            <a-button size="large" @click="onImportAccount">
+              Import Account
+            </a-button>
+          </a-col>
+          <a-col :span="12">
+            <p style="text-align: center">
+              Change network setting
+              <nuxt-link class="link-to-import" to="/setting/network"
+                ><strong>here</strong></nuxt-link
+              >.
+            </p>
+          </a-col>
+        </a-row>
+        
+        <!-- <a-button type="primary">
+          Primary
+        </a-button>
         <Button text="Sign In or Create Account" :onClick="onCreateAccount" />
-        <Button-Outline text="Import Account" :onClick="onImportAccount" />
-        <p class="already-registered" style="text-align: center">
-          Change network setting
-          <nuxt-link class="link-to-import" to="/setting/network"
-            ><strong>here</strong></nuxt-link
-          >.
-        </p>
-        <p class="version">
+        <Button-Outline text="Import Account" :onClick="onImportAccount" /> -->
+        <!-- <p class="version">
           <em>V {{ version }}</em>
-        </p>
+        </p> -->
       </div>
     </div>
   </v-ons-page>
@@ -27,6 +51,7 @@ import Vue from 'vue'
 import 'onsenui/css/onsenui.css'
 import 'onsenui/css/onsen-css-components.css'
 import VueOnsen from 'vue-onsenui/esm'
+// import { Button } from 'ant-design-vue';
 import OnsenComponents from '~/components/Onsen'
 import ChatText from '~/components/ChatText'
 import ChatInput from '~/components/ChatInput'
@@ -37,6 +62,7 @@ import backgroundUrl from '~/assets/images/liberdus_background.png'
 import config from '~/config'
 
 Vue.use(VueOnsen)
+// Vue.use(Button)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 export default {
   components: { Button, ButtonOutline, Title },
@@ -58,7 +84,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .welcome-container {
   display: flex;
   flex-direction: column;
@@ -72,7 +98,24 @@ export default {
   background-attachment: fixed;
   background-position-x: center;
   background-position-y: 100px;
+
+  h1 {
+    margin: 0px;
+    text-align: center;
+    font-size: 48px;
+  }
+
+  h2 {
+    margin-top: 0px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .ant-btn {
+    width: 100%;
+  }
 }
+
 .welcome-container .new-message-btn {
   font-size: 11px;
   color: #43b8e7;

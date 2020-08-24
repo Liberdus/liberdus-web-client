@@ -1,5 +1,5 @@
 <template>
-  <v-ons-page>
+  <!-- <v-ons-page> -->
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <div class="message-tab-container">
       <button
@@ -16,7 +16,7 @@
         </v-ons-list-item>
       </v-ons-list>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
 </template>
 
 <script>

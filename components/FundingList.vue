@@ -1,5 +1,6 @@
 <template>
-  <v-ons-page>
+  <!-- <v-ons-page> -->
+  <div>
     <button
       class="white-button new-funding-button"
       @click="$router.push('/proposal/new/funding')"
@@ -21,7 +22,8 @@
     >
       <v-ons-icon icon="ion-ios-cash" size="lg"></v-ons-icon>Funded Projects
     </button>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,6 @@
 <template>
-  <v-ons-page>
+  <!-- <v-ons-page> -->
+  <div>
     <button
       class="white-button new-proposal-button"
       @click="$router.push('/proposal/new/economy')"
@@ -14,7 +15,8 @@
       <v-ons-icon icon="ion-ios-checkmark-circle-outline" size="lg"></v-ons-icon
       >Vote Proposals
     </button>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
