@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true}" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="import-account-container">
       <p class="secret-key-warning">
         Do not share your
@@ -12,7 +13,8 @@
       <qriously :value="secretKey" :size="200" class="qr-code" />
       <Button text="Copy Secret Key" :onClick="onCopy" />
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -35,6 +37,7 @@ Vue.use(VueQriously);
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 
 export default {
+  layout: 'dashboard',
   components: {
     Title,
     Button,

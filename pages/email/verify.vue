@@ -1,13 +1,14 @@
 <template>
-  <v-ons-page>
-    <tool-bar
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar
       :option="{
         menu: false,
         notification: false,
         back: true,
         backUrl: '/email/register'
       }"
-    />
+    /> -->
     <div v-if="checkingCode" class="checkingCode-container">
       <v-ons-progress-circular indeterminate></v-ons-progress-circular>
       <p class="body">Checking verification code</p>
@@ -51,7 +52,8 @@
         />
       </form>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -81,6 +83,7 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     Title,
     Button,

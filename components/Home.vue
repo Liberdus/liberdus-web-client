@@ -23,14 +23,31 @@
       </div>
       <div class="wallet-action-container">
         <div class="wallet-action">
-          <button class="white-button" @click="$router.push('/wallet/send')">
+          <!-- <button class="white-button" @click="$router.push('/wallet/send')">
             <v-ons-icon icon="ion-ios-send" size="lg"></v-ons-icon>Send
-          </button>
+          </button> -->
+          <a-button 
+            type="primary" 
+            shape="round" 
+            size="large" 
+            icon="check" 
+            @click="$router.push('/wallet/send')"
+          >
+            Send
+          </a-button>
         </div>
         <div class="wallet-action">
-          <button class="white-button" @click="$router.push('/wallet/receive')">
+          <!-- <button class="white-button" @click="$router.push('/wallet/receive')">
             <v-ons-icon icon="ion-ios-download" size="lg"></v-ons-icon>Receive
-          </button>
+          </button> -->
+          <a-button 
+            shape="round" 
+            size="large" 
+            icon="download"
+            @click="$router.push('/wallet/receive')"
+          >
+            Receive
+          </a-button>
         </div>
       </div>
       <v-ons-list id="transaction-list">
@@ -547,7 +564,7 @@ export default {
   display: flex;
   justify-content: space-around;
   margin-bottom: 30px;
-  max-width: 600px;
+  max-width: 400px;
   margin: 50px auto;
 }
 .wallet-action {

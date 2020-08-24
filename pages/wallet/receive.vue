@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true }" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <!-- TODO: -->
     <div class="receive-container" v-if="getWallet.handle">
       <Title text="Receive Coins" />
@@ -28,7 +29,8 @@
         <Button text="Copy Account Address" :onClick="onCopyAddress" />
       </div>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -51,6 +53,7 @@ Vue.use(VueQriously)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     Title,
     Button,

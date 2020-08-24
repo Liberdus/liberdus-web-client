@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true, title: `Friend Setting`}" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true, title: `Friend Setting`}" /> -->
 
     <div class="friend-setting-container">
       <div class="new-message-input-container">
@@ -52,7 +53,8 @@
         </v-ons-list>
       </div>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -73,6 +75,7 @@ Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 
 export default {
+  layout: 'dashboard',
   components: {
     ChatText,
     ChatInput,

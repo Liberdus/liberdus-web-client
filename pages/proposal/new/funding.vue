@@ -1,13 +1,14 @@
 <template>
-  <v-ons-page>
-    <tool-bar
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar
       :option="{
         menu: false,
         notification: false,
         back: true,
         redirectUrl: '/'
       }"
-    />
+    /> -->
     <!-- {{ window }} -->
     <div class="funding-create-container">
       <h2 class="title-2">New Funding Proposal</h2>
@@ -135,7 +136,8 @@
         </p>
       </div>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -159,6 +161,7 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     ToolBar,
     Button,

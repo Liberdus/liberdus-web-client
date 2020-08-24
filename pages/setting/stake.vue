@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true }" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
 
     <div class="toll-container">
       <p v-if="getAppState">
@@ -40,7 +41,8 @@
         </div>
       </form>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -65,6 +67,7 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     Title,
     Button,

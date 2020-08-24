@@ -1,13 +1,14 @@
 <template>
-  <v-ons-page>
-    <tool-bar
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar
       :option="{
         menu: false,
         notification: false,
         back: true,
         redirectUrl: '/'
       }"
-    />
+    /> -->
     <div class="proposal-detail-container">
       <h2 class="proposal-title">{{ proposalTitle }}</h2>
       <h4 class="proposal-type" v-if="proposal.type === 'proposal'">
@@ -104,7 +105,8 @@
 
       <Button text="Vote" :onClick="submitVote" :isDisabled="!allowVoting" />
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -128,6 +130,7 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     ToolBar,
     Button,

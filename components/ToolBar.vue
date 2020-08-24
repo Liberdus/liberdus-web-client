@@ -1,7 +1,7 @@
 <template>
   <v-ons-toolbar>
     <div class="left">
-      <button v-if="option.back" @click="redirect(option.backUrl || '/')">
+      <button v-if="option.back" @click="redirect(option.backUrl || '/')" class="toolbar-back-button">
         <v-ons-icon icon="ion-ios-arrow-back" size="lg"></v-ons-icon>
       </button>
       <img v-else src="../assets/images/loading-logo.png" class="main-logo" />
@@ -167,6 +167,14 @@ export default {
 }
 </script>
 <style scoped lang="scss">
+.toolbar-back-button {
+  position: relative;
+  .ons-icon {
+    position: absolute;
+    top: 15px;
+    left: 17px;
+  }
+}
 .toolbar__title {
   font-family: Poppins;
   font-size: 20px;

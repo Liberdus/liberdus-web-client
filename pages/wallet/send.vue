@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true }" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div class="send-coins-container">
       <Title text="Send Coins" />
       <div v-if="loading" class="loading-status">
@@ -104,7 +105,8 @@
         <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
       </div>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -128,6 +130,7 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
+  layout: 'dashboard',
   components: {
     QReader,
     Title,
