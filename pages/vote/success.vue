@@ -1,6 +1,7 @@
 <template>
-  <v-ons-page>
-    <tool-bar :option="{ menu: false, notification: false, back: true }" />
+  <!-- <v-ons-page> -->
+  <div>
+    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div
       class="loading-status"
       v-if="!loading && (!window || !window.votingWindow)"
@@ -22,7 +23,8 @@
         No projects are funded yet.
       </div>
     </div>
-  </v-ons-page>
+  <!-- </v-ons-page> -->
+  </div>
 </template>
 
 <script>
@@ -36,6 +38,7 @@ import Button from '~/components/baisc/Button'
 import WindowInfo from '~/components/WindowInfo'
 import { concat } from 'lodash'
 export default {
+  layout: 'dashboard',
   components: {
     MessageListItem,
     Title,

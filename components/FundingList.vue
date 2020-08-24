@@ -1,7 +1,7 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <button
+    <!-- <button
       class="white-button new-funding-button"
       @click="$router.push('/proposal/new/funding')"
     >
@@ -21,7 +21,69 @@
       @click="$router.push('/vote/success')"
     >
       <v-ons-icon icon="ion-ios-cash" size="lg"></v-ons-icon>Funded Projects
-    </button>
+    </button> -->
+
+    <a-row 
+      type="flex" 
+      justify="space-around" 
+      align="middle" 
+      class="funding-button-row"
+      :gutter="[0,16]"
+    >
+      <a-col span="24">
+        <a-row 
+          type="flex" 
+          justify="space-around" 
+          align="middle"
+        >
+          <a-button
+            type="primary"
+            shape="round"
+            icon="plus-square"
+            size="large"
+            @click="$router.push('/proposal/new/funding')"
+          >
+            New Funding Proposal
+          </a-button>
+        </a-row>
+      </a-col>
+
+      <a-col span="24">
+        <a-row 
+          type="flex" 
+          justify="space-around" 
+          align="middle"
+        >
+          <a-button
+            type="primary"
+            shape="round"
+            icon="check-square"
+            size="large"
+            @click="$router.push('/vote/funding')"
+          >
+            Vote Fundings
+          </a-button>
+        </a-row>
+      </a-col>
+
+      <a-col span="24">
+        <a-row 
+          type="flex" 
+          justify="space-around" 
+          align="middle"
+        >
+          <a-button
+            type="primary"
+            shape="round"
+            icon="fund"
+            size="large"
+            @click="$router.push('/vote/success')"
+          >
+            Funded Projects
+          </a-button>
+        </a-row>
+      </a-col>
+    </a-row>
   <!-- </v-ons-page> -->
   </div>
 </template>
@@ -73,6 +135,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+.funding-button-row {
+  margin-top: 30px !important;
+}
 .my-vote-list-container {
   width: 90%;
   max-width: 600px;

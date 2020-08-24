@@ -2,12 +2,28 @@
   <!-- <v-ons-page> -->
     <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
     <div class="message-tab-container">
-      <button
+      <!-- <button
         class="white-button new-message-button"
         @click="$router.push('/message/new')"
       >
         <v-ons-icon icon="ion-ios-chatboxes" size="lg"></v-ons-icon>New Message
-      </button>
+      </button> -->
+      <a-row 
+        type="flex" 
+        justify="space-around" 
+        align="middle" 
+        class="new-button-row"
+      >
+        <a-button
+          type="primary"
+          shape="round"
+          icon="message"
+          size="large"
+          @click="$router.push('/message/new')"
+        >
+          New Message
+        </a-button>
+      </a-row>
       <v-ons-list class="message-list">
         <v-ons-list-item v-for="message in messageList" :key="message.text">
           <nuxt-link v-bind:to="`/message/${message.handle}`" class="nuxt-link">
@@ -82,6 +98,9 @@ export default {
 </script>
 
 <style>
+.new-button-row {
+  margin-top: 30px;
+}
 .message-tab-container {
   width: 90%;
   max-width: 600px;
