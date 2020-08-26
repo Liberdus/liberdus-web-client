@@ -10,74 +10,78 @@
         <v-ons-progress-bar indeterminate></v-ons-progress-bar>
       </div>
       <div v-else class="create-account-content">
-        <Title text="Sign In or Create Account" />
-        <p class="text-body">
-          Enter your username to sign in existing account or create a new one
-        </p>
-        <div class="create-username-input-container">
-          <input
-            type="text"
-            ref="usenameInput"
-            placeholder="Username"
-            v-model="username"
-            class="text-input"
-            v-on:keyup="loadAccount"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          />
-
-          <div v-if="!allowSignIn">
-            <p class="input-error-message" v-if="!isNodeOnline">
-              Unable to connect to server node.
+        <a-row type="flex" justify="space-around" :gutter="[20,20]">
+          <a-col :span="24">
+            <h1>Sign In or Create Account</h1>
+          </a-col>
+          <a-col :span="24">
+            <h2>Enter your username to sign in existing account or create a new one</h2>
+          </a-col>
+          <a-col :span="24">
+            <a-row :gutter="[0,5]">
+              <a-col :span="24">
+                <a-input 
+                  size="large"
+                  placeholder="Username"
+                  v-model="username"
+                  v-on:keyup="loadAccount"
+                />
+              </a-col>
+              <a-col :span="24">
+                <div v-if="!allowSignIn">
+                  <p class="input-error-message" v-if="!isNodeOnline">
+                    Unable to connect to server node.
+                  </p>
+                  <p
+                    class="input-error-message"
+                    v-else-if="$v.username.required && !$v.username.alphaNum"
+                  >
+                    Username can contain only alphabets and numberic characters
+                  </p>
+                  <p
+                    class="input-error-message"
+                    v-else-if="$v.username.required && !$v.username.minLength"
+                  >
+                    Username must be at least 3 characters long
+                  </p>
+                  <div v-else-if="!checkingUsername">
+                    <p class="input-error-message" v-if="isUsernameTaken">
+                      Username is already taken.
+                    </p>
+                    <p class="input-success-message" v-else-if="isUsernameValid">
+                      Username is available.
+                    </p>
+                  </div>
+                  <div v-else-if="checkingUsername">
+                    <p class="input-checking-message">Checking username...</p>
+                  </div>
+                </div>
+                <div v-if="allowSignIn">
+                  <p class="input-success-message">
+                    Valid account found in the local wallet.
+                  </p>
+                </div>
+              </a-col>
+            </a-row>
+            
+          </a-col>
+          <a-col :span="24">
+            <a-button type="primary" size="large" @click="onSignIn" v-if="existingValidAccount">
+              Sign In
+            </a-button>
+            <a-button type="primary" size="large" @click="onCreateAccount" v-else :disabled="!isUsernameValid">
+              Create Account
+            </a-button>
+          </a-col>
+          <a-col :span="24">
+            <p class="already-registered">
+              Already registered ? Please import your account
+              <nuxt-link class="link-to-import" to="/setting/import">
+                <strong>here</strong> </nuxt-link
+              >.
             </p>
-            <p
-              class="input-error-message"
-              v-else-if="$v.username.required && !$v.username.alphaNum"
-            >
-              Username can contain only alphabets and numberic characters
-            </p>
-            <p
-              class="input-error-message"
-              v-else-if="$v.username.required && !$v.username.minLength"
-            >
-              Username must be at least 3 characters long
-            </p>
-            <div v-else-if="!checkingUsername">
-              <p class="input-error-message" v-if="isUsernameTaken">
-                Username is already taken.
-              </p>
-              <p class="input-success-message" v-else-if="isUsernameValid">
-                Username is available.
-              </p>
-            </div>
-            <div v-else-if="checkingUsername">
-              <p class="input-checking-message">Checking username...</p>
-            </div>
-          </div>
-          <div v-if="allowSignIn">
-            <p class="input-success-message">
-              Valid account found in the local wallet.
-            </p>
-          </div>
-        </div>
-        <Button
-          v-if="existingValidAccount"
-          text="Sign In"
-          :onClick="onSignIn"
-        />
-        <Button
-          v-else
-          text="Create Account"
-          :onClick="onCreateAccount"
-          :isDisabled="!isUsernameValid"
-        />
-        <p class="already-registered">
-          Already registered ? Please import your account
-          <nuxt-link class="link-to-import" to="/setting/import">
-            <strong>here</strong> </nuxt-link
-          >.
-        </p>
+          </a-col>
+        </a-row>
       </div>
     </div>
   </v-ons-page>
@@ -272,7 +276,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .create-account-container {
   width: 100%;
   margin: 0 auto;
@@ -288,44 +292,48 @@ export default {
   background-attachment: fixed;
   background-position-x: center;
   background-position-y: 100px;
+
+  .input-error-message {
+    color: red;
+    font-weight: normal !important;
+  }
+  .input-success-message {
+    color: green;
+  }
+  .input-checking-message {
+    color: #333;
+    font-size: 12px;
+    text-align: left;
+  }
+  .already-registered {
+    font-size: 13px;
+    color: #9a9a9a;
+    letter-spacing: -0.14px;
+    text-align: center;
+    margin-top: 15px;
+  }
+  h1 {
+    margin: 0px;
+    text-align: center;
+    font-size: 40px;
+  }
+
+  h2 {
+    margin-top: 0px;
+    text-align: center;
+    font-size: 20px;
+  }
+
+  .create-account-content {
+    max-width: 600px;
+  }
+
+  .ant-btn {
+    width: 100%;
+  }
 }
 
-.create-account-container .already-registered {
-  font-size: 13px;
-  color: #9a9a9a;
-  letter-spacing: -0.14px;
-  text-align: center;
-  margin-top: 15px;
-}
-.create-account-container .create-account-content {
-  max-width: 600px;
-}
-.create-account-container .create-account-content h3 {
-  font-family: 'Poppins';
-}
-.create-username-input-container {
-  margin: 20px auto;
-  max-width: 600px;
-}
-.create-account-container p {
-  text-align: left;
-}
-.create-account-container h3 {
-  margin: 30px auto;
-}
 
-.create-username-input-container .input-error-message {
-  color: red;
-  font-weight: normal !important;
-}
-.create-username-input-container .input-success-message {
-  color: green;
-}
-.create-username-input-container .input-checking-message {
-  color: #333;
-  font-size: 12px;
-  text-align: left;
-}
 .link-to-import {
   color: #43b8e7 !important;
   cursor: pointer;
