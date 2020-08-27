@@ -150,6 +150,11 @@ export default {
       return queue.sort((a, b) => b.timestamp - a.timestamp)
     }
   },
+  beforeMount: function() {
+    if (!this.isUIReady) {
+      this.$router.push('/loading')
+    }
+  },
   methods: {
     ...mapActions({
       updateAppState: 'chat/updateAppState',

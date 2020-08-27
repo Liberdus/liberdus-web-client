@@ -91,6 +91,7 @@
 import Vue from 'vue'
 import 'onsenui/css/onsenui.css'
 import 'onsenui/css/onsen-css-components.css'
+import Vuelidate from 'vuelidate'
 import VueOnsen from 'vue-onsenui/esm'
 import OnsenComponents from '~/components/Onsen'
 import ChatText from '~/components/ChatText'
@@ -103,6 +104,7 @@ import Button from '~/components/baisc/Button'
 import ToolBar from '~/components/ToolBar'
 import backgroundUrl from '~/assets/images/liberdus_background.png'
 
+Vue.use(Vuelidate)
 Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 export default {
