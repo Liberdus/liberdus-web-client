@@ -140,9 +140,10 @@ export default {
     },
     onClickAddFriend (handle) {
       let self = this
-      this.$ons.notification
-        .confirm(`Confirm to add @${this.friend} to friend list ?`)
-        .then(async result => {
+      this.$confirm({
+        title: 'Confirm',
+        content: `Confirm to add @${this.friend} to friend list ?`,
+        async onOk() {
           if (result === 1) {
             let isSubmitted = await utils.addFriend(
               this.friend,
@@ -150,7 +151,19 @@ export default {
             )
             if (isSubmitted) this.notify('Add Friend transaction is submitted.')
           }
-        })
+        },
+      });
+      // this.$ons.notification
+      //   .confirm(`Confirm to add @${this.friend} to friend list ?`)
+      //   .then(async result => {
+      //     if (result === 1) {
+      //       let isSubmitted = await utils.addFriend(
+      //         this.friend,
+      //         this.getWallet.entry.keys
+      //       )
+      //       if (isSubmitted) this.notify('Add Friend transaction is submitted.')
+      //     }
+      //   })
     },
     notify (message) {
       this.$ons.notification.alert(message)

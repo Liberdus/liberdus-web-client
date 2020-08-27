@@ -5,15 +5,11 @@
 
     <div class="friend-setting-container">
       <div class="new-message-input-container">
-        <input
-          type="text"
+        <a-input
           placeholder="Search a friend"
-          class="text-input"
           v-model="queryHandle"
-          @keyup="searchAccount"
-          autocorrect="off"
-          autocomplete="off"
-          autocapitalize="off"
+          @change="searchAccount"
+          size="large"
         />
       </div>
 
@@ -27,7 +23,11 @@
                   <em>Toll: {{ foundAccount.data.toll }} Coin</em>
                 </p>
               </div>
-              <v-ons-icon v-if="isFriend" icon="ion-ios-person" size="lg"></v-ons-icon>
+              <v-ons-icon
+                v-if="isFriend"
+                icon="ion-ios-person"
+                size="lg"
+              ></v-ons-icon>
               <v-ons-icon
                 v-else
                 icon="ion-ios-add-circle"
@@ -39,9 +39,15 @@
         </v-ons-card>
       </div>
       <div class="current-friend-list">
-        <h2 class="title-2">My Friend List</h2>
+        <!-- <h2 class="title-2">My Friend List</h2> -->
+        <a-divider orientation="left">
+          My Friends List
+        </a-divider>
         <v-ons-list v-if="getAppState">
-          <v-ons-list-item v-for="alias in getAppState.data.friends" :key="alias">
+          <v-ons-list-item
+            v-for="alias in getAppState.data.friends"
+            :key="alias"
+          >
             <p>@{{ alias }}</p>
             <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
             <v-ons-icon
@@ -53,57 +59,57 @@
         </v-ons-list>
       </div>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import { mapGetters } from "vuex";
-import utils from "../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import { mapGetters } from 'vuex';
+import utils from '../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import Title from '~/components/baisc/Title';
+import Button from '~/components/baisc/Button';
 
 Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   layout: 'dashboard',
   components: {
     ChatText,
     ChatInput,
-    ToolBar
+    ToolBar,
   },
   data: function() {
     return {
-      queryHandle: "",
-      foundAccount: null
+      queryHandle: '',
+      foundAccount: null,
     };
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady',
     }),
     isFriend() {
       if (!this.foundAccount || !this.getAppState) return false;
       return (
         this.getAppState.data.friends.indexOf(this.foundAccount.alias) >= 0
       );
-    }
+    },
   },
   methods: {
     redirect(url, option) {
       this.$router.push(url);
-      if (url === "/" && option) {
+      if (url === '/' && option) {
       }
     },
 
@@ -122,40 +128,57 @@ export default {
     onClickAddFriend(handle) {
       let self = this;
       if (handle && handle !== this.getWallet.handle) {
-        this.$ons.notification
-          .confirm(
-            `Confirm to add @${this.foundAccount.alias} to friend list ?`
-          )
-          .then(result => {
-            if (result === 1) {
-              utils.addFriend(
-                this.foundAccount.alias,
-                this.getWallet.entry.keys
-              );
-              this.queryHandle = "";
-              this.foundAccount = null;
-            }
-          });
+        this.$confirm({
+          title: 'Confirm',
+          content: (
+            <span>
+              Confirm to add{' '}
+              <i style='color: blue'>@{this.foundAccount.alias}</i> to your
+              friends list?
+            </span>
+          ),
+          onOk() {
+            utils.addFriend(
+              self.foundAccount.alias,
+              self.getWallet.entry.keys
+            );
+            self.queryHandle = '';
+            self.foundAccount = null;
+          },
+        });
       }
     },
     async onClickRemoveFriend(alias) {
       let self = this;
-      this.$ons.notification
-        .confirm(`Confirm to remove @${alias} from friend list ?`)
-        .then(async result => {
-          if (result === 1) {
-            let isSubmitted = await utils.removeFriend(
-              alias,
-              this.getWallet.entry.keys
-            );
-            if (isSubmitted) this.notify("Remove friend tx is submitted.");
+      this.$confirm({
+        title: 'Confirm',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No',
+        content: (
+          <span>
+            Confirm to remove{' '}
+            <i style='color: blue'>@{alias}</i> from your friends list?
+          </span>
+        ),
+        async onOk() {
+          let isSubmitted = await utils.removeFriend(
+            alias,
+            self.getWallet.entry.keys
+          );
+          if (isSubmitted) {
+            self.$notification.success({
+              message: 'Remove friend tx is submitted',
+              description: ''
+            });
           }
-        });
+        },
+      });
     },
     notify(message) {
       this.$ons.notification.alert(message);
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -197,7 +220,7 @@ export default {
 }
 .current-friend-list .list-item p {
   font-size: 18px;
-  font-family: "Poppins";
+  font-family: 'Poppins';
 }
 .current-friend-list h4 {
   margin-left: 20px;
