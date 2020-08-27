@@ -179,8 +179,7 @@ export default {
           localStorage.removeItem('lastTx')
         }
       } catch (e) {}
-      this.$router.push('/welcome')
-      window.location.reload(false)
+      window.location.href = '/'
     }
   }
 }
