@@ -48,6 +48,7 @@
     <a-tabs
       default-active-key="wallet"
       size="large"
+      v-if="isUIReady"
     >
       <a-tab-pane 
         key="wallet" 

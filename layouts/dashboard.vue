@@ -152,13 +152,15 @@ export default {
   props: {
     option: {
       type: Object,
-      default: {
-        notification: false,
-        profile: false,
-        back: false,
-        menu: false,
-        backUrl: '/',
-        addFriend: null
+      default: function() {
+        return {
+          notification: false,
+          profile: false,
+          back: false,
+          menu: false,
+          backUrl: '/',
+          addFriend: null
+        }
       }
     }
   },
