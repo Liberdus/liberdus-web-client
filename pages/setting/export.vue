@@ -3,22 +3,31 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="import-account-container">
-      <p class="secret-key-warning">
-        Do not share your
-        <strong>Secret Key</strong> to anyone
-      </p>
-      <p id="secret-key">
-        <strong>{{ secretKey }}</strong>
-      </p>
-      <qriously
-        :value="secretKey"
-        :size="200"
-        class="qr-code"
-      />
-      <Button
-        text="Copy Secret Key"
-        :on-click="onCopy"
-      />
+      <a-card title="Your Secret Key">
+        <p id="secret-key">
+          <strong>{{ secretKey }}</strong>
+        </p>
+
+        <p class="secret-key-warning">
+          Do not share your
+          <strong>Secret Key</strong> to anyone
+        </p>
+
+        <qriously
+          :value="secretKey"
+          :size="200"
+          class="qr-code"
+        />
+        
+        <a-button
+          @click="onCopy"
+          size="large"
+          shape="round"
+          type="primary"
+        >
+          Copy Secret Key
+        </a-button>
+      </a-card>
     </div>
   <!-- </v-ons-page> -->
   </div>

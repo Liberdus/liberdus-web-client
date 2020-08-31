@@ -1,74 +1,75 @@
 <template>
-  <!-- <v-ons-page> -->
   <div>
-    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div class="email-container">
-      <Title text="Register Email" />
-      <!-- {{ hasEmailHash }}
-      {{ hasVerified }} -->
-      <div v-if="hasEmailHash && hasVerified">
-        <p
-          id="verified-message"
-          class="body"
-        >
-          Your email address has been verified.
-        </p>
-      </div>
-      <div v-else-if="hasEmailHash && !hasVerified">
-        <p
-          id="registered-message"
-          class="body"
-        >
-          A verification code has been sent to your inbox. Please verify your
-          email
-          <nuxt-link
-            class="link-to-import"
-            to="/email/verify"
-          >
-            <strong>here</strong>
-          </nuxt-link>
-        </p>
-      </div>
-      <form
-        v-else
-        class="email-form"
-      >
-        <div class="email-input-container">
-          <p class="body">
-            Enter your email address
-          </p>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="Email"
-            class="toll-input text-input"
-          >
-        </div>
-        <div class="error-message-container">
+      <a-card title="Register Email">
+        <div v-if="hasEmailHash && hasVerified">
           <p
-            v-if="$v.email.required && !$v.email.email"
-            class="input-error-message"
+            id="verified-message"
+            class="body"
           >
-            Invalid email address
+            Your email address has been verified.
           </p>
         </div>
-        <Button
-          text="Register Email"
-          :is-disabled="!isEmailValid"
-          :on-click="onRegisterEmail"
-        />
-        <p class="already-registered">
-          Already received a verification code ? Please verify your email
-          <nuxt-link
-            class="link-to-import"
-            to="/email/verify"
+        <div v-else-if="hasEmailHash && !hasVerified">
+          <p
+            id="registered-message"
+            class="body"
           >
-            <strong>here</strong>
-          </nuxt-link>.
-        </p>
-      </form>
+            A verification code has been sent to your inbox. Please verify your
+            email
+            <nuxt-link
+              class="link-to-import"
+              to="/email/verify"
+            >
+              <strong>here</strong>
+            </nuxt-link>
+          </p>
+        </div>
+        <form
+          v-else
+          class="email-form"
+        >
+          <div class="email-input-container">
+            <p class="body">
+              Enter your email address
+            </p>
+            <a-input
+              v-model="email"
+              type="email"
+              placeholder="Email"
+              size="large"
+            />
+          </div>
+          <div class="error-message-container">
+            <p
+              v-if="$v.email.required && !$v.email.email"
+              class="input-error-message"
+            >
+              Invalid email address
+            </p>
+          </div>
+          <a-button
+            :disabled="!isEmailValid"
+            @click="onRegisterEmail"
+            size="large"
+            shape="round"
+            type="primary"
+            style="width: 100%; margin-bottom:20px"
+          >
+            Register Email
+          </a-button>
+          <p class="already-registered">
+            Already received a verification code ? Please verify your email
+            <nuxt-link
+              class="link-to-import"
+              to="/email/verify"
+            >
+              <strong>here</strong>
+            </nuxt-link>.
+          </p>
+        </form>
+      </a-card>
     </div>
-  <!-- </v-ons-page> -->
   </div>
 </template>
 

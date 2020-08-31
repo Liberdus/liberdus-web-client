@@ -1,77 +1,78 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <!-- <tool-bar
-      :option="{
-        menu: false,
-        notification: false,
-        back: true,
-        backUrl: '/email/register'
-      }"
-    /> -->
-    <div
-      v-if="checkingCode"
-      class="checkingCode-container"
-    >
-      <v-ons-progress-circular indeterminate />
-      <p class="body">
-        Checking verification code
-      </p>
-    </div>
-    <div
-      v-else-if="!checkingCode && codeAccepted"
-      class="checkingCode-container"
-    >
-      <p
-        id="verified-message"
-        class="body"
+    <a-card title="Verify Email" style="max-width: 600px; margin:auto">
+      <div
+        v-if="checkingCode"
+        class="checkingCode-container"
       >
-        Your email address has been verified.
-      </p>
-    </div>
-    <div
-      v-else
-      class="email-container"
-    >
-      <Title text="Verify Email" />
-      <form class="email-form">
-        <p class="body error-warning">
-          {{ error }}
+        <v-ons-progress-circular indeterminate />
+        <p class="body">
+          Checking verification code
         </p>
-        <div class="email-input-container">
-          <p class="body">
-            Enter the verification code sent to your email
+      </div>
+
+      <div
+        v-else-if="!checkingCode && codeAccepted"
+        class="checkingCode-container"
+      >
+        <p
+          id="verified-message"
+          class="body"
+        >
+          Your email address has been verified.
+        </p>
+      </div>
+
+      <div
+        v-else
+        class="email-container"
+      >
+        <form class="email-form">
+          <p class="body error-warning">
+            {{ error }}
           </p>
-          <input
-            v-model="code"
-            type="text"
-            placeholder="Verification code"
-            class="toll-input text-input"
-          >
-        </div>
-        <div class="error-message-container">
-          <p
-            v-if="!$v.code.integer"
-            class="input-error-message"
-          >
-            Code must be digits only
-          </p>
-          <p
-            v-else-if="code.length > 0 && !$v.code.minLength"
-            class="input-error-message"
-          >
-            Required at least 6 digits
-          </p>
-        </div>
-        <Button
-          text="Submit Verification Code"
-          :on-click="onVerifyCode"
-          :is-disabled="!isCodeValid"
-        />
-      </form>
+
+          <div class="email-input-container">
+            <p class="body">
+              Enter the verification code sent to your email
+            </p>
+            <a-input
+              v-model="code"
+              type="text"
+              placeholder="Verification code"
+              size="large"
+            />
+          </div>
+
+          <div class="error-message-container">
+            <p
+              v-if="!$v.code.integer"
+              class="input-error-message"
+            >
+              Code must be digits only
+            </p>
+            <p
+              v-else-if="code.length > 0 && !$v.code.minLength"
+              class="input-error-message"
+            >
+              Required at least 6 digits
+            </p>
+          </div>
+
+          <a-button
+            @click="onVerifyCode"
+            :disabled="!isCodeValid"
+            size="large"
+            shape="round"
+            type="primary"
+          >Submit Verification Code
+          </a-button>
+        </form>
+      </div>
+      </a-card>
     </div>
   <!-- </v-ons-page> -->
-  </div>
 </template>
 
 <script>

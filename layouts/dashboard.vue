@@ -5,6 +5,7 @@
       collapsed-width="0"
       @collapse="onCollapse"
       @breakpoint="onBreakpoint"
+      v-if="getWallet"
     >
       <div class="header-logo">
         <a-row
@@ -107,7 +108,7 @@
     </a-layout-sider>
     <a-layout class="main-layout">
       <a-layout-header :style="{ background: '#fff', padding: 0 }">
-        <a-dropdown placement="bottomRight">
+        <a-dropdown placement="bottomRight" v-if="getWallet">
           <a-avatar
             shape="square"
             size="large"
@@ -132,11 +133,13 @@
           </a-menu>
         </a-dropdown>
       </a-layout-header>
+
       <a-layout-content :style="{ margin: '24px 16px 0' }">
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
           <nuxt />
         </div>
       </a-layout-content>
+
       <a-layout-footer style="textAlign: center">
         Liberdus ©2020 Created by Shardus team
       </a-layout-footer>
