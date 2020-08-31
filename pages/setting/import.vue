@@ -6,22 +6,41 @@
         Enter or Scan your
         <strong>Secret Key</strong> to import your account.
       </p>
-      <q-reader :onDetectQR="onDetectSk" :scanning="showScanner" />
+      <q-reader
+        :on-detect-q-r="onDetectSk"
+        :scanning="showScanner"
+      />
       <v-ons-button
         v-if="showScanner"
         class="new-message-btn"
         modifier="quiet"
         @click="onClickQRScanner"
-      >Close QR Scanner</v-ons-button>
+      >
+        Close QR Scanner
+      </v-ons-button>
 
       <div class="secret-input-container">
-        <input placeholder="Secret key" v-model="secretKey" class="text-input" />
-        <v-ons-button modifier="quiet" @click="onClickQRScanner" class="qr-code-btn">
-          <img src="../../assets/qrcode.png" alt="qr-code" />
+        <input
+          v-model="secretKey"
+          placeholder="Secret key"
+          class="text-input"
+        >
+        <v-ons-button
+          modifier="quiet"
+          class="qr-code-btn"
+          @click="onClickQRScanner"
+        >
+          <img
+            src="../../assets/qrcode.png"
+            alt="qr-code"
+          >
         </v-ons-button>
       </div>
 
-      <Button text="Import Account" :onClick="onImportAccount" />
+      <Button
+        text="Import Account"
+        :on-click="onImportAccount"
+      />
     </div>
   </v-ons-page>
 </template>
@@ -50,6 +69,11 @@ export default {
     ToolBar,
     Button
   },
+  beforeRouteEnter(to, from, next) {
+    next(vm => {
+      vm.previousUrl = from.path;
+    });
+  },
   data: function() {
     return {
       secretKey: "",
@@ -58,11 +82,6 @@ export default {
     };
   },
   computed: {},
-  beforeRouteEnter(to, from, next) {
-    next(vm => {
-      vm.previousUrl = from.path;
-    });
-  },
   methods: {
     ...mapActions({
       addWallet: "wallet/addWallet"

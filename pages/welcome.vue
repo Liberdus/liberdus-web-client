@@ -6,7 +6,11 @@
     >
       <div class="welcome-content">
         <!-- <Title text="Getting Started" /> -->
-        <a-row type="flex" justify="space-around" :gutter="[20,20]">
+        <a-row
+          type="flex"
+          justify="space-around"
+          :gutter="[20,20]"
+        >
           <a-col :span="24">
             <h1>Get Started</h1>
           </a-col>
@@ -14,21 +18,31 @@
             <h2>Welcome to the Liberdus web wallet v{{ version }}</h2>
           </a-col>
           <a-col :span="12">
-            <a-button type="primary" size="large" @click="onCreateAccount">
+            <a-button
+              type="primary"
+              size="large"
+              @click="onCreateAccount"
+            >
               Sign In
             </a-button>
           </a-col>
           <a-col :span="12">
-            <a-button size="large" @click="onImportAccount">
+            <a-button
+              size="large"
+              @click="onImportAccount"
+            >
               Import Account
             </a-button>
           </a-col>
           <a-col :span="12">
             <p style="text-align: center">
               Change network setting
-              <nuxt-link class="link-to-import" to="/setting/network"
-                ><strong>here</strong></nuxt-link
-              >.
+              <nuxt-link
+                class="link-to-import"
+                to="/setting/network"
+              >
+                <strong>here</strong>
+              </nuxt-link>.
             </p>
           </a-col>
         </a-row>

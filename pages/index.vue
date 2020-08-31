@@ -19,7 +19,9 @@
       :visible="true"
       :index.sync="activeIndex"
     ></v-ons-tabbar>-->
-    <p style="display: none">{{ isUIReady }}</p>
+    <p style="display: none">
+      {{ isUIReady }}
+    </p>
     <!-- <v-ons-tabbar
       v-if="isUIReady"
       swipeable
@@ -43,26 +45,33 @@
         @click="onSelectTab($event, tabs[i])"
       ></v-ons-tab>
     </v-ons-tabbar> -->
-    <a-tabs default-active-key="wallet" size="large">
+    <a-tabs
+      default-active-key="wallet"
+      size="large"
+    >
       <a-tab-pane 
         key="wallet" 
-        tab="Wallet">
-          <home />
+        tab="Wallet"
+      >
+        <home />
       </a-tab-pane>
       <a-tab-pane 
         key="message" 
-        tab="Message">
-          <message />
+        tab="Message"
+      >
+        <message />
       </a-tab-pane>
       <a-tab-pane 
         key="funding-list" 
-        tab="Funding">
-          <funding-list />
+        tab="Funding"
+      >
+        <funding-list />
       </a-tab-pane>
       <a-tab-pane 
         key="proosal-list" 
-        tab="Proposal">
-          <proposal-list />
+        tab="Proposal"
+      >
+        <proposal-list />
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -94,7 +103,6 @@ Vue.use(Notifications)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     Message,
     Home,
@@ -103,6 +111,35 @@ export default {
     FundingList,
     ToolBar
   },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if (!from || !from.name) return
+      vm.prevRoute = from
+      if (to && to.query.tabIndex) {
+        vm.activeIndex = parseInt(to.query.tabIndex)
+      } else if (from.path.split('/')[1] === 'vote') {
+        if (
+          from.path.split('/')[2] === 'funding' ||
+          from.path.split('/')[2] === 'success'
+        ) {
+          vm.activeIndex = 2
+        } else if (from.path.split('/')[2] === 'economy') {
+          vm.activeIndex = 3
+        }
+      } else if (from.name.split('-')[0] === 'proposal') {
+        if (from.name.split('-')[2] === 'funding') {
+          vm.activeIndex = 2
+        } else {
+          vm.activeIndex = 3
+        }
+      } else if (from.name.split('-')[0] === 'message') {
+        vm.activeIndex = 1
+      } else if (from.name.split('-')[0] === 'wallet') {
+        vm.activeIndex = 0
+      }
+    })
+  },
+  layout: 'dashboard',
   data () {
     return {
       activeIndex: 0,
@@ -142,34 +179,6 @@ export default {
         }
       ]
     }
-  },
-  beforeRouteEnter (to, from, next) {
-    next(vm => {
-      if (!from || !from.name) return
-      vm.prevRoute = from
-      if (to && to.query.tabIndex) {
-        vm.activeIndex = parseInt(to.query.tabIndex)
-      } else if (from.path.split('/')[1] === 'vote') {
-        if (
-          from.path.split('/')[2] === 'funding' ||
-          from.path.split('/')[2] === 'success'
-        ) {
-          vm.activeIndex = 2
-        } else if (from.path.split('/')[2] === 'economy') {
-          vm.activeIndex = 3
-        }
-      } else if (from.name.split('-')[0] === 'proposal') {
-        if (from.name.split('-')[2] === 'funding') {
-          vm.activeIndex = 2
-        } else {
-          vm.activeIndex = 3
-        }
-      } else if (from.name.split('-')[0] === 'message') {
-        vm.activeIndex = 1
-      } else if (from.name.split('-')[0] === 'wallet') {
-        vm.activeIndex = 0
-      }
-    })
   },
   beforeDestroy: function () {},
   methods: {

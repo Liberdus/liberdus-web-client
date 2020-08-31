@@ -2,7 +2,9 @@
   <div class="transaction-list-item">
     <transaction-message :transaction="transaction" />
     <div class="timestamp-plus-amount">
-      <div class="timestamp">{{ timestamp }}</div>
+      <div class="timestamp">
+        {{ timestamp }}
+      </div>
       <transaction-amount :transaction="transaction" />
     </div>
   </div>

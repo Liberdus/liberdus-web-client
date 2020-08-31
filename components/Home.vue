@@ -1,9 +1,17 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <notification :lastMessage="lastMessage" :lastTx="lastTx" />
-    <p style="display: none">{{ isUIReady }}</p>
-    <div class="home-tab-container" v-if="isUIReady">
+    <notification
+      :last-message="lastMessage"
+      :last-tx="lastTx"
+    />
+    <p style="display: none">
+      {{ isUIReady }}
+    </p>
+    <div
+      v-if="isUIReady"
+      class="home-tab-container"
+    >
       <!-- <p v-if="getAppState">{{ getAppState }}</p> -->
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
@@ -11,15 +19,25 @@
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
-          <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+          <v-ons-progress-circular indeterminate />
         </h1>
-        <p class="register-reminder" v-if="getAppState && !getAppState.emailHash">
-          <nuxt-link to="/email/register"><strong>Register</strong></nuxt-link>
+        <p
+          v-if="getAppState && !getAppState.emailHash"
+          class="register-reminder"
+        >
+          <nuxt-link to="/email/register">
+            <strong>Register</strong>
+          </nuxt-link>
           your email to earn some coins
         </p>
       </div>
       <div>
-        <h4 v-if="getAppState" class="user-alias">@{{ getWallet.handle }}</h4>
+        <h4
+          v-if="getAppState"
+          class="user-alias"
+        >
+          @{{ getWallet.handle }}
+        </h4>
       </div>
       <div class="wallet-action-container">
         <div class="wallet-action">

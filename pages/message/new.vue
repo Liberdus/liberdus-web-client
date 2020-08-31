@@ -4,36 +4,49 @@
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="new-message-input-container">
       <input
+        ref="username-input"
+        v-model="alias"
         type="text"
         placeholder="Search a username"
         class="text-input"
-        v-model="alias"
-        @keyup="searchAlias"
         autocorrect="off"
         autocomplete="off"
         autocapitalize="off"
-        ref="username-input"
-      />
+        @keyup="searchAlias"
+      >
     </div>
     <v-ons-list class="found-alias-list">
-      <v-ons-list-item v-for="alias in availabeAlias" :key="alias">
-        <nuxt-link v-bind:to="`/message/${alias}`" class="nuxt-link">@{{ alias }}</nuxt-link>
+      <v-ons-list-item
+        v-for="alias in availabeAlias"
+        :key="alias"
+      >
+        <nuxt-link
+          :to="`/message/${alias}`"
+          class="nuxt-link"
+        >
+          @{{ alias }}
+        </nuxt-link>
       </v-ons-list-item>
     </v-ons-list>
 
     <div class="current-friend-list">
-      <h2 class="title-2">My Friends</h2>
+      <h2 class="title-2">
+        My Friends
+      </h2>
       <!-- <v-ons-list v-if="getAppState"> -->
       <v-ons-list>
         <nuxt-link
           v-for="alias in getAppState.data.friends"
           :key="alias"
-          v-bind:to="`/message/${alias}`"
+          :to="`/message/${alias}`"
           class="nuxt-link"
         >
           <v-ons-list-item>
             <p>@{{ alias }}</p>
-            <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon>
+            <v-ons-icon
+              icon="ion-ios-person"
+              size="lg"
+            />
           </v-ons-list-item>
         </nuxt-link>
       </v-ons-list>
@@ -60,7 +73,6 @@ Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 
 export default {
-  layout: 'dashboard',
   components: {
     ChatText,
     ChatInput,
@@ -68,6 +80,7 @@ export default {
     Title,
     Button
   },
+  layout: 'dashboard',
   validate({ params }) {
     return true;
   },

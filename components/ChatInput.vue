@@ -1,24 +1,33 @@
 <template>
   <div class="chat-input-container">
-    <p class="required-toll not-enough-toll" v-if="!isFriend && notEnoughCoin">
+    <p
+      v-if="!isFriend && notEnoughCoin"
+      class="required-toll not-enough-toll"
+    >
       Not Enough coin to pay toll
     </p>
-    <p class="required-toll" v-else-if="!isFriend">
+    <p
+      v-else-if="!isFriend"
+      class="required-toll"
+    >
       <strong>Total Cost: {{ requiredToll + requiredFee }} coins</strong>
       (Toll {{ requiredToll }} coins + Tx fee {{ requiredFee }} coins)
     </p>
-    <p class="required-toll" v-else-if="isFriend">
+    <p
+      v-else-if="isFriend"
+      class="required-toll"
+    >
       <strong>Total Cost: {{ requiredFee }} coins</strong>
       (Tx Fee)
     </p>
     <input
+      v-model="message"
       type="text"
       placeholder="Type your message"
-      v-model="message"
       class="text-input chat-input"
-      v-on:keyup.enter="submitMessage"
       :disabled="notEnoughCoin"
-    />
+      @keyup.enter="submitMessage"
+    >
   </div>
 </template>
 
@@ -46,6 +55,14 @@ export default {
       return false
     }
   },
+  async mounted () {
+    const to = await utils.getAddress(this.friend)
+    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address)
+    const network = await utils.queryParameters()
+    if (network.current.transactionFee) {
+      this.requiredFee = network.current.transactionFee
+    }
+  },
   methods: {
     async submitMessage () {
       let messageToSend = this.message
@@ -61,14 +78,6 @@ export default {
         timestamp: null,
         body: messageToSend
       })
-    }
-  },
-  async mounted () {
-    const to = await utils.getAddress(this.friend)
-    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address)
-    const network = await utils.queryParameters()
-    if (network.current.transactionFee) {
-      this.requiredFee = network.current.transactionFee
     }
   }
 }

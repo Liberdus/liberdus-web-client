@@ -6,34 +6,41 @@
     <div class="toll-container">
       <p v-if="getAppState">
         Current Staked Amount:
-        <strong>{{ currentStakedAmount }} Coins</strong
-        ><span v-if="pendingStakeRemoval"> (pending for removal)</span>
+        <strong>{{ currentStakedAmount }} Coins</strong><span v-if="pendingStakeRemoval"> (pending for removal)</span>
       </p>
-      <p v-else>Current Staked Amount: -</p>
+      <p v-else>
+        Current Staked Amount: -
+      </p>
       <p v-if="stakeRequired">
         Required Stake: <strong>{{ stakeRequired }} coins</strong>
       </p>
       <form
         v-if="currentStakedAmount === 0 && stakeRequired > 0"
-        @submit.prevent="onSubmitStake"
         class="toll-form"
+        @submit.prevent="onSubmitStake"
       >
         <Button text="Add Stake" />
       </form>
       <form
         v-if="currentStakedAmount > 0 && !pendingStakeRemoval"
-        @submit.prevent="onSubmitRequestRemoveStake"
         class="toll-form"
+        @submit.prevent="onSubmitRequestRemoveStake"
       >
-        <Button v-if="!pendingStakeRemoval" text="Request to remove stake" />
+        <Button
+          v-if="!pendingStakeRemoval"
+          text="Request to remove stake"
+        />
       </form>
       <form
         v-if="currentStakedAmount > 0 && pendingStakeRemoval"
-        @submit.prevent="onSubmitRemoveStake"
         class="toll-form"
+        @submit.prevent="onSubmitRemoveStake"
       >
         <div v-if="pendingStakeRemoval">
-          <Button text="Remove stake" :isDisabled="!isReadyToRemoveStake" />
+          <Button
+            text="Remove stake"
+            :is-disabled="!isReadyToRemoveStake"
+          />
           <p style="font-size: 13px">
             Your stake can be removed at
             <strong v-if="timeToRemoveStake">{{ timeToRemoveStake }}</strong>
@@ -67,12 +74,12 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function () {
     return {
       network: null,

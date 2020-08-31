@@ -1,5 +1,10 @@
 <template>
-  <button class="outline-button" @click="onClick">{{ text }}</button>
+  <button
+    class="outline-button"
+    @click="onClick"
+  >
+    {{ text }}
+  </button>
 </template>
 <script>
 export default {

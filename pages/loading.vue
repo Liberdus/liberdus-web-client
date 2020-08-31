@@ -1,7 +1,11 @@
 <template>
   <v-ons-page>
     <div id="loading-container">
-      <img id="loading-logo" src="../assets/images/loading-logo.png" alt />
+      <img
+        id="loading-logo"
+        src="../assets/images/loading-logo.png"
+        alt
+      >
     </div>
   </v-ons-page>
 </template>

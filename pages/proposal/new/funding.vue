@@ -11,117 +11,145 @@
     /> -->
     <!-- {{ window }} -->
     <div class="funding-create-container">
-      <h2 class="title-2">New Funding Proposal</h2>
-      <div v-if="loading" class="loading-status">
-        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      <h2 class="title-2">
+        New Funding Proposal
+      </h2>
+      <div
+        v-if="loading"
+        class="loading-status"
+      >
+        <v-ons-progress-circular indeterminate />
       </div>
       <div
-        class="loading-status"
         v-else-if="!loading && (!window || !window.devProposalWindow)"
+        class="loading-status"
       >
         Unable to get funding proposal window from server
       </div>
       <div v-else>
-        <p class="body">Submit new proposal when proposal window is active.</p>
+        <p class="body">
+          Submit new proposal when proposal window is active.
+        </p>
         <window-info
           v-if="window"
           :window="window"
-          :currentWindowName="currentWindowName"
+          :current-window-name="currentWindowName"
         />
         <div>
-          <p class="label">Title</p>
+          <p class="label">
+            Title
+          </p>
           <input
-            type="text"
             v-model="title"
+            type="text"
             class="text-input"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
-          />
+          >
         </div>
 
         <div>
-          <p class="label">Description</p>
+          <p class="label">
+            Description
+          </p>
           <textarea
+            v-model="description"
             name="description-input"
             class="description-input"
-            v-model="description"
             cols="30"
             rows="5"
-          ></textarea>
+          />
         </div>
 
         <div>
-          <p class="label">Proposed Amount</p>
+          <p class="label">
+            Proposed Amount
+          </p>
           <input
-            type="text"
             v-model="amount"
+            type="text"
             class="text-input"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
-          />
+          >
         </div>
         <div>
-          <p class="label">Payment Plan</p>
+          <p class="label">
+            Payment Plan
+          </p>
           <div class="drop-down-container">
-            <v-ons-select style="width: 40%" v-model="selectedPaymentType">
+            <v-ons-select
+              v-model="selectedPaymentType"
+              style="width: 40%"
+            >
               <option
                 v-for="item in paymentType"
-                :value="item.value"
                 :key="item.id"
-                >{{ item.text }}</option
+                :value="item.value"
               >
+                {{ item.text }}
+              </option>
             </v-ons-select>
             <v-ons-icon
               icon="ion-ios-arrow-down"
               size="lg"
               class="drop-down-icon"
-            ></v-ons-icon>
+            />
           </div>
         </div>
 
         <div v-if="selectedPaymentType === 'multiple'">
-          <p class="label">Payment Count</p>
+          <p class="label">
+            Payment Count
+          </p>
           <input
+            v-model="paymentCount"
             type="text"
             placeholder="5"
-            v-model="paymentCount"
             class="text-input"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
-          />
+          >
         </div>
 
         <div v-if="selectedPaymentType === 'multiple'">
-          <p class="label">Delay between payments (in minutes)</p>
+          <p class="label">
+            Delay between payments (in minutes)
+          </p>
           <input
+            v-model="delay"
             type="text"
             placeholder="0"
-            v-model="delay"
             class="text-input"
             autocorrect="off"
             autocomplete="off"
             autocapitalize="off"
-          />
+          >
         </div>
-        <p class="coin-usage-warning" v-if="!allowProposal">
+        <p
+          v-if="!allowProposal"
+          class="coin-usage-warning"
+        >
           Proposal window will start in
           <strong v-if="nextDevProposalStart">{{ secondsToDhms }}</strong>
         </p>
-        <p class="coin-usage-warning" v-else>
+        <p
+          v-else
+          class="coin-usage-warning"
+        >
           Proposal window will expire in
-          <strong>{{ secondsToDhms }}</strong
-          >.
+          <strong>{{ secondsToDhms }}</strong>.
         </p>
         <p v-if="allowProposal && !isDevIssueGenerated">
           Waiting to get developer issue number.
         </p>
         <Button
           text="Submit Proposal"
-          :onClick="onSubmitProposal"
-          :isDisabled="!allowProposal || !isDevIssueGenerated"
+          :on-click="onSubmitProposal"
+          :is-disabled="!allowProposal || !isDevIssueGenerated"
         />
         <p
           v-if="
@@ -161,7 +189,6 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     ToolBar,
     Button,
@@ -169,6 +196,7 @@ export default {
     Title,
     Choice
   },
+  layout: 'dashboard',
   data: function () {
     return {
       selectedPaymentType: 'single',

@@ -8,27 +8,32 @@
         Current Toll Amount:
         <strong>{{ getAppState.data.toll }} Coins</strong>
       </p>
-      <p v-else>Current Toll Amount: -</p>
-      <form @submit.prevent="onUpdateToll" class="toll-form">
+      <p v-else>
+        Current Toll Amount: -
+      </p>
+      <form
+        class="toll-form"
+        @submit.prevent="onUpdateToll"
+      >
         <div class="toll-amount-input-container">
           <input
+            v-model="newToll"
             type="text"
             placeholder="New toll amount"
-            v-model="newToll"
             class="toll-input text-input"
-          />
+          >
 
           <p
-            class="input-error-message"
             v-if="$v.newToll.required && !$v.newToll.between"
+            class="input-error-message"
           >
             Invalid toll amount
           </p>
         </div>
         <Button
           text="Update Toll Amount"
-          :onClick="onUpdateToll"
-          :isDisabled="!isTollVaild"
+          :on-click="onUpdateToll"
+          :is-disabled="!isTollVaild"
         />
       </form>
     </div>
@@ -57,12 +62,12 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function () {
     return {
       newToll: ''

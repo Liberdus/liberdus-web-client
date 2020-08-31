@@ -3,7 +3,10 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <!-- TODO: -->
-    <div class="receive-container" v-if="getWallet.handle">
+    <div
+      v-if="getWallet.handle"
+      class="receive-container"
+    >
       <Title text="Receive Coins" />
       <p>Share your username to your senders</p>
       <!-- TODO
@@ -13,8 +16,15 @@
         <p id="username">
           <strong>{{ getWallet.handle }}</strong>
         </p>
-        <qriously :value="getWallet.handle" :size="180" class="qr-code" />
-        <Button text="Copy Account Username" :onClick="onCopyUsername" />
+        <qriously
+          :value="getWallet.handle"
+          :size="180"
+          class="qr-code"
+        />
+        <Button
+          text="Copy Account Username"
+          :on-click="onCopyUsername"
+        />
       </div>
 
       <div>
@@ -26,7 +36,10 @@
           :size="180"
           class="qr-code"
         />
-        <Button text="Copy Account Address" :onClick="onCopyAddress" />
+        <Button
+          text="Copy Account Address"
+          :on-click="onCopyAddress"
+        />
       </div>
     </div>
   <!-- </v-ons-page> -->
@@ -53,12 +66,12 @@ Vue.use(VueQriously)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function () {
     return {}
   },

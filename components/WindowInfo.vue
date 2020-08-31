@@ -1,25 +1,33 @@
 <template>
-  <div class="window-info-container" v-if="derivedWindow">
+  <div
+    v-if="derivedWindow"
+    class="window-info-container"
+  >
     <div class="switch-container">
-      <v-ons-switch input-id="switch1" v-model="showAllWindow"></v-ons-switch>
+      <v-ons-switch
+        v-model="showAllWindow"
+        input-id="switch1"
+      />
       <span class="body">Show all windows</span>
     </div>
     <!-- {{ derivedWindow }} -->
     <div
+      v-if="currentWindowName === 'PROPOSAL' || showAllWindow"
       :class="{
         'window-info': true,
         active: currentWindowName === 'PROPOSAL',
         'green-bg': currentWindowName === 'PROPOSAL' && showAllWindow
       }"
-      v-if="currentWindowName === 'PROPOSAL' || showAllWindow"
     >
       <label
-        class="current-window-label"
         v-if="currentWindowName === 'PROPOSAL'"
-        >Current Active Window</label
-      >
+        class="current-window-label"
+      >Current Active Window</label>
       <h5>Proposal Window</h5>
-      <div v-if="currentWindowName === 'PROPOSAL'" class="timers">
+      <div
+        v-if="currentWindowName === 'PROPOSAL'"
+        class="timers"
+      >
         <p class="coin-usage-warning">
           Proposal window will expire in
           <strong>{{ remainingSecondProposalWindow }}</strong>
@@ -35,18 +43,22 @@
       </div>
     </div>
     <div
+      v-if="currentWindowName === 'VOTING' || showAllWindow"
       :class="{
         'window-info': true,
         active: currentWindowName === 'VOTING',
         'green-bg': currentWindowName === 'VOTING' && showAllWindow
       }"
-      v-if="currentWindowName === 'VOTING' || showAllWindow"
     >
-      <label class="current-window-label" v-if="currentWindowName === 'VOTING'"
-        >Current Active Window</label
-      >
+      <label
+        v-if="currentWindowName === 'VOTING'"
+        class="current-window-label"
+      >Current Active Window</label>
       <h5>Voting Window</h5>
-      <div v-if="currentWindowName === 'VOTING'" class="timers">
+      <div
+        v-if="currentWindowName === 'VOTING'"
+        class="timers"
+      >
         <p class="coin-usage-warning">
           Voting window will expire in
           <strong>{{ remainingSecondVotingWindow }}</strong>
@@ -62,18 +74,22 @@
       </div>
     </div>
     <div
+      v-if="currentWindowName === 'GRACE' || showAllWindow"
       :class="{
         'window-info': true,
         active: currentWindowName === 'GRACE',
         'green-bg': currentWindowName === 'GRACE' && showAllWindow
       }"
-      v-if="currentWindowName === 'GRACE' || showAllWindow"
     >
-      <label class="current-window-label" v-if="currentWindowName === 'GRACE'"
-        >Current Active Window</label
-      >
+      <label
+        v-if="currentWindowName === 'GRACE'"
+        class="current-window-label"
+      >Current Active Window</label>
       <h5>Grace Window</h5>
-      <div v-if="currentWindowName === 'GRACE'" class="timers">
+      <div
+        v-if="currentWindowName === 'GRACE'"
+        class="timers"
+      >
         <p class="coin-usage-warning">
           Grace window will expire in
           <strong>{{ remainingSecondGraceWindow }}</strong>
@@ -89,18 +105,22 @@
       </div>
     </div>
     <div
+      v-if="currentWindowName === 'APPLY' || showAllWindow"
       :class="{
         'window-info': true,
         active: currentWindowName === 'APPLY',
         'green-bg': currentWindowName === 'APPLY' && showAllWindow
       }"
-      v-if="currentWindowName === 'APPLY' || showAllWindow"
     >
-      <label class="current-window-label" v-if="currentWindowName === 'APPLY'"
-        >Current Active Window</label
-      >
+      <label
+        v-if="currentWindowName === 'APPLY'"
+        class="current-window-label"
+      >Current Active Window</label>
       <h5>Apply Window</h5>
-      <div v-if="currentWindowName === 'APPLY'" class="timers">
+      <div
+        v-if="currentWindowName === 'APPLY'"
+        class="timers"
+      >
         <p class="coin-usage-warning">
           Apply window will expire in
           <strong>{{ remainingSecondApplyWindow }}</strong>
@@ -120,12 +140,6 @@
 <script>
 import moment from 'moment'
 export default {
-  data: function () {
-    return {
-      showAllWindow: false,
-      moment
-    }
-  },
   props: {
     window: {
       type: Object,
@@ -133,6 +147,12 @@ export default {
     },
     currentWindowName: {
       type: String
+    }
+  },
+  data: function () {
+    return {
+      showAllWindow: false,
+      moment
     }
   },
   computed: {

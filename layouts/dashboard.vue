@@ -7,12 +7,21 @@
       @breakpoint="onBreakpoint"
     >
       <div class="header-logo">
-        <a-row type="flex" align="middle" :gutter="16">
+        <a-row
+          type="flex"
+          align="middle"
+          :gutter="16"
+        >
           <a-col flex="30px">
-            <img src="icon.png" class="main-logo" />
+            <img
+              src="icon.png"
+              class="main-logo"
+            >
           </a-col>
 
-          <a-col flex="auto">Liberdus</a-col>
+          <a-col flex="auto">
+            Liberdus
+          </a-col>
         </a-row>
       </div>
 
@@ -22,7 +31,10 @@
         :default-selected-keys="['home']"
         :default-open-keys="['settings']"
       >
-        <a-menu-item key="home" @click="redirect('/')">
+        <a-menu-item
+          key="home"
+          @click="redirect('/')"
+        >
           <a-icon type="home" />
           <span class="nav-text">Home</span>
         </a-menu-item>
@@ -41,35 +53,53 @@
           </a-menu-item>
         </a-sub-menu> -->
 
-        <a-menu-item key="friends" @click="redirect('/setting/friends')">
+        <a-menu-item
+          key="friends"
+          @click="redirect('/setting/friends')"
+        >
           <a-icon type="usergroup-add" />
           <span class="nav-text">Friends</span>
         </a-menu-item>
 
-        <a-menu-item key="stake" @click="redirect('/setting/stake')">
+        <a-menu-item
+          key="stake"
+          @click="redirect('/setting/stake')"
+        >
           <a-icon type="dollar" />
           <span class="nav-text">Stake</span>
         </a-menu-item>
 
         <a-sub-menu key="settings">
           <span slot="title"><a-icon type="setting" />Settings</span>
-          <a-menu-item key="network" @click="redirect('/setting/network')">
+          <a-menu-item
+            key="network"
+            @click="redirect('/setting/network')"
+          >
             <a-icon type="wifi" />
             <span class="nav-text">Network</span>
           </a-menu-item>
 
-          <a-menu-item key="toll" @click="redirect('/setting/toll')">
+          <a-menu-item
+            key="toll"
+            @click="redirect('/setting/toll')"
+          >
             <a-icon type="share-alt" />
             <span class="nav-text">Toll</span>
           </a-menu-item>
         </a-sub-menu>
 
-        <a-menu-item key="about" @click="redirect('/setting/about')">
+        <a-menu-item
+          key="about"
+          @click="redirect('/setting/about')"
+        >
           <a-icon type="pic-left" />
           <span class="nav-text">About</span>
         </a-menu-item>
 
-        <a-menu-item key="sign-out" @click="onSignOut">
+        <a-menu-item
+          key="sign-out"
+          @click="onSignOut"
+        >
           <a-icon type="logout" />
           <span class="nav-text">Sign out</span>
         </a-menu-item>
@@ -83,7 +113,7 @@
             size="large"
             :style="{ backgroundColor: '#87d068', verticalAlign: 'middle' }"
           >
-            {{getWallet ? getWallet.handle : "No User"}}
+            {{ getWallet ? getWallet.handle : "No User" }}
           </a-avatar>
 
           <a-menu slot="overlay">

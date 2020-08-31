@@ -10,9 +10,6 @@ import { mapGetters, mapActions } from 'vuex'
 import utils from '../assets/utils'
 import newMessageSoundFile from '../assets/new_message_sound.mp3'
 export default {
-  data: function () {
-    return {}
-  },
   props: {
     lastMessage: {
       type: Object
@@ -20,6 +17,9 @@ export default {
     lastTx: {
       type: Object
     }
+  },
+  data: function () {
+    return {}
   },
   computed: {
     ...mapGetters({

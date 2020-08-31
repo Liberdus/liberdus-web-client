@@ -7,47 +7,64 @@
       <!-- {{ hasEmailHash }}
       {{ hasVerified }} -->
       <div v-if="hasEmailHash && hasVerified">
-        <p class="body" id="verified-message">
+        <p
+          id="verified-message"
+          class="body"
+        >
           Your email address has been verified.
         </p>
       </div>
       <div v-else-if="hasEmailHash && !hasVerified">
-        <p class="body" id="registered-message">
+        <p
+          id="registered-message"
+          class="body"
+        >
           A verification code has been sent to your inbox. Please verify your
           email
-          <nuxt-link class="link-to-import" to="/email/verify"
-            ><strong>here</strong></nuxt-link
+          <nuxt-link
+            class="link-to-import"
+            to="/email/verify"
           >
+            <strong>here</strong>
+          </nuxt-link>
         </p>
       </div>
-      <form class="email-form" v-else>
+      <form
+        v-else
+        class="email-form"
+      >
         <div class="email-input-container">
-          <p class="body">Enter your email address</p>
+          <p class="body">
+            Enter your email address
+          </p>
           <input
+            v-model="email"
             type="email"
             placeholder="Email"
-            v-model="email"
             class="toll-input text-input"
-          />
+          >
         </div>
         <div class="error-message-container">
           <p
-            class="input-error-message"
             v-if="$v.email.required && !$v.email.email"
+            class="input-error-message"
           >
             Invalid email address
           </p>
         </div>
         <Button
           text="Register Email"
-          :isDisabled="!isEmailValid"
-          :onClick="onRegisterEmail"
+          :is-disabled="!isEmailValid"
+          :on-click="onRegisterEmail"
         />
         <p class="already-registered">
           Already received a verification code ? Please verify your email
-          <nuxt-link class="link-to-import" to="/email/verify"
-            ><strong>here</strong></nuxt-link
-          >.
+          <nuxt-link
+            class="link-to-import"
+            to="/email/verify"
+          >
+            <strong>here</strong>
+          </nuxt-link>.
         </p>
       </form>
     </div>
@@ -76,12 +93,12 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function () {
     return {
       email: '',
@@ -106,6 +123,10 @@ export default {
       if (this.$v.email.required && this.$v.email.email) return true
     }
   },
+  mounted: async function () {
+    if (this.getAppState.emailHash) this.hasEmailHash = true
+    if (this.getAppState.verified === true) this.hasVerified = true
+  },
   methods: {
     async onRegisterEmail (e) {
       e.preventDefault()
@@ -127,10 +148,6 @@ export default {
     notify (message) {
       this.$ons.notification.alert(message)
     }
-  },
-  mounted: async function () {
-    if (this.getAppState.emailHash) this.hasEmailHash = true
-    if (this.getAppState.verified === true) this.hasVerified = true
   }
 }
 </script>

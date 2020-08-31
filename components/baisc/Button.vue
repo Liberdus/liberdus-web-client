@@ -1,5 +1,9 @@
 <template>
-  <button class="default-button" @click="onClick" :disabled="isDisabled">
+  <button
+    class="default-button"
+    :disabled="isDisabled"
+    @click="onClick"
+  >
     {{ text }}
   </button>
 </template>

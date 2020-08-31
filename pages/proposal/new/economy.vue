@@ -9,23 +9,33 @@
         redirectUrl: '/'
       }"
     /> -->
-    <form class="proposal-create-container" @submit="onSubmitProposal">
-      <h2 class="title-2">New Change Proposal</h2>
-      <div v-if="loading" class="loading-status">
-        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+    <form
+      class="proposal-create-container"
+      @submit="onSubmitProposal"
+    >
+      <h2 class="title-2">
+        New Change Proposal
+      </h2>
+      <div
+        v-if="loading"
+        class="loading-status"
+      >
+        <v-ons-progress-circular indeterminate />
       </div>
       <div
-        class="loading-status"
         v-else-if="!loading && (!window || !window.proposalWindow)"
+        class="loading-status"
       >
         Unable to get proposal window from server
       </div>
       <div v-else>
-        <p class="body">Submit new proposal when proposal window is active.</p>
+        <p class="body">
+          Submit new proposal when proposal window is active.
+        </p>
         <window-info
           v-if="window"
           :window="window"
-          :currentWindowName="currentWindowName"
+          :current-window-name="currentWindowName"
         />
 
         <table id="network-table">
@@ -38,138 +48,208 @@
           </thead>
           <tbody>
             <tr>
-              <td class="parameter-name">Funding Proposal Fee</td>
+              <td class="parameter-name">
+                Funding Proposal Fee
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.devProposalFee }}
               </td>
               <td class="new-value">
-                <input v-model="form.devProposalFee" required />
+                <input
+                  v-model="form.devProposalFee"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Network Proposal Fee</td>
+              <td class="parameter-name">
+                Network Proposal Fee
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.proposalFee }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.proposalFee" required />
+                <input
+                  v-model="form.proposalFee"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Min. Maintenance Fee</td>
+              <td class="parameter-name">
+                Min. Maintenance Fee
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.maintenanceFee }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.maintenanceFee" required />
+                <input
+                  v-model="form.maintenanceFee"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Maintenance Interval</td>
+              <td class="parameter-name">
+                Maintenance Interval
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.maintenanceInterval }}
               </td>
               <td class="new-value">
                 <input
-                  type="number"
                   v-model="form.maintenanceInterval"
+                  type="number"
                   required
-                />
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Node Penalty</td>
+              <td class="parameter-name">
+                Node Penalty
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.nodePenalty }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.nodePenalty" required />
+                <input
+                  v-model="form.nodePenalty"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Node Reward Amount</td>
+              <td class="parameter-name">
+                Node Reward Amount
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.nodeRewardAmount }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.nodeRewardAmount" required />
+                <input
+                  v-model="form.nodeRewardAmount"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Node Reward Interval</td>
+              <td class="parameter-name">
+                Node Reward Interval
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.nodeRewardInterval }}
               </td>
               <td class="new-value">
                 <input
-                  type="number"
                   v-model="form.nodeRewardInterval"
+                  type="number"
                   required
-                />
+                >
               </td>
             </tr>
 
             <tr>
-              <td class="parameter-name">Stake Required</td>
+              <td class="parameter-name">
+                Stake Required
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.stakeRequired }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.stakeRequired" required />
+                <input
+                  v-model="form.stakeRequired"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Transaction Fee</td>
+              <td class="parameter-name">
+                Transaction Fee
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.transactionFee }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.transactionFee" required />
+                <input
+                  v-model="form.transactionFee"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Faucet Amount</td>
+              <td class="parameter-name">
+                Faucet Amount
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.faucetAmount }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.faucetAmount" required />
+                <input
+                  v-model="form.faucetAmount"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
             <tr>
-              <td class="parameter-name">Default Toll</td>
+              <td class="parameter-name">
+                Default Toll
+              </td>
               <td class="current-value">
                 {{ networkParameters.current.defaultToll }}
               </td>
               <td class="new-value">
-                <input type="number" v-model="form.defaultToll" required />
+                <input
+                  v-model="form.defaultToll"
+                  type="number"
+                  required
+                >
               </td>
             </tr>
           </tbody>
         </table>
         <div>
-          <p class="label">Title</p>
-          <input name="title-input" class="text-input" v-model="form.title" />
+          <p class="label">
+            Title
+          </p>
+          <input
+            v-model="form.title"
+            name="title-input"
+            class="text-input"
+          >
         </div>
         <div>
-          <p class="label">Description</p>
+          <p class="label">
+            Description
+          </p>
           <textarea
+            v-model="form.description"
             name="description-input"
             class="description-input"
-            v-model="form.description"
             cols="30"
             rows="5"
-          ></textarea>
+          />
         </div>
 
-        <p class="coin-usage-warning" v-if="!allowProposal">
+        <p
+          v-if="!allowProposal"
+          class="coin-usage-warning"
+        >
           Proposal window will start in
           <strong v-if="nextProposalStart">{{ secondsToDhms }}</strong>
         </p>
-        <p class="coin-usage-warning" v-else>
+        <p
+          v-else
+          class="coin-usage-warning"
+        >
           Proposal window will expire in
-          <strong>{{ secondsToDhms }}</strong
-          >.
+          <strong>{{ secondsToDhms }}</strong>.
           <span v-if="allowProposal && !issueGenerated">
             Waiting network to create default proposal...
           </span>
@@ -178,8 +258,8 @@
         <Button
           text="Submit Proposal"
           type="submit"
-          :onClick="onSubmitProposal"
-          :isDisabled="!allowProposal || !issueGenerated"
+          :on-click="onSubmitProposal"
+          :is-disabled="!allowProposal || !issueGenerated"
         />
         <p
           v-if="
@@ -220,7 +300,6 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     ToolBar,
     WindowInfo,
@@ -228,6 +307,7 @@ export default {
     Title,
     Choice
   },
+  layout: 'dashboard',
   data: function () {
     return {
       networkParameters: null,

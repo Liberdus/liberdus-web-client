@@ -1,10 +1,16 @@
 <template>
   <div class="recent-message-list-item">
     <div class="username-timestamp">
-      <div class="username">@{{ message.handle }}</div>
-      <div class="timestamp">{{ timestamp }}</div>
+      <div class="username">
+        @{{ message.handle }}
+      </div>
+      <div class="timestamp">
+        {{ timestamp }}
+      </div>
     </div>
-    <div class="last-message-text">{{ message.lastMessage }}</div>
+    <div class="last-message-text">
+      {{ message.lastMessage }}
+    </div>
   </div>
 </template>
 

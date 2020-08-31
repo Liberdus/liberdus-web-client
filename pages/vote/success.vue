@@ -3,12 +3,15 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div
-      class="loading-status"
       v-if="!loading && (!window || !window.votingWindow)"
+      class="loading-status"
     >
       Unable to get voting window from server
     </div>
-    <div v-else class="proposal-list-container">
+    <div
+      v-else
+      class="proposal-list-container"
+    >
       <!-- {{ allProposalList }} -->
       <Title text="Funded Projects" />
       <div v-if="activeProposalList.length > 0">
@@ -16,10 +19,13 @@
           v-for="proposal in activeProposalList"
           :key="proposal.id"
           :proposal="proposal"
-          v-on:vote-enter="onVoteReceiveFromChild"
+          @vote-enter="onVoteReceiveFromChild"
         />
       </div>
-      <div v-else class="no-proposal-message">
+      <div
+        v-else
+        class="no-proposal-message"
+      >
         No projects are funded yet.
       </div>
     </div>
@@ -38,7 +44,6 @@ import Button from '~/components/baisc/Button'
 import WindowInfo from '~/components/WindowInfo'
 import { concat } from 'lodash'
 export default {
-  layout: 'dashboard',
   components: {
     MessageListItem,
     Title,
@@ -47,6 +52,7 @@ export default {
     ProposalListItem,
     WindowInfo
   },
+  layout: 'dashboard',
   data: function () {
     return {
       proposalList: [],

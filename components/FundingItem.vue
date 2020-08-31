@@ -1,17 +1,27 @@
 <template>
   <div class="vote-list-item">
-    <h4 class="vote-title">{{vote.title}}</h4>
+    <h4 class="vote-title">
+      {{ vote.title }}
+    </h4>
     <div class="my-vote-detail">
-      <p class="label">You voted:</p>
+      <p class="label">
+        You voted:
+      </p>
       <div class="selected-vote">
-        <p class="tag">{{vote.selectedVote.tag}}</p>
-        <p>{{vote.selectedVote.value}}</p>
+        <p class="tag">
+          {{ vote.selectedVote.tag }}
+        </p>
+        <p>{{ vote.selectedVote.value }}</p>
       </div>
     </div>
     <div>
-      <div v-for="tag of Object.keys(vote.votePercents)" :key="tag" class="vote-progress-container">
-        <p>{{ tag }}. {{vote.votePercents[tag]}}</p>
-        <v-ons-progress-bar :value="vote.votePercents[tag]"></v-ons-progress-bar>
+      <div
+        v-for="tag of Object.keys(vote.votePercents)"
+        :key="tag"
+        class="vote-progress-container"
+      >
+        <p>{{ tag }}. {{ vote.votePercents[tag] }}</p>
+        <v-ons-progress-bar :value="vote.votePercents[tag]" />
       </div>
     </div>
     <div class="vote-footer">

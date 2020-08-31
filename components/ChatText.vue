@@ -1,12 +1,16 @@
 <template>
   <div
-    class="chat-text-container"
-    v-bind:class="{ isUser: isUser, isFriend: isFriend, isPending: isPending }"
     v-if="message !== null"
+    class="chat-text-container"
+    :class="{ isUser: isUser, isFriend: isFriend, isPending: isPending }"
   >
     <div class="chat">
-      <p class="chat-message">{{ message.body }}</p>
-      <p class="chat-timestamp">{{ formattedTimestamp }}</p>
+      <p class="chat-message">
+        {{ message.body }}
+      </p>
+      <p class="chat-timestamp">
+        {{ formattedTimestamp }}
+      </p>
     </div>
   </div>
 </template>

@@ -1,7 +1,11 @@
 <template>
   <div class="choice">
-    <div class="tag">{{ tag }}</div>
-    <div class="value">{{ value }}</div>
+    <div class="tag">
+      {{ tag }}
+    </div>
+    <div class="value">
+      {{ value }}
+    </div>
   </div>
 </template>
 <script>

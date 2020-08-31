@@ -1,37 +1,43 @@
 <template>
   <!-- <v-ons-page> -->
-    <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
-    <div class="message-tab-container">
-      <!-- <button
+  <!-- <tool-bar :option="{ menu: true, notification: true, back: false}" /> -->
+  <div class="message-tab-container">
+    <!-- <button
         class="white-button new-message-button"
         @click="$router.push('/message/new')"
       >
         <v-ons-icon icon="ion-ios-chatboxes" size="lg"></v-ons-icon>New Message
       </button> -->
-      <a-row 
-        type="flex" 
-        justify="space-around" 
-        align="middle" 
-        class="new-button-row"
+    <a-row 
+      type="flex" 
+      justify="space-around" 
+      align="middle" 
+      class="new-button-row"
+    >
+      <a-button
+        type="primary"
+        shape="round"
+        icon="message"
+        size="large"
+        @click="$router.push('/message/new')"
       >
-        <a-button
-          type="primary"
-          shape="round"
-          icon="message"
-          size="large"
-          @click="$router.push('/message/new')"
+        New Message
+      </a-button>
+    </a-row>
+    <v-ons-list class="message-list">
+      <v-ons-list-item
+        v-for="message in messageList"
+        :key="message.text"
+      >
+        <nuxt-link
+          :to="`/message/${message.handle}`"
+          class="nuxt-link"
         >
-          New Message
-        </a-button>
-      </a-row>
-      <v-ons-list class="message-list">
-        <v-ons-list-item v-for="message in messageList" :key="message.text">
-          <nuxt-link v-bind:to="`/message/${message.handle}`" class="nuxt-link">
-            <message-list-item :message="message" />
-          </nuxt-link>
-        </v-ons-list-item>
-      </v-ons-list>
-    </div>
+          <message-list-item :message="message" />
+        </nuxt-link>
+      </v-ons-list-item>
+    </v-ons-list>
+  </div>
   <!-- </v-ons-page> -->
 </template>
 

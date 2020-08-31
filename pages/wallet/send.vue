@@ -4,42 +4,60 @@
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div class="send-coins-container">
       <Title text="Send Coins" />
-      <div v-if="loading" class="loading-status">
-        <v-ons-progress-circular indeterminate></v-ons-progress-circular>
+      <div
+        v-if="loading"
+        class="loading-status"
+      >
+        <v-ons-progress-circular indeterminate />
       </div>
-      <div class="loading-status" v-else-if="!loading && !requiredTxFee">
+      <div
+        v-else-if="!loading && !requiredTxFee"
+        class="loading-status"
+      >
         Unable to get transaction fee from server
       </div>
       <div v-else>
-        <p class="body">Enter username</p>
-        <q-reader :onDetectQR="onDetectUsername" :scanning="showScanner" />
+        <p class="body">
+          Enter username
+        </p>
+        <q-reader
+          :on-detect-q-r="onDetectUsername"
+          :scanning="showScanner"
+        />
         <v-ons-button
           v-if="showScanner"
           class="new-message-btn"
           modifier="quiet"
           @click="onClickQRScanner"
-          >Close QR Scanner</v-ons-button
         >
+          Close QR Scanner
+        </v-ons-button>
         <div class="send-username-input-container">
           <input
+            ref="username-input"
+            v-model="username"
             type="text"
             placeholder="Username"
-            v-model="username"
             class="send-username-input text-input"
             @focusout="checkUsername"
             @focusin="onUsernameFocus"
-            ref="username-input"
-          />
+          >
           <v-ons-button
             modifier="quiet"
-            @click="onClickQRScanner"
             class="qr-code-btn"
+            @click="onClickQRScanner"
           >
-            <img src="../../assets/qrcode.png" alt="qr-code" />
+            <img
+              src="../../assets/qrcode.png"
+              alt="qr-code"
+            >
           </v-ons-button>
         </div>
         <div class="username-warning">
-          <p v-if="isOwnName" class="invalid-username">
+          <p
+            v-if="isOwnName"
+            class="invalid-username"
+          >
             You cannot send coins to yourself.
           </p>
           <p
@@ -79,22 +97,24 @@
           </p>
         </div>
         <div class="send-amount-input-container">
-          <p class="body">Enter amount to send</p>
+          <p class="body">
+            Enter amount to send
+          </p>
           <input
+            v-model="amount"
             type="text"
             placeholder="Amount"
-            v-model="amount"
             class="send-username-input send-amount-input text-input"
-          />
+          >
           <p
-            class="input-error-message"
             v-if="$v.amount.required && !$v.amount.between"
+            class="input-error-message"
           >
             Invalid amount
           </p>
           <p
-            class="input-error-message"
             v-else-if="amount.length > 0 && !hasEnoughBalance"
+            class="input-error-message"
           >
             Not enough balance.
           </p>
@@ -102,7 +122,11 @@
         <p class="required-tx-fee">
           Tx Fee {{ requiredTxFee }} coins will be deducted from your account.
         </p>
-        <Button text="Send" :onClick="onSend" :disabled="!isFormValid" />
+        <Button
+          text="Send"
+          :on-click="onSend"
+          :disabled="!isFormValid"
+        />
       </div>
     </div>
   <!-- </v-ons-page> -->
@@ -130,13 +154,13 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     QReader,
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function () {
     return {
       username: '',

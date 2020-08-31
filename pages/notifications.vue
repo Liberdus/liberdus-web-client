@@ -3,15 +3,28 @@
     <v-ons-list>
       {{ getNotificationQueue }}
       <v-ons-list-item>
-        <nuxt-link to="/setting/toll" class="nuxt-link">
+        <nuxt-link
+          to="/setting/toll"
+          class="nuxt-link"
+        >
           <div>
-            <p class="setting-name">Toll</p>
-            <p class="setting-description">Update your toll setting</p>
+            <p class="setting-name">
+              Toll
+            </p>
+            <p class="setting-description">
+              Update your toll setting
+            </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
     </v-ons-list>
-    <v-ons-button class="new-message-btn" modifier="quiet" @click="onSignOut">Sign Out</v-ons-button>
+    <v-ons-button
+      class="new-message-btn"
+      modifier="quiet"
+      @click="onSignOut"
+    >
+      Sign Out
+    </v-ons-button>
   </v-ons-page>
 </template>
 

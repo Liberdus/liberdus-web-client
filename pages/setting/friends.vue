@@ -1,3 +1,5 @@
+<!-- eslint-disable -->
+
 <template>
   <!-- <v-ons-page> -->
   <div>
@@ -130,13 +132,11 @@ export default {
       if (handle && handle !== this.getWallet.handle) {
         this.$confirm({
           title: 'Confirm',
-          content: (
-            <span>
+          content: <span>
               Confirm to add{' '}
               <i style='color: blue'>@{this.foundAccount.alias}</i> to your
               friends list?
-            </span>
-          ),
+            </span>,
           onOk() {
             utils.addFriend(
               self.foundAccount.alias,
@@ -155,12 +155,10 @@ export default {
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
-        content: (
-          <span>
+        content: <span>
             Confirm to remove{' '}
             <i style='color: blue'>@{alias}</i> from your friends list?
-          </span>
-        ),
+          </span>,
         async onOk() {
           let isSubmitted = await utils.removeFriend(
             alias,

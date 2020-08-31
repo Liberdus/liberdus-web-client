@@ -3,14 +3,23 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div
-      class="loading-status"
       v-if="!loading && (!window || !window.votingWindow)"
+      class="loading-status"
     >
       Unable to get voting window from server
     </div>
-    <div v-else class="proposal-list-container">
-      <Title v-if="voteType === 'economy'" text="Vote Proposals" />
-      <Title v-else-if="voteType === 'funding'" text="Vote Fundings" />
+    <div
+      v-else
+      class="proposal-list-container"
+    >
+      <Title
+        v-if="voteType === 'economy'"
+        text="Vote Proposals"
+      />
+      <Title
+        v-else-if="voteType === 'funding'"
+        text="Vote Fundings"
+      />
       <Title
         v-else-if="voteType === 'funding_success'"
         text="Funded Projects"
@@ -19,19 +28,25 @@
       <window-info
         v-if="window"
         :window="window"
-        :currentWindowName="currentWindowName"
+        :current-window-name="currentWindowName"
       />
-      <div v-if="activeProposalList.length > 0" class="list-container">
+      <div
+        v-if="activeProposalList.length > 0"
+        class="list-container"
+      >
         <ProposalListItem
           v-for="proposal in activeProposalList"
           :key="proposal.id"
-          :proposal="proposal"
-          :currentWindowName="currentWindowName"
-          v-on:vote-enter="onVoteReceiveFromChild"
           :ref="proposal.id.slice(0, 6)"
+          :proposal="proposal"
+          :current-window-name="currentWindowName"
+          @vote-enter="onVoteReceiveFromChild"
         />
       </div>
-      <div v-else class="no-proposal-message">
+      <div
+        v-else
+        class="no-proposal-message"
+      >
         No
         <strong>active</strong>
         {{ voteType }} proposals to vote
@@ -58,8 +73,8 @@
       </p>
       <button
         class="default-button new-proposal-button"
-        @click="onSubmitVotes"
         :disabled="!allowVote"
+        @click="onSubmitVotes"
       >
         Submit Votes
       </button>
@@ -79,7 +94,6 @@ import Button from '~/components/baisc/Button'
 import WindowInfo from '~/components/WindowInfo'
 import { concat } from 'lodash'
 export default {
-  layout: 'dashboard',
   components: {
     MessageListItem,
     Title,
@@ -88,6 +102,7 @@ export default {
     ProposalListItem,
     WindowInfo
   },
+  layout: 'dashboard',
   data: function () {
     return {
       proposalList: [],

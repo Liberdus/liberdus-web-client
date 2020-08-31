@@ -1,72 +1,135 @@
 <template>
   <v-ons-toolbar>
     <div class="left">
-      <button v-if="option.back" @click="redirect(option.backUrl || '/')" class="toolbar-back-button">
-        <v-ons-icon icon="ion-ios-arrow-back" size="lg"></v-ons-icon>
+      <button
+        v-if="option.back"
+        class="toolbar-back-button"
+        @click="redirect(option.backUrl || '/')"
+      >
+        <v-ons-icon
+          icon="ion-ios-arrow-back"
+          size="lg"
+        />
       </button>
-      <img v-else src="../assets/images/loading-logo.png" class="main-logo" />
+      <img
+        v-else
+        src="../assets/images/loading-logo.png"
+        class="main-logo"
+      >
     </div>
-    <div class="center" v-if="option.title">{{ option.title }}</div>
+    <div
+      v-if="option.title"
+      class="center"
+    >
+      {{ option.title }}
+    </div>
     <div class="right">
-      <div v-if="option.notification && getWallet" class="user-alias">
+      <div
+        v-if="option.notification && getWallet"
+        class="user-alias"
+      >
         @{{ getWallet.handle }}
       </div>
-      <button v-if="option.notification" @click="toggleNotification">
-        <v-ons-icon icon="ion-ios-notifications-outline" size="lg"></v-ons-icon>
+      <button
+        v-if="option.notification"
+        @click="toggleNotification"
+      >
+        <v-ons-icon
+          icon="ion-ios-notifications-outline"
+          size="lg"
+        />
       </button>
-      <button v-if="option.menu" @click="toggleSetting">
-        <v-ons-icon icon="ion-ios-menu" size="lg"></v-ons-icon>
+      <button
+        v-if="option.menu"
+        @click="toggleSetting"
+      >
+        <v-ons-icon
+          icon="ion-ios-menu"
+          size="lg"
+        />
       </button>
       <button
         v-if="option.addFriend"
-        @click="onAddFriend"
         class="add-friend-button"
+        @click="onAddFriend"
       >
-        <v-ons-icon icon="ion-ios-add-circle" size="lg"></v-ons-icon>
+        <v-ons-icon
+          icon="ion-ios-add-circle"
+          size="lg"
+        />
       </button>
     </div>
 
     <v-ons-modal :visible="settingVisible">
       <button class="close-setting-button">
         <v-ons-icon
+          v-if="option.menu"
           icon="ion-ios-close"
           size="lg"
           @click="toggleSetting"
-          v-if="option.menu"
-        ></v-ons-icon>
+        />
       </button>
       <div class="setting-container">
-        <h1 class="setting-title">Settings</h1>
+        <h1 class="setting-title">
+          Settings
+        </h1>
         <ul>
           <!-- <li>General</li> -->
-          <li @click="redirect('/setting/export')">Export Account</li>
-          <li @click="redirect('/email/register')">Register Email</li>
-          <li @click="redirect('/setting/toll')">Toll</li>
-          <li @click="redirect('/setting/friends')">Friends</li>
-          <li @click="redirect('/setting/network')">Network</li>
-          <li @click="redirect('/setting/stake')">Stake</li>
-          <li @click="redirect('/setting/about')">About</li>
-          <li @click="onSignOut">Sign Out</li>
+          <li @click="redirect('/setting/export')">
+            Export Account
+          </li>
+          <li @click="redirect('/email/register')">
+            Register Email
+          </li>
+          <li @click="redirect('/setting/toll')">
+            Toll
+          </li>
+          <li @click="redirect('/setting/friends')">
+            Friends
+          </li>
+          <li @click="redirect('/setting/network')">
+            Network
+          </li>
+          <li @click="redirect('/setting/stake')">
+            Stake
+          </li>
+          <li @click="redirect('/setting/about')">
+            About
+          </li>
+          <li @click="onSignOut">
+            Sign Out
+          </li>
         </ul>
       </div>
     </v-ons-modal>
     <v-ons-modal :visible="notificationVisible">
       <button class="close-setting-button">
         <v-ons-icon
+          v-if="option.menu"
           icon="ion-ios-close"
           size="lg"
           @click="toggleNotification"
-          v-if="option.menu"
-        ></v-ons-icon>
+        />
       </button>
       <div class="setting-container">
-        <h1 class="setting-title">Notifications</h1>
+        <h1 class="setting-title">
+          Notifications
+        </h1>
         <ul>
-          <li v-for="noti in notificationQueue" :key="noti.id">
+          <li
+            v-for="noti in notificationQueue"
+            :key="noti.id"
+          >
             <div class="notification-item">
-              <p class="time">{{ formatTimestamp(noti.timestamp) }}</p>
-              <h6 class="title">{{ noti.title }}</h6>
-              <p class="text">{{ noti.text }}</p>
+              <p class="time">
+                {{ formatTimestamp(noti.timestamp) }}
+              </p>
+              <h6 class="title">
+                {{ noti.title }}
+              </h6>
+              <p class="text">
+                {{ noti.text }}
+              </p>
             </div>
           </li>
         </ul>

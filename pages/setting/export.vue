@@ -10,8 +10,15 @@
       <p id="secret-key">
         <strong>{{ secretKey }}</strong>
       </p>
-      <qriously :value="secretKey" :size="200" class="qr-code" />
-      <Button text="Copy Secret Key" :onClick="onCopy" />
+      <qriously
+        :value="secretKey"
+        :size="200"
+        class="qr-code"
+      />
+      <Button
+        text="Copy Secret Key"
+        :on-click="onCopy"
+      />
     </div>
   <!-- </v-ons-page> -->
   </div>
@@ -37,12 +44,12 @@ Vue.use(VueQriously);
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
 
 export default {
-  layout: 'dashboard',
   components: {
     Title,
     Button,
     ToolBar
   },
+  layout: 'dashboard',
   data: function() {
     return {};
   },

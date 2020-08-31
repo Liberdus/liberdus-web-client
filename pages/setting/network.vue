@@ -8,45 +8,63 @@
         backUrl: previousUrl
       }"
     />
-    <div v-if="checkingSeedNode" class="checking-container">
-      <v-ons-progress-circular indeterminate></v-ons-progress-circular>
-      <p class="body">Checking seed node</p>
+    <div
+      v-if="checkingSeedNode"
+      class="checking-container"
+    >
+      <v-ons-progress-circular indeterminate />
+      <p class="body">
+        Checking seed node
+      </p>
     </div>
-    <div v-else class="network-container">
+    <div
+      v-else
+      class="network-container"
+    >
       <p v-if="seedNode">
         Current Seed Node IP:
         <span>{{ seedNode.ip }}</span>
       </p>
-      <p v-else>Current Seed Node IP:</p>
+      <p v-else>
+        Current Seed Node IP:
+      </p>
 
       <p v-if="seedNode">
         Current Seed Node PORT:
         <span>{{ seedNode.port }}</span>
       </p>
-      <p v-else>Current Seed Node PORT:</p>
+      <p v-else>
+        Current Seed Node PORT:
+      </p>
 
       <form class="network-form">
-        <p class="sub-head">Change Seed Node</p>
+        <p class="sub-head">
+          Change Seed Node
+        </p>
         <input
+          v-model="newIP"
           type="text"
           placeholder="New ip address"
-          v-model="newIP"
           class="text-input"
-        />
+        >
         <input
+          v-model="newPort"
           type="text"
           placeholder="New port number"
-          v-model="newPort"
           class="text-input"
+        >
+        <Button
+          text="Update Network"
+          :on-click="onUpdateSeedNode"
         />
-        <Button text="Update Network" :onClick="onUpdateSeedNode" />
       </form>
       <v-ons-button
         class="new-message-btn"
         modifier="quiet"
         @click="onResetNetwork"
-        >Reset to Default Network</v-ons-button
       >
+        Reset to Default Network
+      </v-ons-button>
     </div>
   </v-ons-page>
 </template>

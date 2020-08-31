@@ -13,17 +13,22 @@
     <div class="message-list-container">
       <chat-text
         v-for="(message, index) in messages"
-        :message="message"
         :key="`chat${index}`"
+        :message="message"
       />
-      <chat-text v-if="pendingMessage" :message="pendingMessage" />
+      <chat-text
+        v-if="pendingMessage"
+        :message="pendingMessage"
+      />
     </div>
     <chat-input
       :friend="friend"
-      :isFriend="isFriend"
-      :setPendingMessage="setPendingMessage"
+      :is-friend="isFriend"
+      :set-pending-message="setPendingMessage"
     />
-    <p class="end-of-history">End of History</p>
+    <p class="end-of-history">
+      End of History
+    </p>
   </v-ons-page>
 </template>
 

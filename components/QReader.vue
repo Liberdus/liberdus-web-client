@@ -1,11 +1,16 @@
 <template>
-  <div class="qr-scanner-container" v-if="scanning">
-    <p class="camera-error-message">{{this.cameraErrorMessage}}</p>
+  <div
+    v-if="scanning"
+    class="qr-scanner-container"
+  >
+    <p class="camera-error-message">
+      {{ this.cameraErrorMessage }}
+    </p>
     <qrcode-stream
       v-if="!cameraErrorMessage"
+      :paused="!scanning"
       @decode="onDecode"
       @init="onInit"
-      :paused="!scanning"
     />
     <!-- <b-button variant="primary" @click="hideScanner" class="cancel-scanner-btn">Cancel</b-button> -->
   </div>

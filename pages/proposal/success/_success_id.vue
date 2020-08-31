@@ -10,8 +10,13 @@
       }"
     /> -->
     <div class="proposal-detail-container">
-      <h2 class="title-2">Your Votes are submitted !</h2>
-      <ButtonOutline text="Back To Proposals" :onClick="onBackToHome" />
+      <h2 class="title-2">
+        Your Votes are submitted !
+      </h2>
+      <ButtonOutline
+        text="Back To Proposals"
+        :on-click="onBackToHome"
+      />
     </div>
   <!-- </v-ons-page> -->
   </div>
@@ -38,13 +43,13 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     ToolBar,
     ButtonOutline,
     Title,
     Choice
   },
+  layout: 'dashboard',
   data: function () {
     return {
       voteState: 'select'

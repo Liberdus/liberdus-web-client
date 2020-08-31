@@ -10,44 +10,81 @@
       }"
     /> -->
     <div class="proposal-detail-container">
-      <h2 class="proposal-title">{{ proposalTitle }}</h2>
-      <h4 class="proposal-type" v-if="proposal.type === 'proposal'">
+      <h2 class="proposal-title">
+        {{ proposalTitle }}
+      </h2>
+      <h4
+        v-if="proposal.type === 'proposal'"
+        class="proposal-type"
+      >
         Parameter Proposal
       </h4>
-      <h4 class="proposal-type" v-else-if="proposal.type === 'dev_proposal'">
+      <h4
+        v-else-if="proposal.type === 'dev_proposal'"
+        class="proposal-type"
+      >
         Development Proposal
       </h4>
       <div class="proposal-info-detail">
         <div class="row-1">
           <div>
-            <p class="label">ID</p>
-            <p class="value">{{ shortenAddress(proposal.id) }}</p>
+            <p class="label">
+              ID
+            </p>
+            <p class="value">
+              {{ shortenAddress(proposal.id) }}
+            </p>
           </div>
           <div>
-            <p class="label">Hash</p>
-            <p class="value">{{ shortenAddress(proposal.hash) }}</p>
+            <p class="label">
+              Hash
+            </p>
+            <p class="value">
+              {{ shortenAddress(proposal.hash) }}
+            </p>
           </div>
         </div>
         <div class="row-2">
           <div>
-            <p class="label">Total Votes</p>
-            <p class="value">{{ proposal.totalVotes }}</p>
+            <p class="label">
+              Total Votes
+            </p>
+            <p class="value">
+              {{ proposal.totalVotes }}
+            </p>
           </div>
           <div>
-            <p class="label">Date</p>
-            <p class="value">{{ timestamp }}</p>
+            <p class="label">
+              Date
+            </p>
+            <p class="value">
+              {{ timestamp }}
+            </p>
           </div>
         </div>
         <div class="row-3">
           <div>
-            <p class="label">Proposal Status</p>
-            <p class="value success" v-if="status === 'Success'">
+            <p class="label">
+              Proposal Status
+            </p>
+            <p
+              v-if="status === 'Success'"
+              class="value success"
+            >
               {{ status }}
             </p>
-            <p class="value fail" v-else-if="status === 'Failed'">
+            <p
+              v-else-if="status === 'Failed'"
+              class="value fail"
+            >
               {{ status }}
             </p>
-            <p class="value" v-else>{{ status }}</p>
+            <p
+              v-else
+              class="value"
+            >
+              {{ status }}
+            </p>
           </div>
           <div>
             <!-- <p class="label">Date</p>
@@ -56,54 +93,79 @@
         </div>
 
         <div v-if="proposal.type === 'proposal'">
-          <p class="proposal-description">Proposed Value</p>
+          <p class="proposal-description">
+            Proposed Value
+          </p>
           <p
-            class="sub-head"
             v-for="parameter in Object.keys(proposal.proposedParameters)"
             :key="parameter"
+            class="sub-head"
           >
-            <strong
-              >{{ parameter }} -
-              {{ proposal.proposedParameters[parameter] }}</strong
-            >
+            <strong>{{ parameter }} -
+              {{ proposal.proposedParameters[parameter] }}</strong>
           </p>
         </div>
 
         <div v-if="proposal.type === 'dev_proposal'">
           <div>
-            <p class="label">Proposed Total Amount</p>
-            <p class="value">{{ proposal.totalAmount }}</p>
+            <p class="label">
+              Proposed Total Amount
+            </p>
+            <p class="value">
+              {{ proposal.totalAmount }}
+            </p>
           </div>
-          <p class="label">Pay Address</p>
-          <p class="value">{{ shortenAddress(proposal.payAddress) }}</p>
+          <p class="label">
+            Pay Address
+          </p>
+          <p class="value">
+            {{ shortenAddress(proposal.payAddress) }}
+          </p>
         </div>
       </div>
     </div>
 
-    <div class="vote-section" v-if="status === 'Active'">
+    <div
+      v-if="status === 'Active'"
+      class="vote-section"
+    >
       <div>
-        <p class="label">Enter amount of token to vote</p>
+        <p class="label">
+          Enter amount of token to vote
+        </p>
         <input
-          type="text"
           v-model="tokenToVote"
+          type="text"
           class="text-input"
           autocorrect="off"
           autocomplete="off"
           autocapitalize="off"
-        />
+        >
       </div>
 
       {{ this.votingWindow }}
       <!-- <p class="coin-usage-warning" v-if="!allowVoting">Voting window will start at </p> -->
-      <p class="coin-usage-warning" v-if="!allowVoting">
+      <p
+        v-if="!allowVoting"
+        class="coin-usage-warning"
+      >
         Voting window will start at
         <strong v-if="this.votingWindow">{{
           new Date(this.votingWindow[0])
         }}</strong>
       </p>
-      <p class="coin-usage-warning" v-else>Voting window is open now.</p>
+      <p
+        v-else
+        class="coin-usage-warning"
+      >
+        Voting window is open now.
+      </p>
 
-      <Button text="Vote" :onClick="submitVote" :isDisabled="!allowVoting" />
+      <Button
+        text="Vote"
+        :on-click="submitVote"
+        :is-disabled="!allowVoting"
+      />
     </div>
   <!-- </v-ons-page> -->
   </div>
@@ -130,13 +192,13 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: {
     ToolBar,
     Button,
     Title,
     Choice
   },
+  layout: 'dashboard',
   validate ({ params }) {
     return true
   },

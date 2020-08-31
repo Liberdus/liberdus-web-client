@@ -8,7 +8,10 @@
       <p class="proposal-description">
         <strong>Description</strong>: {{ proposal.parameters.description }}
       </p>
-      <table id="network-table" v-if="proposal">
+      <table
+        v-if="proposal"
+        id="network-table"
+      >
         <thead>
           <tr>
             <td>Parameter</td>
@@ -17,141 +20,152 @@
         </thead>
         <tbody>
           <tr>
-            <td class="parameter-name">Funding Proposal Fee</td>
+            <td class="parameter-name">
+              Funding Proposal Fee
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.devProposalFee"
                 class="new-parameter"
-                >{{ proposal.parameters.devProposalFee }}</span
-              >
+              >{{ proposal.parameters.devProposalFee }}</span>
               <span v-else>{{ proposal.parameters.devProposalFee }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Min. Maintenance Fee</td>
+            <td class="parameter-name">
+              Min. Maintenance Fee
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.maintenanceFee"
                 class="new-parameter"
-                >{{ proposal.parameters.maintenanceFee }}</span
-              >
+              >{{ proposal.parameters.maintenanceFee }}</span>
               <span v-else>{{ proposal.parameters.maintenanceFee }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Maintenance Interval</td>
+            <td class="parameter-name">
+              Maintenance Interval
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.maintenanceInterval"
                 class="new-parameter"
-                >{{ proposal.parameters.maintenanceInterval }}</span
-              >
+              >{{ proposal.parameters.maintenanceInterval }}</span>
               <span v-else>{{ proposal.parameters.maintenanceInterval }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Node Penalty</td>
+            <td class="parameter-name">
+              Node Penalty
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.nodePenalty"
                 class="new-parameter"
-                >{{ proposal.parameters.nodePenalty }}</span
-              >
+              >{{ proposal.parameters.nodePenalty }}</span>
               <span v-else>{{ proposal.parameters.nodePenalty }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Node Reward Amount</td>
+            <td class="parameter-name">
+              Node Reward Amount
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.nodeRewardAmount"
                 class="new-parameter"
               >
-                {{ proposal.parameters.nodeRewardAmount }}</span
-              >
+                {{ proposal.parameters.nodeRewardAmount }}</span>
               <span v-else> {{ proposal.parameters.nodeRewardAmount }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Node Reward Interval</td>
+            <td class="parameter-name">
+              Node Reward Interval
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.nodeRewardInterval"
                 class="new-parameter"
               >
-                {{ proposal.parameters.nodeRewardInterval }}</span
-              >
+                {{ proposal.parameters.nodeRewardInterval }}</span>
               <span v-else> {{ proposal.parameters.nodeRewardInterval }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Proposal Fee</td>
+            <td class="parameter-name">
+              Proposal Fee
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.proposalFee"
                 class="new-parameter"
               >
-                {{ proposal.parameters.proposalFee }}</span
-              >
+                {{ proposal.parameters.proposalFee }}</span>
               <span v-else> {{ proposal.parameters.proposalFee }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Stake Required</td>
+            <td class="parameter-name">
+              Stake Required
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.stakeRequired"
                 class="new-parameter"
               >
-                {{ proposal.parameters.stakeRequired }}</span
-              >
+                {{ proposal.parameters.stakeRequired }}</span>
               <span v-else> {{ proposal.parameters.stakeRequired }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Transaction Fee</td>
+            <td class="parameter-name">
+              Transaction Fee
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.transactionFee"
                 class="new-parameter"
               >
-                {{ proposal.parameters.transactionFee }}</span
-              >
+                {{ proposal.parameters.transactionFee }}</span>
               <span v-else> {{ proposal.parameters.transactionFee }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Faucet Amount</td>
+            <td class="parameter-name">
+              Faucet Amount
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.faucetAmount"
                 class="new-parameter"
               >
-                {{ proposal.parameters.faucetAmount }}</span
-              >
+                {{ proposal.parameters.faucetAmount }}</span>
               <span v-else> {{ proposal.parameters.faucetAmount }}</span>
             </td>
           </tr>
           <tr>
-            <td class="parameter-name">Default Toll</td>
+            <td class="parameter-name">
+              Default Toll
+            </td>
 
             <td class="new-value">
               <span
                 v-if="proposal.proposedParameters.defaultToll"
                 class="new-parameter"
               >
-                {{ proposal.parameters.defaultToll }}</span
-              >
+                {{ proposal.parameters.defaultToll }}</span>
               <span v-else> {{ proposal.parameters.defaultToll }}</span>
             </td>
           </tr>
@@ -182,13 +196,13 @@
       </div> -->
 
       <input
+        v-if="currentWindowName === 'VOTING'"
+        v-model="voteAmount"
         type="text"
         placeholder="Enter coin amount to vote"
         class="text-input"
-        v-model="voteAmount"
-        v-on:keyup="onEnterVote"
-        v-if="currentWindowName === 'VOTING'"
-      />
+        @keyup="onEnterVote"
+      >
 
       <!-- <p class="proposal-description">{{proposal.description}}</p> -->
       <div class="proposal-footer">
@@ -199,21 +213,30 @@
     </div>
 
     <div v-else-if="proposal.type === 'dev_proposal'">
-      <h4 v-if="proposal.title" class="proposal-title">{{ proposal.title }}</h4>
+      <h4
+        v-if="proposal.title"
+        class="proposal-title"
+      >
+        {{ proposal.title }}
+      </h4>
       <p class="proposal-type">
         <strong>Description</strong>: {{ proposal.description }}
       </p>
       <p class="proposal-type">
         <strong>Amount</strong>: {{ proposal.totalAmount }} coins
       </p>
-      <p class="proposal-type"><strong>Pay To</strong>: @{{ this.payTo }}</p>
+      <p class="proposal-type">
+        <strong>Pay To</strong>: @{{ this.payTo }}
+      </p>
 
       <p class="proposal-type">
         <strong>Payment Type</strong>:
         {{ proposal.payments.length > 1 ? 'Multiple' : 'One time' }}
       </p>
       <section v-if="proposal.payments.length > 1">
-        <p class="proposal-type"><strong>Payment Milestones</strong>:</p>
+        <p class="proposal-type">
+          <strong>Payment Milestones</strong>:
+        </p>
         <ul class="milestone-list">
           <li
             v-for="(milestone, i) in proposal.payments"
@@ -226,8 +249,8 @@
         </ul>
       </section>
       <div
-        class="choice-list"
         v-if="proposal.approved === null && currentWindowName === 'VOTING'"
+        class="choice-list"
       >
         <button
           :class="{
@@ -252,13 +275,13 @@
       </div>
 
       <input
+        v-if="proposal.approved === null && currentWindowName === 'VOTING'"
+        v-model="voteAmount"
         type="text"
         placeholder="Enter coin amount to vote"
         class="text-input"
-        v-model="voteAmount"
-        v-on:keyup="onEnterVote"
-        v-if="proposal.approved === null && currentWindowName === 'VOTING'"
-      />
+        @keyup="onEnterVote"
+      >
 
       <div class="proposal-footer">
         <div>

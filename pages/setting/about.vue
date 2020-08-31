@@ -5,9 +5,15 @@
     <div class="about-container">
       <Title text="Liberdus" />
       <p class="about-liberdus">
-        <a href="https://liberdus.com" target="_blank">Liberdus</a> is a payment
+        <a
+          href="https://liberdus.com"
+          target="_blank"
+        >Liberdus</a> is a payment
         network and the first application to be built with the
-        <a href="https://shardus.com" target="_blank">Shardus</a> distributed
+        <a
+          href="https://shardus.com"
+          target="_blank"
+        >Shardus</a> distributed
         ledger framework. The main purpose of Liberdus network is to enable
         people to govern their own money; and as a result, participate in a more
         fair and sustainable economy.
@@ -42,8 +48,8 @@ Vue.use(Vuelidate)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {
-  layout: 'dashboard',
   components: { Title, ToolBar },
+  layout: 'dashboard',
   data: function () {
     return {
       version: config.version

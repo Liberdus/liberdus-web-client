@@ -5,12 +5,22 @@
       :style="{ backgroundImage: `url(${backgroundUrl})` }"
     >
       <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome' }" />
-      <div v-if="creatingHandle" class="create-account-content">
+      <div
+        v-if="creatingHandle"
+        class="create-account-content"
+      >
         <h3>Creating New Account</h3>
-        <v-ons-progress-bar indeterminate></v-ons-progress-bar>
+        <v-ons-progress-bar indeterminate />
       </div>
-      <div v-else class="create-account-content">
-        <a-row type="flex" justify="space-around" :gutter="[20,20]">
+      <div
+        v-else
+        class="create-account-content"
+      >
+        <a-row
+          type="flex"
+          justify="space-around"
+          :gutter="[20,20]"
+        >
           <a-col :span="24">
             <h1>Sign In or Create Account</h1>
           </a-col>
@@ -21,39 +31,50 @@
             <a-row :gutter="[0,5]">
               <a-col :span="24">
                 <a-input 
+                  v-model="username"
                   size="large"
                   placeholder="Username"
-                  v-model="username"
-                  v-on:keyup="loadAccount"
+                  @keyup="loadAccount"
                 />
               </a-col>
               <a-col :span="24">
                 <div v-if="!allowSignIn">
-                  <p class="input-error-message" v-if="!isNodeOnline">
+                  <p
+                    v-if="!isNodeOnline"
+                    class="input-error-message"
+                  >
                     Unable to connect to server node.
                   </p>
                   <p
-                    class="input-error-message"
                     v-else-if="$v.username.required && !$v.username.alphaNum"
+                    class="input-error-message"
                   >
                     Username can contain only alphabets and numberic characters
                   </p>
                   <p
-                    class="input-error-message"
                     v-else-if="$v.username.required && !$v.username.minLength"
+                    class="input-error-message"
                   >
                     Username must be at least 3 characters long
                   </p>
                   <div v-else-if="!checkingUsername">
-                    <p class="input-error-message" v-if="isUsernameTaken">
+                    <p
+                      v-if="isUsernameTaken"
+                      class="input-error-message"
+                    >
                       Username is already taken.
                     </p>
-                    <p class="input-success-message" v-else-if="isUsernameValid">
+                    <p
+                      v-else-if="isUsernameValid"
+                      class="input-success-message"
+                    >
                       Username is available.
                     </p>
                   </div>
                   <div v-else-if="checkingUsername">
-                    <p class="input-checking-message">Checking username...</p>
+                    <p class="input-checking-message">
+                      Checking username...
+                    </p>
                   </div>
                 </div>
                 <div v-if="allowSignIn">
@@ -63,22 +84,35 @@
                 </div>
               </a-col>
             </a-row>
-            
           </a-col>
           <a-col :span="24">
-            <a-button type="primary" size="large" @click="onSignIn" v-if="existingValidAccount">
+            <a-button
+              v-if="existingValidAccount"
+              type="primary"
+              size="large"
+              @click="onSignIn"
+            >
               Sign In
             </a-button>
-            <a-button type="primary" size="large" @click="onCreateAccount" v-else :disabled="!isUsernameValid">
+            <a-button
+              v-else
+              type="primary"
+              size="large"
+              :disabled="!isUsernameValid"
+              @click="onCreateAccount"
+            >
               Create Account
             </a-button>
           </a-col>
           <a-col :span="24">
             <p class="already-registered">
               Already registered ? Please import your account
-              <nuxt-link class="link-to-import" to="/setting/import">
-                <strong>here</strong> </nuxt-link
-              >.
+              <nuxt-link
+                class="link-to-import"
+                to="/setting/import"
+              >
+                <strong>here</strong>
+              </nuxt-link>.
             </p>
           </a-col>
         </a-row>
@@ -109,6 +143,12 @@ Vue.use(VueOnsen)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 export default {
   components: { Title, Button, ToolBar },
+  filters: {
+    lowerCase: str => {
+      if (!str) return
+      return str.toLowerCase()
+    }
+  },
   data: function () {
     return {
       username: '',
@@ -122,12 +162,6 @@ export default {
       registerWithLocalAccountAddress: false,
       localWallet: null,
       nameCheckerTimeout: null
-    }
-  },
-  filters: {
-    lowerCase: str => {
-      if (!str) return
-      return str.toLowerCase()
     }
   },
   validations: {
