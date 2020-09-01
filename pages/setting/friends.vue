@@ -1,5 +1,3 @@
-<!-- eslint-disable -->
-
 <template>
   <!-- <v-ons-page> -->
   <div>
@@ -66,6 +64,7 @@
 </template>
 
 <script>
+
 import Vue from 'vue';
 import 'onsenui/css/onsenui.css';
 import 'onsenui/css/onsen-css-components.css';
@@ -132,11 +131,7 @@ export default {
       if (handle && handle !== this.getWallet.handle) {
         this.$confirm({
           title: 'Confirm',
-          content: <span>
-              Confirm to add{' '}
-              <i style='color: blue'>@{this.foundAccount.alias}</i> to your
-              friends list?
-            </span>,
+          content: `Confirm to add ${this.foundAccount.alias} to your friends list?`,
           onOk() {
             utils.addFriend(
               self.foundAccount.alias,
@@ -155,10 +150,7 @@ export default {
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
-        content: <span>
-            Confirm to remove{' '}
-            <i style='color: blue'>@{alias}</i> from your friends list?
-          </span>,
+        content: `Confirm to remove ${alias} from your friends list?`,
         async onOk() {
           let isSubmitted = await utils.removeFriend(
             alias,
