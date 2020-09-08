@@ -89,12 +89,11 @@ export default {
   margin: 20px auto;
   word-break: break-word;
   font-family: Inconsolata;
-  font-size: 19px;
+  font-size: 17px;
   color: #2f457a;
   letter-spacing: -0.21px;
   text-align: center;
   line-height: 27px;
-  width: 300px;
 }
 #secret-key > strong {
   user-select: text;

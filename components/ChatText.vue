@@ -4,14 +4,21 @@
     class="chat-text-container"
     :class="{ isUser: isUser, isFriend: isFriend, isPending: isPending }"
   >
-    <div class="chat">
-      <p class="chat-message">
-        {{ message.body }}
-      </p>
-      <p class="chat-timestamp">
-        {{ formattedTimestamp }}
-      </p>
-    </div>
+    <a-row style="width: 100%">
+      <a-col :span="24">
+        <p class="chat-timestamp">
+          {{ formattedTimestamp }}
+        </p>
+      </a-col>
+
+      <a-col :span="24" class="chat-message-col">
+        <div class="chat">
+          <p class="chat-message">
+            {{ message.body }}
+          </p>
+        </div>
+      </a-col>
+    </a-row>
   </div>
 </template>
 
@@ -47,18 +54,18 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .chat-text-container {
   display: flex;
 }
 .chat-text-container .chat {
   width: auto;
   padding: 10px;
-  margin: 5px;
-  border: 1px solid #f0f0f0;
+  margin-bottom: 10px;
   border-radius: 5px;
-  max-width: 50%;
+  max-width: 70%;
   font-size: 12px;
+  display: inline-block;
 }
 .chat-text-container {
   max-width: 600px;
@@ -72,39 +79,51 @@ export default {
   letter-spacing: -0.13px;
   text-align: left;
   line-height: 17px;
+  margin-bottom: 2px;
+  display: inline-block;
 }
 .chat-text-container.isUser {
   justify-content: flex-end;
+
+  .chat-message-col {
+    text-align: right;
+  }
+}
+.chat-text-container.isPending {
+  .chat-message-col {
+    text-align: right;
+  }
 }
 .chat-text-container.isFriend {
   justify-content: flex-start;
+
+  .chat-message-col {
+    text-align: left;
+  }
 }
 .chat-text-container.isUser .chat {
-  background: #e6eef6;
-  background: rgba(143, 209, 251, 0.23);
-  box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
-  border-radius: 10px;
+  background: #dbf4fd;
+  border-radius: 5px;
+  margin-left: auto;
 }
 .chat-text-container.isFriend .chat {
-  background: #f2f2f2;
-  background: #ffffff;
-  box-shadow: 0 2px 4px 0 rgba(206, 206, 206, 0.5);
-  border-radius: 10px;
+  background: #f2f6f9;
+  border-radius: 5px;
 }
 .chat-text-container.isPending .chat {
   background: #e8e8e8;
   border: 1px solid #d7d6d6;
+  margin-left: auto;
 }
 .chat-text-container.isUser .chat-timestamp {
   text-align: right;
-  font-size: 10px;
-  color: #888;
-  margin-top: 5px;
 }
 .chat-text-container.isFriend .chat-timestamp {
   text-align: left;
+}
+.chat-text-container .chat-timestamp {
   font-size: 10px;
   color: #888;
-  margin-top: 5px;
+  margin: 5px;
 }
 </style>

@@ -11,7 +11,7 @@
     /> -->
     <!-- {{ window }} -->
     <div class="funding-create-container">
-      <h2 class="title-2">
+      <h2>
         New Funding Proposal
       </h2>
       <div
@@ -22,7 +22,6 @@
       </div>
       <div
         v-else-if="!loading && (!window || !window.devProposalWindow)"
-        class="loading-status"
       >
         Unable to get funding proposal window from server
       </div>
@@ -36,98 +35,78 @@
           :current-window-name="currentWindowName"
         />
         <div>
-          <p class="label">
+          <p class="input-label-text">
             Title
           </p>
-          <input
+          <a-input
             v-model="title"
-            type="text"
-            class="text-input"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          >
-        </div>
-
-        <div>
-          <p class="label">
-            Description
-          </p>
-          <textarea
-            v-model="description"
-            name="description-input"
-            class="description-input"
-            cols="30"
-            rows="5"
+            size="large"
+            placeholder="Input title"
           />
         </div>
 
         <div>
-          <p class="label">
+          <p class="input-label-text">
+            Description
+          </p>
+          <a-textarea
+            v-model="description"
+            name="description-input"
+            cols="30"
+            rows="5"
+            placeholder="Input description"
+          />
+        </div>
+
+        <div>
+          <p class="input-label-text">
             Proposed Amount
           </p>
-          <input
+          <a-input
             v-model="amount"
-            type="text"
-            class="text-input"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          >
+            placeholder="Input amount"
+          />
         </div>
         <div>
-          <p class="label">
+          <p class="input-label-text">
             Payment Plan
           </p>
           <div class="drop-down-container">
-            <v-ons-select
+            <a-radio-group
               v-model="selectedPaymentType"
               style="width: 40%"
             >
-              <option
+              <a-radio-button
                 v-for="item in paymentType"
                 :key="item.id"
                 :value="item.value"
               >
                 {{ item.text }}
-              </option>
-            </v-ons-select>
-            <v-ons-icon
-              icon="ion-ios-arrow-down"
-              size="lg"
-              class="drop-down-icon"
-            />
+              </a-radio-button>
+            </a-radio-group>
           </div>
         </div>
 
         <div v-if="selectedPaymentType === 'multiple'">
-          <p class="label">
+          <p class="input-label-text">
             Payment Count
           </p>
-          <input
+          <a-input
             v-model="paymentCount"
             type="text"
             placeholder="5"
-            class="text-input"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          >
+          />
         </div>
 
         <div v-if="selectedPaymentType === 'multiple'">
-          <p class="label">
+          <p class="input-label-text">
             Delay between payments (in minutes)
           </p>
-          <input
+          <a-input
             v-model="delay"
             type="text"
             placeholder="0"
-            class="text-input"
-            autocorrect="off"
-            autocomplete="off"
-            autocapitalize="off"
-          >
+          />
         </div>
         <p
           v-if="!allowProposal"
@@ -146,11 +125,15 @@
         <p v-if="allowProposal && !isDevIssueGenerated">
           Waiting to get developer issue number.
         </p>
-        <Button
-          text="Submit Proposal"
-          :on-click="onSubmitProposal"
-          :is-disabled="!allowProposal || !isDevIssueGenerated"
-        />
+        <a-button
+          @click="onSubmitProposal"
+          :disabled="!allowProposal || !isDevIssueGenerated"
+          size="large"
+          style="width:100%;"
+          type="primary"
+        >
+          Submit Proposal
+        </a-button>
         <p
           v-if="
             networkParameters.current.devProposalFee &&
@@ -434,6 +417,10 @@ export default {
   }
   p {
     text-align: left;
+  }
+
+  .input-label-text {
+    margin-top: 20px;
   }
 }
 .funding-create-container > div {

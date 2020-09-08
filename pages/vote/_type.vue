@@ -71,13 +71,13 @@
           {{ secondsToDhms }}
         </strong>
       </p>
-      <button
+      <a-button
         class="default-button new-proposal-button"
         :disabled="!allowVote"
         @click="onSubmitVotes"
       >
         Submit Votes
-      </button>
+      </a-button>
     </div>
   <!-- </v-ons-page> -->
   </div>
@@ -536,11 +536,11 @@ export default {
   text-align: center;
 }
 .vote-footer {
-  background: #f4f4f4;
   position: fixed;
   bottom: 0px;
-  width: 100%;
-  box-shadow: 0 -2px 6px 0px rgb(205, 205, 205);
+  left: 200px;
+  width: calc(100% - 200px);
+  box-shadow: 0 -2px 0px 0px rgb(205, 205, 205);
   p {
     width: 90%;
     max-width: 600px;

@@ -57,6 +57,7 @@
               <td class="new-value">
                 <input
                   v-model="form.devProposalFee"
+                  type="number"
                   required
                 >
               </td>
@@ -218,22 +219,23 @@
           <p class="label">
             Title
           </p>
-          <input
+          <a-input
             v-model="form.title"
             name="title-input"
-            class="text-input"
-          >
+            size="large"
+            placeholder="Input title"
+          />
         </div>
         <div>
           <p class="label">
             Description
           </p>
-          <textarea
+          <a-textarea
             v-model="form.description"
             name="description-input"
-            class="description-input"
             cols="30"
             rows="5"
+            placeholder="Input description"
           />
         </div>
 
@@ -255,12 +257,16 @@
           </span>
         </p>
 
-        <Button
-          text="Submit Proposal"
-          type="submit"
-          :on-click="onSubmitProposal"
-          :is-disabled="!allowProposal || !issueGenerated"
-        />
+        <a-button
+          type="primary"
+          htmlType="submit"
+          @click="onSubmitProposal"
+          :disabled="!allowProposal || !issueGenerated"
+          style="width:100%"
+          size="large"
+        >
+          Submit Proposal
+        </a-button>
         <p
           v-if="
             networkParameters.current.proposalFee &&
@@ -599,10 +605,14 @@ export default {
     box-shadow: 0 0 1px 0 rgba(0, 0, 0, 0.08), 0 4px 8px 0 rgba(0, 0, 0, 0.08);
     border-radius: 10px;
     margin-bottom: 20px;
+    th {
+      padding-top: 20px;
+    }
     tr {
       height: 40px;
       td {
         text-align: center;
+        padding-left: 10px !important;
         input {
           padding: 10px;
           display: block;

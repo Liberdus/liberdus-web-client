@@ -4,26 +4,31 @@
     class="window-info-container"
   >
     <div class="switch-container">
-      <v-ons-switch
+      <!-- <v-ons-switch
         v-model="showAllWindow"
         input-id="switch1"
-      />
+      /> -->
+      <a-switch v-model="showAllWindow">
+        <a-icon slot="checkedChildren" type="check" />
+        <a-icon slot="unCheckedChildren" type="close" />
+      </a-switch>
       <span class="body">Show all windows</span>
     </div>
     <!-- {{ derivedWindow }} -->
-    <div
+    <a-card
       v-if="currentWindowName === 'PROPOSAL' || showAllWindow"
       :class="{
-        'window-info': true,
         active: currentWindowName === 'PROPOSAL',
         'green-bg': currentWindowName === 'PROPOSAL' && showAllWindow
       }"
+      size="small"
+      title="Proposal Window"
     >
       <label
         v-if="currentWindowName === 'PROPOSAL'"
         class="current-window-label"
       >Current Active Window</label>
-      <h5>Proposal Window</h5>
+      <!-- <h5>Proposal Window</h5> -->
       <div
         v-if="currentWindowName === 'PROPOSAL'"
         class="timers"
@@ -33,28 +38,39 @@
           <strong>{{ remainingSecondProposalWindow }}</strong>
         </p>
       </div>
-      <div>
-        <div>Start</div>
-        <div>{{ formatDate(derivedWindow.proposalWindow[0]) }}</div>
-      </div>
-      <div>
-        <div>End</div>
-        <div>{{ formatDate(derivedWindow.proposalWindow[1]) }}</div>
-      </div>
-    </div>
-    <div
+
+      <a-row>
+        <a-col :span="6">
+          Start
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.proposalWindow[0]) }}
+        </a-col>
+
+        <a-col :span="6">
+          End
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.proposalWindow[1]) }}
+        </a-col>
+      </a-row>
+    </a-card>
+
+    <a-card
       v-if="currentWindowName === 'VOTING' || showAllWindow"
       :class="{
-        'window-info': true,
         active: currentWindowName === 'VOTING',
         'green-bg': currentWindowName === 'VOTING' && showAllWindow
       }"
+      size="small"
+      title="Voting Window"
     >
       <label
         v-if="currentWindowName === 'VOTING'"
         class="current-window-label"
       >Current Active Window</label>
-      <h5>Voting Window</h5>
       <div
         v-if="currentWindowName === 'VOTING'"
         class="timers"
@@ -64,28 +80,38 @@
           <strong>{{ remainingSecondVotingWindow }}</strong>
         </p>
       </div>
-      <div>
-        <div>Start</div>
-        <div>{{ formatDate(derivedWindow.votingWindow[0]) }}</div>
-      </div>
-      <div>
-        <div>End</div>
-        <div>{{ formatDate(derivedWindow.votingWindow[1]) }}</div>
-      </div>
-    </div>
-    <div
+
+      <a-row>
+        <a-col :span="6">
+          Start
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.votingWindow[0]) }}
+        </a-col>
+
+        <a-col :span="6">
+          End
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.votingWindow[1]) }}
+        </a-col>
+      </a-row>
+    </a-card>
+
+    <a-card
       v-if="currentWindowName === 'GRACE' || showAllWindow"
       :class="{
-        'window-info': true,
-        active: currentWindowName === 'GRACE',
         'green-bg': currentWindowName === 'GRACE' && showAllWindow
       }"
+      size="small"
+      title="Grace Window"
     >
       <label
         v-if="currentWindowName === 'GRACE'"
         class="current-window-label"
       >Current Active Window</label>
-      <h5>Grace Window</h5>
       <div
         v-if="currentWindowName === 'GRACE'"
         class="timers"
@@ -95,28 +121,39 @@
           <strong>{{ remainingSecondGraceWindow }}</strong>
         </p>
       </div>
-      <div>
-        <div>Start</div>
-        <div>{{ formatDate(derivedWindow.graceWindow[0]) }}</div>
-      </div>
-      <div>
-        <div>End</div>
-        <div>{{ formatDate(derivedWindow.graceWindow[1]) }}</div>
-      </div>
-    </div>
-    <div
+
+      <a-row>
+        <a-col :span="6">
+          Start
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.graceWindow[0]) }}
+        </a-col>
+
+        <a-col :span="6">
+          End
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.graceWindow[1]) }}
+        </a-col>
+      </a-row>
+    </a-card>
+
+    <a-card
       v-if="currentWindowName === 'APPLY' || showAllWindow"
       :class="{
-        'window-info': true,
         active: currentWindowName === 'APPLY',
         'green-bg': currentWindowName === 'APPLY' && showAllWindow
       }"
+      size="small"
+      title="Apply Window"
     >
       <label
         v-if="currentWindowName === 'APPLY'"
         class="current-window-label"
       >Current Active Window</label>
-      <h5>Apply Window</h5>
       <div
         v-if="currentWindowName === 'APPLY'"
         class="timers"
@@ -126,15 +163,25 @@
           <strong>{{ remainingSecondApplyWindow }}</strong>
         </p>
       </div>
-      <div>
-        <div>Start</div>
-        <div>{{ formatDate(derivedWindow.applyWindow[0]) }}</div>
-      </div>
-      <div>
-        <div>End</div>
-        <div>{{ formatDate(derivedWindow.applyWindow[1]) }}</div>
-      </div>
-    </div>
+
+      <a-row>
+        <a-col :span="6">
+          Start
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.applyWindow[0]) }}
+        </a-col>
+
+        <a-col :span="6">
+          End
+        </a-col>
+
+        <a-col :sapn="18" style="text-align: right">
+          {{ formatDate(derivedWindow.applyWindow[1]) }}
+        </a-col>
+      </a-row>
+    </a-card>
   </div>
 </template>
 <script>
@@ -223,6 +270,9 @@ export default {
       font-size: 13px;
       color: #333;
     }
+  }
+  .ant-card {
+    margin-bottom: 20px;
   }
   .window-info {
     margin: 10px auto;

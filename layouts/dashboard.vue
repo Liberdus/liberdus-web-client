@@ -107,7 +107,7 @@
       </a-menu>
     </a-layout-sider>
     <a-layout class="main-layout">
-      <a-layout-header :style="{ background: '#fff', padding: 0 }">
+      <a-layout-header :style="{ background: '#fff', padding: 0 }" class="header-toolbar">
         <a-dropdown placement="bottomRight" v-if="getWallet">
           <a-avatar
             shape="square"
@@ -237,11 +237,13 @@ export default {
 #components-layout-demo-responsive {
   min-height: 100vh;
 
-  .ant-avatar {
-    position: absolute;
-    right: 16px;
-    top: 12px;
-    cursor: pointer;
+  .header-toolbar {
+    .ant-avatar {
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      cursor: pointer;
+    }
   }
 }
 

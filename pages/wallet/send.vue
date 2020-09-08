@@ -17,7 +17,7 @@
         Unable to get transaction fee from server
       </div>
       <div v-else>
-        <p class="body">
+        <p>
           Enter username
         </p>
         <q-reader
@@ -33,25 +33,26 @@
           Close QR Scanner
         </v-ons-button>
         <div class="send-username-input-container">
-          <input
+          <a-input
             ref="username-input"
             v-model="username"
             type="text"
             placeholder="Username"
-            class="send-username-input text-input"
+            size="large"
             @focusout="checkUsername"
             @focusin="onUsernameFocus"
-          >
-          <v-ons-button
+          />
+          <a-button
             modifier="quiet"
-            class="qr-code-btn"
             @click="onClickQRScanner"
+            size="large"
+            style="margin-left: 10px"
           >
             <img
               src="../../assets/qrcode.png"
               alt="qr-code"
             >
-          </v-ons-button>
+          </a-button>
         </div>
         <div class="username-warning">
           <p
@@ -97,15 +98,15 @@
           </p>
         </div>
         <div class="send-amount-input-container">
-          <p class="body">
+          <p>
             Enter amount to send
           </p>
-          <input
+          <a-input
             v-model="amount"
             type="text"
             placeholder="Amount"
-            class="send-username-input send-amount-input text-input"
-          >
+            size="large"
+          />
           <p
             v-if="$v.amount.required && !$v.amount.between"
             class="input-error-message"
@@ -122,11 +123,15 @@
         <p class="required-tx-fee">
           Tx Fee {{ requiredTxFee }} coins will be deducted from your account.
         </p>
-        <Button
-          text="Send"
-          :on-click="onSend"
+        <a-button
+          @click="onSend"
           :disabled="!isFormValid"
-        />
+          style="width: 100%"
+          size="large"
+          type="primary"
+        >
+          Send
+        </a-button>
       </div>
     </div>
   <!-- </v-ons-page> -->

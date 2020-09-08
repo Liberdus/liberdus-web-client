@@ -21,10 +21,13 @@
           :size="180"
           class="qr-code"
         />
-        <Button
-          text="Copy Account Username"
-          :on-click="onCopyUsername"
-        />
+        <a-button
+          @click="onCopyUsername"
+          size="large"
+          type="primary"
+        >
+          Copy Account Username
+        </a-button>
       </div>
 
       <div>
@@ -36,10 +39,13 @@
           :size="180"
           class="qr-code"
         />
-        <Button
-          text="Copy Account Address"
-          :on-click="onCopyAddress"
-        />
+        <a-button
+          @click="onCopyAddress"
+          size="large"
+          type="primary"
+        >
+          Copy Account Address
+        </a-button>
       </div>
     </div>
   <!-- </v-ons-page> -->
@@ -93,7 +99,8 @@ export default {
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
       utils.copyToClipboard(this.getWallet.handle)
-      this.$ons.notification.alert('Copied username to clipboard!')
+      // this.$ons.notification.alert('Copied username to clipboard!')
+      this.$notification.success({message: "Copied username to clipboard!"})
     },
     onCopyAddress () {
       // TODO
@@ -159,8 +166,7 @@ export default {
 }
 #public-key {
   font-family: Inconsolata;
-  font-size: 20px;
-  width: 315px;
+  font-size: 17px;
   word-break: break-all;
   color: #2f457a;
   letter-spacing: -0.21px;

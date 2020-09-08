@@ -3,19 +3,16 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="new-message-input-container">
-      <input
+      <a-input
         ref="username-input"
         v-model="alias"
         type="text"
         placeholder="Search a username"
-        class="text-input"
-        autocorrect="off"
-        autocomplete="off"
-        autocapitalize="off"
         @keyup="searchAlias"
-      >
+        size="large"
+      />
     </div>
-    <v-ons-list class="found-alias-list">
+    <!-- <v-ons-list class="found-alias-list">
       <v-ons-list-item
         v-for="alias in availabeAlias"
         :key="alias"
@@ -27,14 +24,31 @@
           @{{ alias }}
         </nuxt-link>
       </v-ons-list-item>
-    </v-ons-list>
+    </v-ons-list> -->
+
+    <a-list bordered :data-source="availabeAlias" class="available-alias-list">
+      <a-list-item slot="renderItem" slot-scope="alias, index" :key="index">
+        <nuxt-link 
+          :key="index"
+          :to="`/message/${alias}`"
+          style="width: 100%;"
+        >
+          <div style="width: 100%;">
+            <a-list-item-meta
+              :key="index"
+            >
+              <span slot="title">{{ alias }}</span>
+              <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
+            </a-list-item-meta>
+          </div>
+        </nuxt-link>
+      </a-list-item>
+    </a-list>
 
     <div class="current-friend-list">
-      <h2 class="title-2">
-        My Friends
-      </h2>
+      <a-divider>Friends list</a-divider>
       <!-- <v-ons-list v-if="getAppState"> -->
-      <v-ons-list>
+      <!-- <v-ons-list>
         <nuxt-link
           v-for="alias in getAppState.data.friends"
           :key="alias"
@@ -49,7 +63,25 @@
             />
           </v-ons-list-item>
         </nuxt-link>
-      </v-ons-list>
+      </v-ons-list> -->
+
+      <a-list :grid="{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 2, xl: 2, xxl: 3 }" :data-source="getAppState.data.friends">
+        <a-list-item slot="renderItem" slot-scope="alias, index" :key="index">
+          <nuxt-link 
+            :key="index"
+            :to="`/message/${alias}`"
+          >
+            <a-card class="friends-list-item-card">
+              <a-list-item-meta
+                :key="index"
+              >
+                <span slot="title">{{ alias }}</span>
+                <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
+              </a-list-item-meta>
+            </a-card>
+          </nuxt-link>
+        </a-list-item>
+      </a-list>
     </div>
   <!-- </v-ons-page> -->
   </div>
@@ -120,7 +152,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .new-message-input-container {
   height: 70px;
   background: transparent;
@@ -141,11 +173,25 @@ export default {
   border: 1px solid #dddddd;
   border-radius: 5px;
 }
+.available-alias-list {
+  max-width: 600px;
+  margin: auto;
+
+  .ant-list-empty-text {
+    display: none;
+  }
+}
 .current-friend-list {
   padding: 20px;
   width: 90%;
   max-width: 600px;
   margin: 20px auto;
+
+  .friends-list-item-card {
+    .ant-card-body {
+      padding: 16px;
+    }
+  }
 }
 .current-friend-list .list-item {
   background: #fbfbfb;
