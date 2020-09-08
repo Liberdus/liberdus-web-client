@@ -17,32 +17,37 @@
       <a-button
         type="primary"
         shape="round"
-        icon="message"
+        icon="plus"
         size="large"
         @click="$router.push('/message/new')"
       >
         New Message
       </a-button>
     </a-row>
-    <v-ons-list class="message-list">
-      <v-ons-list-item
-        v-for="message in messageList"
-        :key="message.text"
-      >
-        <nuxt-link
-          :to="`/message/${message.handle}`"
-          class="nuxt-link"
-        >
-          <message-list-item :message="message" />
-        </nuxt-link>
-      </v-ons-list-item>
-    </v-ons-list>
+
+    <a-divider>Messages List</a-divider>
+
+    <a-list item-layout="horizontal" :data-source="messageList">
+        <a-list-item slot="renderItem" :key="index" slot-scope="message, index">
+          <nuxt-link :to="`/message/${message.handle}`">
+            <a-list-item-meta
+              :key="index"
+              description="dfsgs"
+            >
+              <span slot="title">{{ message.handle }}</span>
+              <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
+            </a-list-item-meta>
+          </nuxt-link>
+          <div class="message-list-item-timestamp">{{ message.timestampStr }}</div>
+        </a-list-item>
+    </a-list>
   </div>
   <!-- </v-ons-page> -->
 </template>
 
 <script>
 import MessageListItem from '~/components/MessageListItem'
+import moment from "moment";
 import { mapGetters, mapActions } from 'vuex'
 import { last } from 'lodash'
 import utils from '../assets/utils'
@@ -82,6 +87,7 @@ export default {
           list.push({
             handle,
             timestamp: last(chats[handle].messages).timestamp,
+            timestampStr: moment(last(chats[handle].messages).timestamp).calendar(),
             lastMessage: last(chats[handle].messages).body
           })
         }
@@ -103,7 +109,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .new-button-row {
   margin-top: 30px;
 }
@@ -111,6 +117,10 @@ export default {
   width: 90%;
   max-width: 600px;
   margin: 0 auto;
+
+  .ant-avatar {
+    margin-top: 7px;
+  }
 }
 .nuxt-link {
   width: 100%;
@@ -146,5 +156,20 @@ export default {
   margin: 30px auto;
   align-items: center;
   display: block;
+}
+
+@media only screen and (max-width: 600px) {
+  .message-tab-container {
+    .ant-list-item {
+      flex-direction: column;
+      align-items: baseline;
+    }
+
+    .message-list-item-timestamp {
+      width: 100%;
+      text-align: right;
+      margin-top: 5px;
+    }
+  }
 }
 </style>

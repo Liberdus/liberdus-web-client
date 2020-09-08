@@ -17,6 +17,7 @@ module.exports = {
         "vue/require-valid-default-prop": "off",
         "vue/require-explicit-emits": "off",
         "vue/this-in-template": "off",
-        "vue/no-deprecated-destroyed-lifecycle": "off"
+        "vue/no-deprecated-destroyed-lifecycle": "off",
+        "vue/no-parsing-error": "off"
     }
 };

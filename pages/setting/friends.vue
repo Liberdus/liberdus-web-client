@@ -1,5 +1,3 @@
-<!-- eslint-disable -->
-
 <template>
   <!-- <v-ons-page> -->
   <div>
@@ -35,6 +33,7 @@
                 icon="ion-ios-add-circle"
                 size="lg"
                 @click="onClickAddFriend(foundAccount.alias)"
+                style="cursor: pointer"
               ></v-ons-icon>
             </v-ons-list-item>
           </v-ons-list>
@@ -50,12 +49,13 @@
             v-for="alias in getAppState.data.friends"
             :key="alias"
           >
-            <p>@{{ alias }}</p>
+            <p style="margin-bottom: 0px">@{{ alias }}</p>
             <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
             <v-ons-icon
               icon="ion-ios-close-circle-outline"
               size="lg"
               @click="onClickRemoveFriend(alias)"
+              style="cursor: pointer"
             ></v-ons-icon>
           </v-ons-list-item>
         </v-ons-list>
@@ -66,6 +66,7 @@
 </template>
 
 <script>
+
 import Vue from 'vue';
 import 'onsenui/css/onsenui.css';
 import 'onsenui/css/onsen-css-components.css';
@@ -132,11 +133,7 @@ export default {
       if (handle && handle !== this.getWallet.handle) {
         this.$confirm({
           title: 'Confirm',
-          content: <span>
-              Confirm to add{' '}
-              <i style='color: blue'>@{this.foundAccount.alias}</i> to your
-              friends list?
-            </span>,
+          content: `Confirm to add ${this.foundAccount.alias} to your friends list?`,
           onOk() {
             utils.addFriend(
               self.foundAccount.alias,
@@ -155,10 +152,7 @@ export default {
         okText: 'Yes',
         okType: 'danger',
         cancelText: 'No',
-        content: <span>
-            Confirm to remove{' '}
-            <i style='color: blue'>@{alias}</i> from your friends list?
-          </span>,
+        content: `Confirm to remove ${alias} from your friends list?`,
         async onOk() {
           let isSubmitted = await utils.removeFriend(
             alias,

@@ -465,6 +465,7 @@ h1 {
   color: #6a6969;
   letter-spacing: 0;
   line-height: 20px;
+  margin-top: 20px;
 }
 .value {
   font-family: Poppins;

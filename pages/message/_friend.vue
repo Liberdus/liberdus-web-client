@@ -1,6 +1,6 @@
 <template>
-  <v-ons-page class="chat-history-view">
-    <tool-bar
+  <!-- <v-ons-page class="chat-history-view"> -->
+    <!-- <tool-bar
       :option="{
         menu: false,
         notification: false,
@@ -8,8 +8,9 @@
         title: `@${friend}`,
         addFriend: isFriend ? null : friend
       }"
-    />
+    /> -->
 
+  <div class="chat-history-view">
     <div class="message-list-container">
       <chat-text
         v-for="(message, index) in messages"
@@ -29,7 +30,8 @@
     <p class="end-of-history">
       End of History
     </p>
-  </v-ons-page>
+  </div>
+  <!-- </v-ons-page> -->
 </template>
 
 <script>
@@ -58,6 +60,7 @@ export default {
     ChatInput,
     ToolBar
   },
+  layout: 'dashboard',
   validate ({ params }) {
     return true
   },
@@ -179,7 +182,7 @@ export default {
     },
     scrollToLastMessage () {
       let container = document.querySelector(
-        '.chat-history-view .page__content'
+        '.chat-history-view'
       )
       let element = document.querySelector('.end-of-history')
       if (element) {

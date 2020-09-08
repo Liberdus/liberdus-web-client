@@ -1,6 +1,6 @@
 <template>
   <div class="recent-message-list-item">
-    <div class="username-timestamp">
+    <!-- <div class="username-timestamp">
       <div class="username">
         @{{ message.handle }}
       </div>
@@ -10,7 +10,19 @@
     </div>
     <div class="last-message-text">
       {{ message.lastMessage }}
-    </div>
+    </div> -->
+
+    <a-list-item-meta
+      :key="index"
+      description="dfsgs"
+    >
+      <a slot="title" href="https://www.antdv.com/">{{ message.handle }}</a>
+      <a-avatar
+        slot="avatar"
+        src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+      />
+    </a-list-item-meta>
+    <div>content</div>
   </div>
 </template>
 
