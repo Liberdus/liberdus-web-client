@@ -33,6 +33,7 @@
                 icon="ion-ios-add-circle"
                 size="lg"
                 @click="onClickAddFriend(foundAccount.alias)"
+                style="cursor: pointer"
               ></v-ons-icon>
             </v-ons-list-item>
           </v-ons-list>
@@ -48,12 +49,13 @@
             v-for="alias in getAppState.data.friends"
             :key="alias"
           >
-            <p>@{{ alias }}</p>
+            <p style="margin-bottom: 0px">@{{ alias }}</p>
             <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
             <v-ons-icon
               icon="ion-ios-close-circle-outline"
               size="lg"
               @click="onClickRemoveFriend(alias)"
+              style="cursor: pointer"
             ></v-ons-icon>
           </v-ons-list-item>
         </v-ons-list>
