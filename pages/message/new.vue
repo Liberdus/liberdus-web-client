@@ -12,6 +12,15 @@
         size="large"
       />
     </div>
+
+    <portal to="navigation-tags">
+      <a-breadcrumb>
+        <a-breadcrumb-item>
+          <nuxt-link to="/message">Message</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>New Message</a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
     <!-- <v-ons-list class="found-alias-list">
       <v-ons-list-item
         v-for="alias in availabeAlias"
@@ -133,7 +142,11 @@ export default {
     }
   },
   mounted() {
-    this.$refs['username-input'].focus()
+    try {
+      this.$refs['username-input'].focus()
+    } catch(e) {
+      console.log(e)
+    }
   },
   methods: {
     async searchAlias() {

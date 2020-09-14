@@ -1,7 +1,29 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
+    <portal to="navigation-tags">
+      <a-breadcrumb v-if="voteType === 'economy'">
+        <a-breadcrumb-item>
+          <nuxt-link to="/proposal">Proposal</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>Vote Proposals</a-breadcrumb-item>
+      </a-breadcrumb>
+
+      <a-breadcrumb v-else-if="voteType === 'funding'">
+        <a-breadcrumb-item>
+          <nuxt-link to="/funding">Funding</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>Vote Fundings</a-breadcrumb-item>
+      </a-breadcrumb>
+
+      <a-breadcrumb v-else-if="voteType === 'funding_success'">
+        <a-breadcrumb-item>
+          <nuxt-link to="/funding">Funding</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>Funded Projects</a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
+
     <div
       v-if="!loading && (!window || !window.votingWindow)"
       class="loading-status"

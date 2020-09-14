@@ -4,6 +4,12 @@
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true, title: `Friend Setting`}" /> -->
 
     <div class="friend-setting-container">
+      <portal to="navigation-tags">
+        <a-breadcrumb>
+          <a-breadcrumb-item>Friends list</a-breadcrumb-item>
+        </a-breadcrumb>
+      </portal>
+
       <div class="new-message-input-container">
         <a-input
           placeholder="Search a friend"

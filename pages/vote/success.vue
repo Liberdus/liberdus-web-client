@@ -1,7 +1,15 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
+    <portal to="navigation-tags">
+      <a-breadcrumb>
+        <a-breadcrumb-item>
+          <nuxt-link to="/funding">Funding</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>Funded Projects</a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
+
     <div
       v-if="!loading && (!window || !window.votingWindow)"
       class="loading-status"

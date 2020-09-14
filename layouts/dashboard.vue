@@ -5,6 +5,7 @@
       collapsed-width="0"
       @collapse="onCollapse"
       @breakpoint="onBreakpoint"
+      v-model="collapsed"
       v-if="getWallet"
     >
       <div class="header-logo">
@@ -40,19 +41,29 @@
           <span class="nav-text">Home</span>
         </a-menu-item>
 
-        <!-- <a-sub-menu key="account">
-          <span slot="title"><a-icon type="user" />My Account</span>
+        <a-menu-item
+          key="message"
+          @click="redirect('/message')"
+        >
+          <a-icon type="message" />
+          <span class="nav-text">Message</span>
+        </a-menu-item>
 
-          <a-menu-item key="export-accout">
-            <a-icon type="export" />
-            <span class="nav-text">Export Account</span>
-          </a-menu-item>
+        <a-menu-item
+          key="funding"
+          @click="redirect('/funding')"
+        >
+          <a-icon type="fund" />
+          <span class="nav-text">Funding</span>
+        </a-menu-item>
 
-          <a-menu-item key="register-email">
-            <a-icon type="mail" />
-            <span class="nav-text">Register Email</span>
-          </a-menu-item>
-        </a-sub-menu> -->
+        <a-menu-item
+          key="proposal"
+          @click="redirect('/proposal')"
+        >
+          <a-icon type="check-square" />
+          <span class="nav-text">Proposal</span>
+        </a-menu-item>
 
         <a-menu-item
           key="friends"
@@ -108,6 +119,25 @@
     </a-layout-sider>
     <a-layout class="main-layout">
       <a-layout-header :style="{ background: '#fff', padding: 0 }" class="header-toolbar">
+        <div class="header-logo-mobile">
+          <a-row
+            type="flex"
+            align="middle"
+            :gutter="16"
+          >
+            <a-col flex="30px">
+              <img
+                src="icon.png"
+                class="main-logo"
+              >
+            </a-col>
+
+            <a-col flex="auto">
+              <span style="header-logo-text">Liberdus</span>
+            </a-col>
+          </a-row>
+        </div>
+
         <a-dropdown placement="bottomRight" v-if="getWallet">
           <a-avatar
             shape="square"
@@ -134,7 +164,10 @@
         </a-dropdown>
       </a-layout-header>
 
-      <a-layout-content :style="{ margin: '24px 16px 0' }">
+      <a-layout-content :style="{ margin: '10px 16px 0' }">
+
+        <portal-target name="navigation-tags" class="navigation-tags"></portal-target>
+
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
           <nuxt />
         </div>
@@ -147,10 +180,13 @@
   </a-layout>
 </template>
 <script>
+import Vue from 'vue'
 import { mapGetters, mapActions } from 'vuex'
 import moment from 'moment'
+import PortalVue from 'portal-vue'
 import utils from '../assets/utils'
 
+Vue.use(PortalVue)
 export default {
   props: {
     option: {
@@ -170,7 +206,9 @@ export default {
   data: function () {
     return {
       settingVisible: false,
-      notificationVisible: false
+      notificationVisible: false,
+      collapsed: true,
+      isMobile: false,
     }
   },
   computed: {
@@ -197,12 +235,17 @@ export default {
     }),
     onCollapse(collapsed, type) {
       console.log(collapsed, type);
+      this.collapsed = collapsed
     },
     onBreakpoint(broken) {
       console.log(broken);
+      this.isMobile = broken;
     },
     redirect (url = '/') {
       this.$router.push(url)
+      if (this.isMobile) {
+        this.collapsed = true
+      }
     },
     onSignOut () {
       let handle = this.getWallet.handle
@@ -233,6 +276,21 @@ export default {
     overflow-y: auto;
   }
 }
+@media screen and (max-width: 992px) {
+  .ant-layout-sider {
+    position: absolute !important;
+    z-index: 10;
+    height: 100%;
+  }
+
+  .navigation-tags {
+    margin-left: 23px;
+  }
+}
+
+.navigation-tags {
+  margin-bottom: 5px;
+}
 
 #components-layout-demo-responsive {
   min-height: 100vh;
@@ -252,14 +310,27 @@ export default {
   margin: 16px;
 }
 
-.header-logo {
+.header-logo, .header-logo-mobile {
   img {
     width: 30px;
   }
 
   font-size: 20px;
   font-weight: bold;
+}
+
+.header-logo {
   color: white;
+}
+
+.header-logo-mobile {
+  margin-left: 20px;
+}
+
+@media screen and (min-width: 992px) {
+  .header-logo-mobile {
+    display: none;
+  }
 }
 
 </style>

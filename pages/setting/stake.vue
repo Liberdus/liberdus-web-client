@@ -4,6 +4,12 @@
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
 
     <div class="toll-container">
+      <portal to="navigation-tags">
+        <a-breadcrumb>
+          <a-breadcrumb-item>Stake</a-breadcrumb-item>
+        </a-breadcrumb>
+      </portal>
+
       <a-card title="Update Stake">
         <a-statistic
           v-if="getAppState"

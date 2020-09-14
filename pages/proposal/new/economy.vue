@@ -1,14 +1,15 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <!-- <tool-bar
-      :option="{
-        menu: false,
-        notification: false,
-        back: true,
-        redirectUrl: '/'
-      }"
-    /> -->
+    <portal to="navigation-tags">
+      <a-breadcrumb>
+        <a-breadcrumb-item>
+          <nuxt-link to="/proposal">Proposal</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>New Change Proposal</a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
+
     <form
       class="proposal-create-container"
       @submit="onSubmitProposal"

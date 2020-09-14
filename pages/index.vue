@@ -7,6 +7,14 @@
       width="100%"
       classes="my-notification-style"
     />
+
+    <portal to="navigation-tags">
+      <a-breadcrumb>
+        <a-breadcrumb-item>
+          Home
+        </a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
     <!-- <v-offline @detected-condition="handleConnectivityChange"></v-offline> -->
     <!-- <tool-bar
       v-if="isUIReady"
@@ -45,36 +53,7 @@
         @click="onSelectTab($event, tabs[i])"
       ></v-ons-tab>
     </v-ons-tabbar> -->
-    <a-tabs
-      default-active-key="wallet"
-      size="large"
-      v-if="isUIReady"
-    >
-      <a-tab-pane 
-        key="wallet" 
-        tab="Wallet"
-      >
-        <home />
-      </a-tab-pane>
-      <a-tab-pane 
-        key="message" 
-        tab="Message"
-      >
-        <message />
-      </a-tab-pane>
-      <a-tab-pane 
-        key="funding-list" 
-        tab="Funding"
-      >
-        <funding-list />
-      </a-tab-pane>
-      <a-tab-pane 
-        key="proosal-list" 
-        tab="Proposal"
-      >
-        <proposal-list />
-      </a-tab-pane>
-    </a-tabs>
+    <home />
   </div>
   <!-- </v-ons-page> -->
 </template>

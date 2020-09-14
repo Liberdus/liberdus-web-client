@@ -10,7 +10,16 @@
       }"
     /> -->
     <!-- {{ window }} -->
-    <div class="funding-create-container">
+    <div class="funding-create-container">  
+      <portal to="navigation-tags">
+        <a-breadcrumb>
+          <a-breadcrumb-item>
+            <nuxt-link to="/funding">Funding</nuxt-link>
+          </a-breadcrumb-item>
+          <a-breadcrumb-item>New Funding</a-breadcrumb-item>
+        </a-breadcrumb>
+      </portal>
+
       <h2>
         New Funding Proposal
       </h2>

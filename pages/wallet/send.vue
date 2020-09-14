@@ -3,19 +3,31 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <div class="send-coins-container">
+      <portal to="navigation-tags">
+        <a-breadcrumb>
+          <a-breadcrumb-item>
+            <nuxt-link to="/">Wallet</nuxt-link>
+          </a-breadcrumb-item>
+          <a-breadcrumb-item>Send</a-breadcrumb-item>
+        </a-breadcrumb>
+      </portal>
+
       <Title text="Send Coins" />
+
       <div
         v-if="loading"
         class="loading-status"
       >
         <v-ons-progress-circular indeterminate />
       </div>
+
       <div
         v-else-if="!loading && !requiredTxFee"
         class="loading-status"
       >
         Unable to get transaction fee from server
       </div>
+
       <div v-else>
         <p>
           Enter username
@@ -143,6 +155,7 @@ import Vue from 'vue'
 import 'onsenui/css/onsenui.css'
 import 'onsenui/css/onsen-css-components.css'
 import VueOnsen from 'vue-onsenui/esm'
+import PortalVue from 'portal-vue'
 import OnsenComponents from '~/components/Onsen'
 import ChatText from '~/components/ChatText'
 import ChatInput from '~/components/ChatInput'
@@ -156,6 +169,7 @@ import Title from '~/components/baisc/Title'
 import Button from '~/components/baisc/Button'
 Vue.use(VueOnsen)
 Vue.use(Vuelidate)
+Vue.use(PortalVue)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
 export default {

@@ -11,6 +11,18 @@
     /> -->
 
   <div class="chat-history-view">
+    <portal to="navigation-tags">
+      <a-breadcrumb>
+        <a-breadcrumb-item>
+          <nuxt-link to="/message">Message</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>
+          <nuxt-link to="/message/new">New Message</nuxt-link>
+        </a-breadcrumb-item>
+        <a-breadcrumb-item>Chatroom</a-breadcrumb-item>
+      </a-breadcrumb>
+    </portal>
+
     <div class="message-list-container">
       <chat-text
         v-for="(message, index) in messages"

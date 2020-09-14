@@ -7,6 +7,15 @@
       v-if="getWallet.handle"
       class="receive-container"
     >
+      <portal to="navigation-tags">
+        <a-breadcrumb>
+          <a-breadcrumb-item>
+            <nuxt-link to="/">Wallet</nuxt-link>
+          </a-breadcrumb-item>
+          <a-breadcrumb-item>Receive</a-breadcrumb-item>
+        </a-breadcrumb>
+      </portal>
+
       <Title text="Receive Coins" />
       <p>Share your username to your senders</p>
       <!-- TODO
@@ -100,14 +109,14 @@ export default {
       // this.$ons.notification.alert("Copied to clipboard!");
       utils.copyToClipboard(this.getWallet.handle)
       // this.$ons.notification.alert('Copied username to clipboard!')
-      this.$notification.success({message: "Copied username to clipboard!"})
+      this.$notification.success({message: 'Copied username to clipboard!'})
     },
     onCopyAddress () {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
       utils.copyToClipboard(this.getWallet.entry.keys.publicKey)
-      this.$ons.notification.alert('Copied address to clipboard!')
+      this.$notification.success({message: 'Copied address to clipboard!'})
     }
   }
 }
