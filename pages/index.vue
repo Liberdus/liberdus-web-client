@@ -82,6 +82,8 @@ Vue.use(VueOnsen)
 Vue.use(Notifications)
 Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
 
+window.onbeforeunload = function() { return false };
+
 export default {
   components: {
     Message,
