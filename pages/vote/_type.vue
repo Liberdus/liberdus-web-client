@@ -585,4 +585,10 @@ export default {
     cursor: not-allowed;
   }
 }
+
+@media only screen and (max-width: 992px) {
+  .vote-footer {
+    left: 0px;
+  }
+}
 </style>
