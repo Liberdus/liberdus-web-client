@@ -1,6 +1,6 @@
 export default {
   server: {
-    ip: '69.30.199.114',
+    ip: '66.228.53.241',
     port: 4000
   },
   proxy: {

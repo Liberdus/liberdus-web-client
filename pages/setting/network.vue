@@ -202,6 +202,7 @@ export default {
     async updateChatServerHost() {
       console.log('Updating chat server host...');
       let randomHost = await utils.getRandomHost();
+      console.log('random host\n', randomHost)
       randomHost.timestamp = Date.now();
       this.updateNetwork(randomHost);
       utils.updateHost(`${randomHost.ip}:${randomHost.port}`);
