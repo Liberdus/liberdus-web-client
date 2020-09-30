@@ -65,6 +65,16 @@ utils.getProxyUrl = function (url, option) {
   return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
 }
 
+utils.getProxyUrlWithRandomHost = async function (url, option) {
+  const randomHost = await this.getRandomHost()
+  const {ip, port} = randomHost
+
+  if (ip === 'localhost' || ip === '127.0.0.1') {
+    return `http://localhost:${port}${url}`
+  }
+  return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
+}
+
 utils.getRandomHost = async () => {
   console.log(seedNodeHost)
   const ip = seedNodeHost.split(':')[0]
@@ -243,19 +253,21 @@ async function getAddress (handle) {
   if (!handle) return
   if (handle.length === 64) return handle
   try {
-    const data = await getJSON(
-      utils.getProxyUrl(`/address/${crypto.hash(handle)}`)
-    )
-    const { address, error } = data
-    if (error) {
-      console.warn(error)
-      console.warn(`Error while getting address for ${handle}`)
-    } else {
-      return address
+    for (let i = 0; i < 3; i ++) {
+      const randomUrl = await utils.getProxyUrlWithRandomHost(`/address/${crypto.hash(handle)}`)
+      const data = await getJSON(randomUrl)
+      const { address, error } = data
+      if (error) {
+        console.log(error)
+        console.log(`Error while getting address for ${handle}`)
+      } else if (address) {
+        return address
+      }
     }
   } catch (e) {
-    return null
+    console.log(e)
   }
+  return null
 }
 
 async function pollMessages (from, to, timestamp) {
