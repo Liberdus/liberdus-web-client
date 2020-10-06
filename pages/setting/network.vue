@@ -132,27 +132,33 @@ export default {
       getNetwork: 'chat/getNetwork',
     }),
     currentSeedNode() {
+      console.log('here spec1')
       return this.getNetwork;
     },
   },
   beforeRouteEnter(to, from, next) {
+    console.log('here spec2')
     next((vm) => {
       vm.previousUrl = from.path;
       console.log(vm.previousUrl);
     });
   },
   mounted: function() {
+    console.log('here1')
     let self = this;
     const defaultSeedNodeHost = `${CONFIG.server.ip}:${CONFIG.server.port}`;
     const storedSeedNodeHost = localStorage.getItem('seednode');
     const seedNodeHost = storedSeedNodeHost || defaultSeedNodeHost;
     this.seedNode = utils.getCurrentSeedNode(seedNodeHost);
+    self.setUIReady()
+    console.log('here3:\n', this.seedNode)
   },
   methods: {
     ...mapActions({
       updateNetwork: 'chat/updateNetwork',
       updateAppState: 'chat/updateAppState',
       removeWallet: 'wallet/removeWallet',
+      setUIReady: "chat/setUIReady",
     }),
     redirect(url, option) {
       console.log(`Pushing to ${url}`);
@@ -161,6 +167,7 @@ export default {
       }
     },
     async onUpdateSeedNode(e) {
+      console.log('here spec3')
       e.preventDefault();
       this.checkingSeedNode = true;
       const isSeedNodeOnline = await utils.isSeedNodeOnline(
@@ -192,6 +199,7 @@ export default {
       this.checkingSeedNode = false;
     },
     signOut() {
+      console.log('here spec4')
       this.updateAppState(null);
       this.removeWallet();
       this.$router.push('/');

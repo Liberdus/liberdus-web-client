@@ -32,7 +32,7 @@
           <nuxt-link :to="`/message/${message.handle}`">
             <a-list-item-meta
               :key="index"
-              description="dfsgs"
+              :description="message.lastMessage"
             >
               <span slot="title">{{ message.handle }}</span>
               <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
@@ -77,6 +77,8 @@ export default {
       return should
     },
     messageList () {
+      console.log('messageList:\n')
+      console.log(this.isUIReady, this.getAppState)
       if (this.getAppState && this.isUIReady) {
         let chats = this.getAppState.data.chats
         let handles = Object.keys(chats)
@@ -92,6 +94,7 @@ export default {
           })
         }
         list = list.sort((a, b) => b.timestamp - a.timestamp)
+        console.log('list:', list)
         return list
       } else {
         return []

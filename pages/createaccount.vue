@@ -189,13 +189,14 @@ export default {
     async onCreateAccount () {
       let self = this
       if (!this.username || this.username.length === 0) return
+      const lowUsername = this.username.toLowerCase()
       let wallet
       if (this.registerWithLocalAccountAddress) {
         wallet = this.localWallet
       } else {
-        let entry = utils.createWallet(this.username)
+        let entry = utils.createWallet(lowUsername)
         wallet = {
-          handle: this.username,
+          handle: lowUsername,
           entry: entry
         }
       }
@@ -217,10 +218,10 @@ export default {
     },
     async checkUsername () {
       console.log('Checking username for: ', this.username)
-      this.username = this.username.toLowerCase()
+      let lowUsername = this.username.toLowerCase()
       this.checkingUsername = true
       try {
-        let remoteAddress = await utils.getAddress(this.username)
+        let remoteAddress = await utils.getAddress(lowUsername)
         if (remoteAddress) {
           let wallets
           try {

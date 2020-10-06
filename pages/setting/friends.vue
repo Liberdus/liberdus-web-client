@@ -123,6 +123,7 @@ export default {
     },
 
     async searchAccount() {
+      console.log('\nsearchAccount:\n', this.queryHandle)
       if (this.queryHandle) this.queryHandle = this.queryHandle.toLowerCase();
       let queryAccount = await utils.queryAccount(this.queryHandle);
       if (queryAccount.account) {

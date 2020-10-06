@@ -48,6 +48,7 @@ export default {
   async mounted() {
     let self = this;
     let randomHost;
+    console.log('loading page mounted')
     try {
       randomHost = await utils.getRandomHost();
     } catch (e) {
@@ -56,6 +57,7 @@ export default {
       this.$ons.notification.alert(
         "Seed Node server is offline. Please change the seed node from network settings."
       );
+      self.setUIReady();
       this.$router.push("/welcome");
     }
     this.host = `${randomHost.ip}:${randomHost.port}`;

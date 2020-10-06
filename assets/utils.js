@@ -76,6 +76,7 @@ utils.getProxyUrlWithRandomHost = async function (url, option) {
 }
 
 utils.getRandomHost = async () => {
+  console.log('getRandomHost:\n')
   console.log(seedNodeHost)
   const ip = seedNodeHost.split(':')[0]
   const port = seedNodeHost.split(':')[1]
@@ -102,6 +103,7 @@ utils.updateSeedNodeHostLocally = async (ip, port) => {
 }
 
 utils.isSeedNodeOnline = async (ip, port) => {
+  console.log('isSeedNodeOnline')
   try {
     // const seedNodeHost = `${ip}:${port}`
     const res = await axios.get(utils.getProxyUrl('/nodelist', { ip, port }), {

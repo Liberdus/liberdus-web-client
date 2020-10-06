@@ -14,7 +14,7 @@
 
     <a-list-item-meta
       :key="index"
-      description="dfsgs"
+      :description="message.lastMessage"
     >
       <a slot="title" href="https://www.antdv.com/">{{ message.handle }}</a>
       <a-avatar

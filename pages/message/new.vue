@@ -151,13 +151,25 @@ export default {
   methods: {
     async searchAlias() {
       if (this.alias) this.alias = this.alias.toLowerCase();
-      let queryAccount = await utils.queryAccount(this.alias);
+      let queryAccount;
+      try {
+        queryAccount = await utils.queryAccount(this.alias);
+      } catch(e) {
+        console.log(e)
+      }
+
+      console.log('queryAccount:\n', queryAccount)
+
       if (
         queryAccount.account &&
         queryAccount.account.alias !== this.getWallet.handle
       ) {
         this.availabeAlias = [queryAccount.account.alias];
       } else if (this.alias.length === 0) {
+        console.log('\n=== No available accounts ===\n')
+        this.availabeAlias = [];
+      } else {
+        console.log('\n=== No available accounts ===\n')
         this.availabeAlias = [];
       }
     }

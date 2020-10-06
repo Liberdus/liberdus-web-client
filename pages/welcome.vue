@@ -22,6 +22,7 @@
               type="primary"
               size="large"
               @click="onCreateAccount"
+              :disabled="btnDisabled"
             >
               Sign In
             </a-button>
@@ -30,6 +31,7 @@
             <a-button
               size="large"
               @click="onImportAccount"
+              :disabled="btnDisabled"
             >
               Import Account
             </a-button>
@@ -74,6 +76,7 @@ import Button from '~/components/baisc/Button'
 import ButtonOutline from '~/components/baisc/ButtonOutline'
 import backgroundUrl from '~/assets/images/liberdus_background.png'
 import config from '~/config'
+import utils from "../assets/utils";
 
 Vue.use(VueOnsen)
 // Vue.use(Button)
@@ -84,7 +87,8 @@ export default {
     return {
       username: '',
       backgroundUrl,
-      version: config.version
+      version: config.version,
+      btnDisabled: false,
     }
   },
   methods: {
@@ -93,6 +97,23 @@ export default {
     },
     onImportAccount () {
       this.$router.push('/setting/import')
+    }
+  },
+  async mounted() {
+    let self = this;
+    let randomHost;
+    console.log('welcome page mounted')
+    try {
+      randomHost = await utils.getRandomHost();
+    } catch (e) {
+      console.log("Cannot get a random host");
+      console.log(e)
+      this.btnDisabled = true
+      // this.$ons.notification.alert(
+      //   "Seed Node server is offline. Please change the seed node from network settings."
+      // );
+      // self.setUIReady();
+      // this.$router.push("/welcome");
     }
   }
 }

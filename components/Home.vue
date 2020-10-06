@@ -449,6 +449,7 @@ export default {
         }
         this.refreshProposalList()
       }
+      console.log('end Refreshing app state...')
     },
     async refreshProposalList () {
       if (!this.getWindowFocus) return
