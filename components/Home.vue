@@ -39,7 +39,7 @@
           @{{ getWallet.handle }}
         </h4>
       </div>
-      <div class="wallet-action-container">
+      <div class="wallet-action-container" v-if="getAppState && getAppState.data.balance >= 0">
         <div class="wallet-action">
           <!-- <button class="white-button" @click="$router.push('/wallet/send')">
             <v-ons-icon icon="ion-ios-send" size="lg"></v-ons-icon>Send
