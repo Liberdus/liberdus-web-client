@@ -154,8 +154,12 @@ utils.saveWallet = newWalletEntry => {
 utils.loadWallet = username => {
   try {
     // eslint-disable-next-line no-undef
+    console.log('\n\n\n === loadWallet === \n\n\n', username)
     const loadedEntries = localStorage.getItem('wallets')
+    console.log('\n\n loadedEntries: \n', loadedEntries)
     const walletList = JSON.parse(loadedEntries)
+    console.log('\n\n walletList: \n', walletList)
+    console.log('\n\n walletList.find(w => w.handle === username): \n', walletList.find(w => w.handle === username))
     return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
