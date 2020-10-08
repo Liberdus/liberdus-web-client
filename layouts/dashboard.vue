@@ -342,6 +342,7 @@ export default {
   position: absolute;
   right: 18px;
   cursor: pointer;
+  top: 0px;
 }
 
 .ant-dropdown {
