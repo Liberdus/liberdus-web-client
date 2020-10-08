@@ -4,7 +4,7 @@
     <portal to="navigation-tags">
       <a-breadcrumb v-if="voteType === 'economy'">
         <a-breadcrumb-item>
-          <nuxt-link to="/proposal">Proposal</nuxt-link>
+          <nuxt-link to="/economy">Economy</nuxt-link>
         </a-breadcrumb-item>
         <a-breadcrumb-item>Vote Proposals</a-breadcrumb-item>
       </a-breadcrumb>

@@ -35,9 +35,9 @@
             shape="round"
             icon="plus-square"
             size="large"
-            @click="$router.push('/proposal/new/economy')"
+            @click="$router.push('/economy/new/economy')"
           >
-            New Change Proposal
+            New Economy Proposal
           </a-button>
         </a-row>
       </a-col>

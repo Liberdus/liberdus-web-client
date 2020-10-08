@@ -9,7 +9,7 @@
 
     <portal to="navigation-tags">
       <a-breadcrumb>
-        <a-breadcrumb-item>Proposal</a-breadcrumb-item>
+        <a-breadcrumb-item>Economy</a-breadcrumb-item>
       </a-breadcrumb>
     </portal>
 

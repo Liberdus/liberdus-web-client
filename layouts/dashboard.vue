@@ -58,11 +58,11 @@
         </a-menu-item>
 
         <a-menu-item
-          key="proposal"
-          @click="redirect('/proposal')"
+          key="economy"
+          @click="redirect('/economy')"
         >
           <a-icon type="check-square" />
-          <span class="nav-text">Proposal</span>
+          <span class="nav-text">Economy</span>
         </a-menu-item>
 
         <a-menu-item
