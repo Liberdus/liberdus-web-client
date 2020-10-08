@@ -139,13 +139,17 @@
         </div>
 
         <a-dropdown placement="bottomRight" v-if="getWallet">
-          <a-avatar
+          <!-- <a-avatar
             shape="square"
             size="large"
             :style="{ backgroundColor: '#87d068', verticalAlign: 'middle' }"
           >
             {{ getWallet ? getWallet.handle : "No User" }}
-          </a-avatar>
+          </a-avatar> -->
+          <span class="username-container">
+            <a-avatar style="backgroundColor:#87d068" icon="user" />
+            <span>{{ getWallet ? getWallet.handle : "No User" }}</span>
+          </span>
 
           <a-menu slot="overlay">
             <a-menu-item @click="redirect('/setting/export')">
@@ -298,10 +302,10 @@ export default {
 
   .header-toolbar {
     .ant-avatar {
-      position: absolute;
-      right: 16px;
-      top: 12px;
-      cursor: pointer;
+      // position: absolute;
+      // right: 16px;
+      // top: 12px;
+      // cursor: pointer;
     }
   }
 }
@@ -332,6 +336,17 @@ export default {
   .header-logo-mobile {
     display: none;
   }
+}
+
+.username-container {
+  position: absolute;
+  right: 18px;
+  cursor: pointer;
+}
+
+.ant-dropdown {
+  min-width: unset;
+  left: calc(100% - 150px);
 }
 
 </style>
