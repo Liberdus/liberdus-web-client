@@ -53,7 +53,7 @@
         @click="onSelectTab($event, tabs[i])"
       ></v-ons-tab>
     </v-ons-tabbar> -->
-    <home />
+    <home v-if="isUIReady" />
   </div>
   <!-- </v-ons-page> -->
 </template>
