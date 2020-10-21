@@ -126,14 +126,24 @@ export default {
       console.log('\nsearchAccount:\n', this.queryHandle)
       if (this.queryHandle) this.queryHandle = this.queryHandle.toLowerCase();
       let queryAccount = await utils.queryAccount(this.queryHandle);
-      if (queryAccount.account) {
-        console.log(queryAccount.account);
-        if (queryAccount.account.alias !== this.getWallet.handle) {
-          this.foundAccount = queryAccount.account;
+
+      try {
+        if (queryAccount.account.alias !== this.queryHandle) {
           return;
         }
+        if (queryAccount.account) {
+          console.log('\n\n  === queryAccount FOUND  \n\n', queryAccount.account)
+          // console.log(queryAccount.account);
+          if (queryAccount.account.alias !== this.getWallet.handle) {
+            this.foundAccount = queryAccount.account;
+            return;
+          }
+        }
+        console.log('\n\n  === queryAccount NOT FOUND  \n\n', queryAccount)
+        this.foundAccount = null;
+      } catch(e) {
+        console.log(e)
       }
-      this.foundAccount = null;
     },
     onClickAddFriend(handle) {
       let self = this;

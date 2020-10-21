@@ -234,7 +234,7 @@ export default {
   position: relative;
   .ons-icon {
     position: absolute;
-    top: 15px;
+    top: 12px;
     left: 17px;
   }
 }

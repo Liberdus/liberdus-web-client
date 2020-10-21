@@ -228,10 +228,10 @@ export default {
     }
   },
   beforeMount: function() {
-    // if (!this.isUIReady) {
-    //   console.log('beforeMount')
-    //   this.$router.push('/loading')
-    // }
+    if (!this.isUIReady) {
+      console.log('beforeMount')
+      this.$router.push('/loading')
+    }
   },
   methods: {
     ...mapActions({

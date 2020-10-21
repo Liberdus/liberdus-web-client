@@ -137,18 +137,17 @@ export default {
       isUIReady: 'chat/isUIReady'
     }),
     isCodeValid () {
-      if (
-        this.$v.code.minLength &&
-        this.$v.code.integer
-      ) {
-        console.log('here2', this.$v.code.minLength, this.$v.code.integer)
-        return true
-      }
+      // if (
+      //   this.$v.code.required ||
+      //   this.$v.code.minLength ||
+      //   this.$v.code.integer
+      // ) {
+      //   console.log('here1')
+      //   return false
+      // }
 
       const hashedCode = utils.hashVerificationCode(this.code)
       if (this.getAppState.verified === hashedCode) return true
-      return false
-      console.log('here1')
       return false
     }
   },

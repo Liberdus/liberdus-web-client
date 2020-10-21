@@ -265,6 +265,7 @@ export default {
     }
   },
   async mounted () {
+    console.log('mounted')
     let self = this
     if (!this.isUIReady) {
       this.$router.push('/loading')
