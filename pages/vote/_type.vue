@@ -567,6 +567,7 @@ export default {
     width: 90%;
     max-width: 600px;
     margin: 10px auto;
+    background-color: white;
   }
   .default-button {
     width: 90%;
