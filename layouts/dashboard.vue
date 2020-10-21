@@ -50,22 +50,6 @@
         </a-menu-item>
 
         <a-menu-item
-          key="funding"
-          @click="redirect('/funding')"
-        >
-          <a-icon type="fund" />
-          <span class="nav-text">Funding</span>
-        </a-menu-item>
-
-        <a-menu-item
-          key="economy"
-          @click="redirect('/economy')"
-        >
-          <a-icon type="check-square" />
-          <span class="nav-text">Economy</span>
-        </a-menu-item>
-
-        <a-menu-item
           key="friends"
           @click="redirect('/setting/friends')"
         >
@@ -79,6 +63,22 @@
         >
           <a-icon type="dollar" />
           <span class="nav-text">Stake</span>
+        </a-menu-item>
+
+        <a-menu-item
+          key="funding"
+          @click="redirect('/funding')"
+        >
+          <a-icon type="fund" />
+          <span class="nav-text">Funding</span>
+        </a-menu-item>
+
+        <a-menu-item
+          key="economy"
+          @click="redirect('/economy')"
+        >
+          <a-icon type="check-square" />
+          <span class="nav-text">Economy</span>
         </a-menu-item>
 
         <a-sub-menu key="settings">
