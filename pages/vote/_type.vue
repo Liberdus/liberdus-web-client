@@ -590,6 +590,7 @@ export default {
 @media only screen and (max-width: 992px) {
   .vote-footer {
     left: 0px;
+    width: 100%;
   }
 }
 </style>

@@ -118,7 +118,6 @@ export default {
   left: 200px;
   /* top: calc(100% - 50px); */
   bottom: 0px;
-  z-index: 100;
   background: #efefef;
   box-shadow: 0 -2px 4px 0 rgba(206, 206, 206, 0.5);
 
