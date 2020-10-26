@@ -58,6 +58,14 @@
         </a-menu-item>
 
         <a-menu-item
+          key="history"
+          @click="redirect('/history')"
+        >
+          <a-icon type="dollar" />
+          <span class="nav-text">Tx History</span>
+        </a-menu-item>
+
+        <a-menu-item
           key="stake"
           @click="redirect('/setting/stake')"
         >
