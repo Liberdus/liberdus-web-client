@@ -17,7 +17,7 @@
           :value="currentStakedAmount"
           suffix="coins"
         />
-        <span v-if="pendingStakeRemoval"> (pending for removal)</span>
+        <span v-else-if="pendingStakeRemoval"> (pending for removal)</span>
 
         <a-statistic
           v-else

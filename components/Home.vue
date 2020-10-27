@@ -182,9 +182,12 @@ export default {
         })
       const processRawMessageTxs = txList =>
         map(txList, tx => {
+          const type = utils.getMessageType(tx, myAddress)
+          const otherPersonAddress = type === 'receive_message' ? tx.from : tx.to
+
           return {
-            type: utils.getMessageType(tx, myAddress),
-            otherPersonAddress: tx.to,
+            type,
+            otherPersonAddress,
             timestamp: tx.timestamp,
             amount: tx.amount
           }
