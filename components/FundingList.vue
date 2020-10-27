@@ -41,7 +41,7 @@
             shape="round"
             icon="plus-square"
             size="large"
-            @click="$router.push('/proposal/new/funding')"
+            @click="$router.push('/economy/new/funding')"
           >
             New Funding Proposal
           </a-button>
