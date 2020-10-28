@@ -121,11 +121,16 @@ export default {
         return
       }
       console.log(textBody)
-      this.$notify({
-        group: 'new-message',
-        title: `New Transaction`,
-        text: textBody,
-        duration: 5000
+      // this.$notify({
+      //   group: 'new-message',
+      //   title: `New Transaction`,
+      //   text: textBody,
+      //   duration: 5000
+      // })
+
+      this.$notification.success({
+        message: 'New Transaction',
+        description: textBody
       })
       this.addNotificationQueue({
         title: `New Transaction`,

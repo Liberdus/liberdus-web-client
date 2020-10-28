@@ -61,7 +61,7 @@
           key="history"
           @click="redirect('/history')"
         >
-          <a-icon type="dollar" />
+          <a-icon type="history" />
           <span class="nav-text">Tx History</span>
         </a-menu-item>
 
@@ -181,7 +181,9 @@
         <portal-target name="navigation-tags" class="navigation-tags"></portal-target>
 
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
-          <nuxt />
+          <div class="template-container">
+            <nuxt />
+          </div>
         </div>
       </a-layout-content>
 
@@ -356,6 +358,10 @@ export default {
 .ant-dropdown {
   min-width: unset;
   left: calc(100% - 150px);
+}
+
+.template-container {
+  overflow-x: auto;
 }
 
 </style>
