@@ -4,6 +4,17 @@
   </div>
 </template>
 
+<script>
+export default {
+  beforeMount: function() {
+    if (!this.isUIReady) {
+      console.log('beforeMount')
+      this.$router.push('/loading')
+    }
+  },
+}
+</script>
+
 <style>
 html {
   font-family: 'Source Sans Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI',
