@@ -119,9 +119,11 @@ export default {
   },
   async mounted () {
     if (this.transaction) {
+      console.log('\n\n === mounted: \n\n', this.transaction.otherPersonAddress)
       this.otherPersonHandle = await utils.getHandle(
         this.transaction.otherPersonAddress
       )
+      console.log('\n\n === mounted1: \n\n', this.otherPersonHandle)
     }
   }
 }
