@@ -106,7 +106,7 @@
               v-else
               type="primary"
               size="large"
-              :disabled="!isUsernameAvailable || checkingUsername"
+              :disabled="!isUsernameAvailable || !isUsernameValid || checkingUsername"
               @click="onCreateAccount"
               :loading="loadingCreateAccount"
             >
@@ -279,6 +279,13 @@ export default {
     },
     async checkUsername () {
       console.log('\n\n\n=== Checking username for: ===\n', this.username)
+      if (!this.username) {
+        console.log('No username provided')
+        this.checkingUsername = false
+        this.allowSignIn = false
+        this.isUsernameAvailable = false
+        return
+      }
       /* ===== NEW LOGIC ===== */
       // Check UsernameHash is in localStore
       let oldUsername = this.username
