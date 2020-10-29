@@ -6,7 +6,8 @@ export const state = () => ({
   isUIReady: false,
   notificationQueue: [],
   timers: {},
-  windowFocus: true
+  windowFocus: true,
+  handleDictionary: {}
 })
 
 export const getters = {
@@ -17,7 +18,8 @@ export const getters = {
   getLastTx: state => state.lastTx,
   getNotificationQueue: state => state.notificationQueue,
   isUIReady: state => state.isUIReady,
-  getWindowFocus: state => state.windowFocus
+  getWindowFocus: state => state.windowFocus,
+  getHandleDictionary: state => state.handleDictionary
 }
 
 export const mutations = {
@@ -66,6 +68,9 @@ export const mutations = {
   },
   clearNotificationQueue (state) {
     state.notificationQueue = []
+  },
+  addHandle (state, payload) {
+    state.handleDictionary[payload.address] = payload.handle
   }
 }
 
@@ -96,5 +101,8 @@ export const actions = {
   },
   async clearNotificationQueue (store) {
     store.commit('clearNotificationQueue')
+  },
+  async addHandle (store, payload) {
+    store.commit('addHandle', payload)
   }
 }

@@ -115,6 +115,7 @@ export default {
       getLastMessage: 'chat/getLastMessage',
       isUIReady: 'chat/isUIReady',
       getWindowFocus: 'chat/getWindowFocus',
+      getHandleDictionary: 'chat/getHandleDictionary',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
@@ -291,6 +292,7 @@ export default {
       updateLastMessage: 'chat/updateLastMessage',
       updateLastTx: 'chat/updateLastTx',
       setUIReady: 'chat/setUIReady',
+      addHandle: 'chat/addHandle',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
@@ -353,7 +355,13 @@ export default {
         let keys = Object.keys(account.data.chats)
         let modifiedChats = {}
         for (let i = 0; i < keys.length; i++) {
-          let handle = await utils.getHandle(keys[i])
+          let handle
+          if (this.getHandleDictionary[keys[i]]) {
+            handle = this.getHandleDictionary[keys[i]]
+          } else {
+            handle = await utils.getHandle(keys[i])
+            this.addHandle({address: keys[i], handle})
+          }
           modifiedChats[handle] = account.data.chats[keys[i]]
         }
 
