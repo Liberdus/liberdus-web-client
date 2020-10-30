@@ -65,7 +65,14 @@
         />
       </a-form-item>
 
-      <a-form-item :wrapper-col="{ span: 12, offset: 5 }">
+      <a-form-item :wrapper-col="{
+        xs: { span: 12, offset: 0 },
+        sm: { span: 12, offset: 5 },
+        md: { span: 12, offset: 5 },
+        lg: { span: 12, offset: 5 },
+        xl: { span: 12, offset: 5 },
+        xxl: { span: 12, offset: 5 },
+      }">
         <a-button
           type="primary"
           html-type="submit"
