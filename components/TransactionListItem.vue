@@ -15,6 +15,7 @@ import moment from 'moment'
 import utils from '../assets/utils'
 import TransactionMessage from './TransactionMessage'
 import TransactionAmount from './TransactionAmount'
+import { mapActions, mapGetters } from 'vuex'
 export default {
   components: {
     TransactionMessage,
@@ -27,15 +28,27 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      getHandleDictionary: 'chat/getHandleDictionary'
+    }),
     timestamp () {
       return moment(this.transaction.timestamp).calendar()
     }
   },
   async mounted () {
-    if (this.transaction)
-      this.otherPersonHandle = await utils.getHandle(
-        this.transaction.otherPersonAddress
-      )
+    if (this.transaction) {
+      if (this.getHandleDictionary[this.transaction.otherPersonAddress]) {
+        this.otherPersonHandle = this.getHandleDictionary[this.transaction.otherPersonAddress]
+      } else {
+        this.otherPersonHandle = await utils.getHandle(this.transaction.otherPersonAddress)
+        this.addHandle({ address: this.transaction.otherPersonAddress, handle: this.otherPersonHandle })
+      }
+    }
+  },
+  methods: {
+    ...mapActions({
+      addHandle: 'chat/addHandle'
+    })
   }
 }
 </script>

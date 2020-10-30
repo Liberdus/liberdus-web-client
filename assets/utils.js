@@ -144,7 +144,7 @@ utils.saveWallet = newWalletEntry => {
   try {
     // eslint-disable-next-line no-undef
     const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
-    const newWallet = [...existingWalletList]
+    const newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
       .filter(w => w.handle !== newWalletEntry.handle)
       .concat(newWalletEntry)
     console.log('new wallet', newWallet)
