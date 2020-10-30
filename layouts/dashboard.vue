@@ -368,8 +368,4 @@ export default {
   left: calc(100% - 150px);
 }
 
-.template-container {
-  overflow-x: auto;
-}
-
 </style>

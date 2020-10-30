@@ -66,7 +66,7 @@
         @{{ otherPersonHandle }}
       </p>
       <p v-else class="other-person-address">
-        loading...
+        {{ transaction.otherPersonAddress }}
       </p>
     </div>
   </section>
