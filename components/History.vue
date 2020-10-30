@@ -17,7 +17,7 @@
           >Download Transactions JSON</a-button
         >
       </div>
-      <a-table :columns="columns" :data-source="txs">
+      <a-table :columns="columns" :data-source="txs" class="tx-table">
         <span slot="txId" slot-scope="text">
           <span class="history-tx-id">
             {{ text }}
@@ -181,7 +181,7 @@ export default {
     downloadJSONFile() {
       let txs = this.getAppState.data.transactions;
       const element = document.createElement('a');
-      const file = new Blob([JSON.stringify(txs)], { type: 'text/plain' });
+      const file = new Blob([JSON.stringify(txs, null, 2)], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
       element.download = 'transactions.json';
       document.body.appendChild(element); // Required for this to work in FireFox
@@ -203,5 +203,9 @@ export default {
 .history-tx-id {
   max-width: 190px;
   display: block;
+}
+
+.tx-table .ant-table {
+  overflow-x: auto;
 }
 </style>
