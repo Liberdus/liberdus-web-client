@@ -3,7 +3,7 @@
     <a-form
       :form="form"
       :label-col="{ span: 5 }"
-      :wrapper-col="{ span: 12 }"
+      :wrapper-col="{ span: 17 }"
       @submit="handleSubmit"
     >
       <a-form-item label="Server url">
@@ -20,21 +20,16 @@
             },
           ]"
           placeholder="Input explorer server url."
+          allowClear
         />
       </a-form-item>
 
       <a-form-item label="Transaction data">
         <a-textarea
-          v-decorator="[
-            'txData',
-            {
-              rules: [
-                { required: true, message: 'Please input transaction data!' },
-              ],
-            },
-          ]"
           placeholder="Input your transaction data."
+          v-model="txData"
           autosize
+          allowClear
         />
       </a-form-item>
 
@@ -104,11 +99,13 @@ export default {
       receiptMessage: '',
       receiptStatus: 0,
       submitLoading: false,
+      txId: '',
     };
   },
   computed: {
     ...mapGetters({
       isUIReady: 'chat/isUIReady',
+      getAppState: 'chat/getAppState',
     }),
   },
   methods: {
@@ -120,7 +117,8 @@ export default {
           console.log('Received values of form: ', values);
 
           try {
-            const { url, txData } = values;
+            const { url } = values;
+            const txData = this.txData
             let tx = JSON.parse(txData);
             this.submitLoading = true
 
@@ -140,5 +138,22 @@ export default {
       });
     },
   },
+  mounted () {
+    try {
+      if (this.$route.query.txId) {
+        let txId = this.$route.query.txId
+        let txs = this.getAppState.data.transactions;
+        let tx_query = txs.filter(tx => tx.txId === txId)
+        console.log('\n\n === tx_query === \n\n', tx_query)
+
+        if (tx_query && tx_query.length) {
+          this.txData = JSON.stringify(tx_query[0], null, 2)
+        }
+      }
+    } catch(e) {
+      console.log(e)
+      this.txId = ''
+    }
+  }
 };
 </script>

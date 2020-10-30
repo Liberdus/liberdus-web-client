@@ -23,9 +23,15 @@
             {{ text }}
           </span>
         </span>
-        <!-- <span slot="timestamp" slot-scope="text">
-          {{ moment(text).calendar() }}
-        </span> -->
+
+        <span slot="action" slot-scope="text, record">
+          <a-button @click="() => redirect(`/receipt?txId=${text}`)">
+            Verify
+          </a-button>
+          <a-button @click="() => exportJSONFile(record.txData)">
+            Export JSON
+          </a-button>
+        </span>
       </a-table>
     </div>
   </div>
@@ -54,8 +60,8 @@ export default {
     const columns = [
       {
         title: 'TxID',
-        dataIndex: 'txId',
-        key: 'txId',
+        dataIndex: 'txId_str',
+        key: 'txId_str',
         slots: { title: 'customTitle' },
         scopedSlots: { customRender: 'txId' },
       },
@@ -84,6 +90,12 @@ export default {
         dataIndex: 'to',
         key: 'to',
       },
+      {
+        title: 'Action',
+        key: 'action',
+        dataIndex: 'txId',
+        scopedSlots: { customRender: 'action' }
+      }
     ];
 
     return {
@@ -130,12 +142,14 @@ export default {
         console.log('\n\n === here1 === \n\n', from_handle, to_handle);
 
         return {
-          txId: `${strFirst}...${strLast}`,
+          txId_str: `${strFirst}...${strLast}`,
+          txId,
           type,
           timestamp,
           timestamp_str: moment(timestamp).calendar(),
           from: from_handle,
           to: to_handle,
+          txData: tx
         };
       })
     );
@@ -152,6 +166,13 @@ export default {
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
       addTimer: 'chat/addTimer',
     }),
+    redirect (url = '/') {
+      this.$router.push(url)
+      console.log('\n\n === redirect === \n', url)
+      if (this.isMobile) {
+        this.collapsed = true
+      }
+    },
     getLastTxFromAPI() {
       if (!this.getAppState) return;
       let txs = this.getAppState.data.transactions;
@@ -166,6 +187,14 @@ export default {
       document.body.appendChild(element); // Required for this to work in FireFox
       element.click();
     },
+    exportJSONFile(txData) {
+      const element = document.createElement('a');
+      const file = new Blob([JSON.stringify(txData, null, 2)], { type: 'text/plain' });
+      element.href = URL.createObjectURL(file);
+      element.download = 'transaction.json';
+      document.body.appendChild(element); // Required for this to work in FireFox
+      element.click();
+    }
   },
 };
 </script>
