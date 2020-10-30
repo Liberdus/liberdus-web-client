@@ -240,34 +240,15 @@ async function injectTx (tx) {
 
 utils.getTxStatus = async (url, tx) => {
   try {
-    const {
-      amount,
-      fee,
-      from,
-      network,
-      sign,
-      timestamp,
-      to,
-      type
-    } = tx
+    delete tx.txId
 
-    const originalTx = {
-      amount,
-      fee,
-      from,
-      network,
-      sign,
-      timestamp,
-      to,
-      type
-    }
-    const txData = convert(originalTx)
+    const txData = convert(tx)
     const res = await postJSON(`${url}/api/tx/status`, txData)
     console.warn(res)
     
     if (res.success) {
-      const appliedHash = crypto.hashObj({ tx: originalTx, status: 'applied', netId: '123abc' });
-      const rejectedHash = crypto.hashObj({ tx: originalTx, status: 'rejected', netId: '123abc' });
+      const appliedHash = crypto.hashObj({ tx: tx, status: 'applied', netId: '123abc' });
+      const rejectedHash = crypto.hashObj({ tx: tx, status: 'rejected', netId: '123abc' });
       
       console.log('\n\n === hash result: \n\n', appliedHash, rejectedHash)
 

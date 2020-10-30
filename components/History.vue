@@ -133,8 +133,7 @@ export default {
     this.txs = await Promise.all(
       txs.map(async (tx) => {
         const { txId, type, timestamp, from, to } = tx;
-        const strFirst = txId.substring(0, 3);
-        const strLast = txId.substr(txId.length - 3);
+        const strFirst = txId.substring(0, 8);
 
         console.log('\n\n === here === \n\n', from, to);
         const from_handle = from ? await utils.getHandle(from) : '';
@@ -142,7 +141,7 @@ export default {
         console.log('\n\n === here1 === \n\n', from_handle, to_handle);
 
         return {
-          txId_str: `${strFirst}...${strLast}`,
+          txId_str: `${strFirst}`,
           txId,
           type,
           timestamp,
