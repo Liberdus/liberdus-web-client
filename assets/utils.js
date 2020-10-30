@@ -5,6 +5,13 @@ import stringify from 'fast-stable-stringify'
 // eslint-disable-next-line no-unused-vars
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
 import config from '../config'
+import {
+  TX_RECEIPT_APPLIED,
+  TX_RECEIPT_REJECTED,
+  TX_RECEIPT_NOT_FOUND,
+  TX_RECEIPT_ERROR
+} from '../constants/tx'
+
 let host
 const defaultSeedNode = `${config.server.ip}:${config.server.port}`
 // eslint-disable-next-line no-undef
@@ -230,6 +237,244 @@ async function injectTx (tx) {
     return err.message
   }
 }
+
+utils.getTxStatus = async (url, tx) => {
+  try {
+    const {
+      amount,
+      fee,
+      from,
+      network,
+      sign,
+      timestamp,
+      to,
+      type
+    } = tx
+
+    const originalTx = {
+      amount,
+      fee,
+      from,
+      network,
+      sign,
+      timestamp,
+      to,
+      type
+    }
+    const txData = convert(originalTx)
+    const res = await postJSON(`${url}/api/tx/status`, txData)
+    console.warn(res)
+    
+    if (res.success) {
+      const appliedHash = crypto.hashObj({ tx: originalTx, status: 'applied', netId: '123abc' });
+      const rejectedHash = crypto.hashObj({ tx: originalTx, status: 'rejected', netId: '123abc' });
+      
+      console.log('\n\n === hash result: \n\n', appliedHash, rejectedHash)
+
+      if (appliedHash.toString().substring(0,8) === res.result[0]) {
+        // Transaction was applied
+        console.log("success")
+        return {
+          status: TX_RECEIPT_APPLIED,
+          message: 'Applied'
+        }
+        
+      } else {
+        // Transaction was rejected
+        console.log("failed")
+        return { 
+          status: TX_RECEIPT_REJECTED,
+          message: 'Rejected'
+        }
+      }
+    } else {
+      return {
+        status: TX_RECEIPT_NOT_FOUND,
+        message: res.result
+      }
+    }
+  } catch (err) {
+    console.warn(err)
+    return {
+      status: TX_RECEIPT_ERROR,
+      message: 'Unexpected error occured while checking the transaction.'
+    }
+  }
+}
+
+function convert(tx) {
+  const orig = JSON.parse(JSON.stringify(tx))
+  const txid = crypto.hashObj(orig, true)
+  const addresses = getKeyFromTransaction(orig)
+  const address = getClosestAddress(txid, addresses)
+  const timestamp = orig.timestamp
+  console.log(JSON.stringify({
+    txid,
+    address,
+    timestamp
+  }))
+
+  return {
+    txid,
+    address,
+    timestamp
+  }
+}
+
+function getClosestAddress(txid, addresses) {
+  const distances = addresses.map(addr =>
+    Math.abs(parseInt(txid.slice(0, 5), 16) - parseInt(addr.slice(0, 5), 16))
+  );
+  const smallestDistance = distances.indexOf(Math.min(...distances));
+  return addresses[smallestDistance];
+};
+
+function getKeyFromTransaction(tx) {
+  const result = {
+    sourceKeys: [],
+    targetKeys: [],
+    allKeys: [],
+    timestamp: tx.timestamp,
+  };
+  switch (tx.type) {
+    case 'init_network':
+      // result.sourceKeys = [tx.from]
+      result.targetKeys = [tx.network];
+      break;
+    case 'snapshot':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'email':
+      result.sourceKeys = [tx.signedTx.from];
+      break;
+    case 'gossip_email_hash':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.account];
+      break;
+    case 'verify':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'register':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.aliasHash];
+      break;
+    case 'create':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.to];
+      break;
+    case 'transfer':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.to, tx.network];
+      break;
+    case 'distribute':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [...tx.recipients, tx.network];
+      break;
+    case 'message':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.to, tx.chatId, tx.network];
+      break;
+    case 'toll':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'friend':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'remove_friend':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.to, tx.network];
+      break;
+    case 'node_reward':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.to, tx.network];
+      break;
+    case 'stake':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'remove_stake':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'remove_stake_request':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'claim_reward':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'snapshot_claim':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network];
+      break;
+    case 'issue':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.issue, tx.proposal, tx.network];
+      break;
+    case 'dev_issue':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.devIssue, tx.network];
+      break;
+    case 'proposal':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.issue, tx.proposal, tx.network];
+      break;
+    case 'dev_proposal':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.devIssue, tx.devProposal, tx.network];
+      break;
+    case 'vote':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.issue, tx.proposal, tx.network];
+      break;
+    case 'dev_vote':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.devIssue, tx.devProposal, tx.network];
+      break;
+    case 'tally':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [...tx.proposals, tx.issue, tx.network];
+      break;
+    case 'apply_tally':
+      result.targetKeys = [tx.network];
+      break;
+    case 'dev_tally':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [...tx.devProposals, tx.devIssue, tx.network];
+      break;
+    case 'apply_dev_tally':
+      result.targetKeys = [tx.network];
+      break;
+    case 'parameters':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.network, tx.issue];
+      break;
+    case 'apply_parameters':
+      result.targetKeys = [tx.network];
+      break;
+    case 'dev_parameters':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.devIssue, tx.network];
+      break;
+    case 'apply_dev_parameters':
+      result.targetKeys = [tx.network];
+      break;
+    case 'developer_payment':
+      result.sourceKeys = [tx.from];
+      result.targetKeys = [tx.developer, tx.network];
+      break;
+    case 'apply_developer_payment':
+      result.targetKeys = [tx.network];
+      break;
+  }
+  result.allKeys = result.allKeys.concat(result.sourceKeys, result.targetKeys);
+  return result.allKeys;
+};
 
 async function getAccountData (id) {
   try {

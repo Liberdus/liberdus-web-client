@@ -66,6 +66,14 @@
         </a-menu-item>
 
         <a-menu-item
+          key="tx-receipts"
+          @click="redirect('/receipt')"
+        >
+          <a-icon type="hdd" />
+          <span class="nav-text">Tx Receipts</span>
+        </a-menu-item>
+
+        <a-menu-item
           key="stake"
           @click="redirect('/setting/stake')"
         >
