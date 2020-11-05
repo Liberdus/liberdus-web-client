@@ -205,8 +205,7 @@ export default {
       let completedProposalList = allProposals.filter(
         proposal => proposal.winner === true || proposal.winner === false
       )
-      //   console.log(activeProposalList)
-      //   console.log(completedProposalList)
+      
       this.updateActiveProposals(activeProposalList)
       this.updateCompletedProposals(completedProposalList)
     },

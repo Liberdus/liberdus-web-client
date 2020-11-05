@@ -77,8 +77,6 @@ export default {
       return should
     },
     messageList () {
-      console.log('messageList:\n')
-      console.log(this.isUIReady, this.getAppState)
       if (this.getAppState && this.isUIReady) {
         let chats = this.getAppState.data.chats
         let handles = Object.keys(chats)
@@ -94,7 +92,6 @@ export default {
           })
         }
         list = list.sort((a, b) => b.timestamp - a.timestamp)
-        console.log('list:', list)
         return list
       } else {
         return []

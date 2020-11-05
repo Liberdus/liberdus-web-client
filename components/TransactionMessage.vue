@@ -94,7 +94,6 @@ export default {
   },
   async mounted () {
     if (this.transaction) {
-      console.log('\n\n === mounted: \n\n', this.transaction.otherPersonAddress)
 
       if (this.getHandleDictionary[this.transaction.otherPersonAddress]) {
         this.otherPersonHandle = this.getHandleDictionary[
@@ -110,7 +109,6 @@ export default {
         })
       }
 
-      console.log('\n\n === mounted1: \n\n', this.otherPersonHandle)
     }
   },
   methods: {

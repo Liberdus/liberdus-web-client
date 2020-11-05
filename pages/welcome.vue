@@ -102,12 +102,10 @@ export default {
   async mounted() {
     let self = this;
     let randomHost;
-    console.log('welcome page mounted')
     try {
       randomHost = await utils.getRandomHost();
     } catch (e) {
       console.log("Cannot get a random host");
-      console.log(e)
       this.btnDisabled = true
       // this.$ons.notification.alert(
       //   "Seed Node server is offline. Please change the seed node from network settings."

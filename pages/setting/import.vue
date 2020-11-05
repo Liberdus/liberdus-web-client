@@ -114,12 +114,10 @@ export default {
           handle: handle,
           entry: entry,
         };
-        console.log(wallet);
         utils.saveWallet(wallet);
         this.addWallet(wallet);
         this.$router.push('/?tabIndex=0');
       } catch(e) {
-        console.log(e)
       }
     },
   },

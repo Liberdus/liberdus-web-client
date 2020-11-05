@@ -343,14 +343,13 @@ export default {
     async refreshDevProposalList () {
       console.log('Refreshing dev proposal list...')
       let allProposals = await utils.queryLatestDevProposals()
-      console.log('all dev proposal: ', allProposals)
       if (!allProposals || allProposals.length === 0) return
       allProposals = allProposals.map(proposal => {
         let obj = { ...proposal }
         obj.type = 'dev_proposal'
         return obj
       })
-      console.log('all dev proposal: ', allProposals)
+      
       let activeDevProposalList = allProposals.filter(
         proposal => proposal.approved !== true && proposal.approved !== false
       )

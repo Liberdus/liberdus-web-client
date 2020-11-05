@@ -42,7 +42,6 @@ utils.hashVerificationCode = code => {
 }
 
 utils.updateHost = newHost => {
-  console.log('Host is updated: ', newHost)
   host = newHost
   return true
 }
@@ -58,18 +57,22 @@ utils.isServerActive = async () => {
 }
 
 utils.getProxyUrl = function (url, option) {
-  let ip, port
-  if (!option) {
-    ip = host.split(':')[0]
-    port = host.split(':')[1]
-  } else if (option) {
-    ip = option.ip
-    port = option.port
+  try {
+    let ip, port
+    if (!option) {
+      ip = host.split(':')[0]
+      port = host.split(':')[1]
+    } else if (option) {
+      ip = option.ip
+      port = option.port
+    }
+    if (ip === 'localhost' || ip === '127.0.0.1') {
+      return `http://localhost:${port}${url}`
+    }
+    return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
+  } catch(e) {
+    return ''
   }
-  if (ip === 'localhost' || ip === '127.0.0.1') {
-    return `http://localhost:${port}${url}`
-  }
-  return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
 }
 
 utils.getProxyUrlWithRandomHost = async function (url, option) {
@@ -83,8 +86,6 @@ utils.getProxyUrlWithRandomHost = async function (url, option) {
 }
 
 utils.getRandomHost = async () => {
-  console.log('getRandomHost:\n')
-  console.log(seedNodeHost)
   const ip = seedNodeHost.split(':')[0]
   const port = seedNodeHost.split(':')[1]
   const res = await axios.get(utils.getProxyUrl('/nodelist', { ip, port }), {
@@ -104,13 +105,11 @@ utils.getRandomHost = async () => {
 
 utils.updateSeedNodeHostLocally = async (ip, port) => {
   const seedNodeHost = `${ip}:${port}`
-  console.log('Seed node is updated locally')
   // eslint-disable-next-line no-undef
   localStorage.setItem('seednode', seedNodeHost)
 }
 
 utils.isSeedNodeOnline = async (ip, port) => {
-  console.log('isSeedNodeOnline')
   try {
     // const seedNodeHost = `${ip}:${port}`
     const res = await axios.get(utils.getProxyUrl('/nodelist', { ip, port }), {
@@ -147,12 +146,9 @@ utils.saveWallet = newWalletEntry => {
     const newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
       .filter(w => w.handle !== newWalletEntry.handle)
       .concat(newWalletEntry)
-    console.log('new wallet', newWallet)
     // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify(newWallet))
   } catch (e) {
-    console.log(e)
-    console.log(JSON.stringify([newWalletEntry]))
     // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
   }
@@ -161,12 +157,8 @@ utils.saveWallet = newWalletEntry => {
 utils.loadWallet = username => {
   try {
     // eslint-disable-next-line no-undef
-    console.log('\n\n\n === loadWallet === \n\n\n', username)
     const loadedEntries = localStorage.getItem('wallets')
-    console.log('\n\n loadedEntries: \n', loadedEntries)
     const walletList = JSON.parse(loadedEntries)
-    console.log('\n\n walletList: \n', walletList)
-    console.log('\n\n walletList.find(w => w.handle === username): \n', walletList.find(w => w.handle === username))
     return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
@@ -213,7 +205,6 @@ function getAccountsUrl () {
 }
 
 function getAccountUrl (id) {
-  console.log(utils.getProxyUrl(`/account/${id}`))
   return utils.getProxyUrl(`/account/${id}`)
 }
 
@@ -223,7 +214,6 @@ async function getJSON (url) {
 }
 
 async function postJSON (url, obj) {
-  console.log(obj)
   const response = await axios.post(url, obj)
   return response.data
 }
@@ -240,27 +230,21 @@ async function injectTx (tx) {
 
 utils.getTxStatus = async (url, tx) => {
   try {
-    const {
-      amount,
-      fee,
-      from,
-      network,
-      sign,
-      timestamp,
-      to,
-      type
-    } = tx
+    let originalTx = tx
+    let key = 'txId'
+    delete originalTx[key]
 
-    const originalTx = {
-      amount,
-      fee,
-      from,
-      network,
-      sign,
-      timestamp,
-      to,
-      type
-    }
+    // const originalTx = {
+    //   amount,
+    //   fee,
+    //   from,
+    //   network,
+    //   sign,
+    //   timestamp,
+    //   to,
+    //   type,
+    //   stake
+    // }
     const txData = convert(originalTx)
     const res = await postJSON(`${url}/api/tx/status`, txData)
     console.warn(res)
@@ -268,12 +252,9 @@ utils.getTxStatus = async (url, tx) => {
     if (res.success) {
       const appliedHash = crypto.hashObj({ tx: originalTx, status: 'applied', netId: '123abc' });
       const rejectedHash = crypto.hashObj({ tx: originalTx, status: 'rejected', netId: '123abc' });
-      
-      console.log('\n\n === hash result: \n\n', appliedHash, rejectedHash)
 
       if (appliedHash.toString().substring(0,8) === res.result[0]) {
         // Transaction was applied
-        console.log("success")
         return {
           status: TX_RECEIPT_APPLIED,
           message: 'Applied'
@@ -281,7 +262,6 @@ utils.getTxStatus = async (url, tx) => {
         
       } else {
         // Transaction was rejected
-        console.log("failed")
         return { 
           status: TX_RECEIPT_REJECTED,
           message: 'Rejected'
@@ -308,11 +288,6 @@ function convert(tx) {
   const addresses = getKeyFromTransaction(orig)
   const address = getClosestAddress(txid, addresses)
   const timestamp = orig.timestamp
-  console.log(JSON.stringify({
-    txid,
-    address,
-    timestamp
-  }))
 
   return {
     txid,
@@ -516,7 +491,6 @@ async function getAddress (handle) {
       }
     }
   } catch (e) {
-    console.log(e)
   }
   return null
 }

@@ -145,7 +145,6 @@ export default {
     try {
       this.$refs['username-input'].focus()
     } catch(e) {
-      console.log(e)
     }
   },
   methods: {
@@ -154,8 +153,6 @@ export default {
       let queryAccount;
       try {
         queryAccount = await utils.queryAccount(this.alias);
-
-        console.log('queryAccount:\n', queryAccount)
 
         if(queryAccount.account.alias !== this.alias) {
           return;
@@ -167,14 +164,11 @@ export default {
         ) {
           this.availabeAlias = [queryAccount.account.alias];
         } else if (this.alias.length === 0) {
-          console.log('\n=== No available accounts ===\n')
           this.availabeAlias = [];
         } else {
-          console.log('\n=== No available accounts ===\n')
           this.availabeAlias = [];
         }
       } catch(e) {
-        console.log(e)
       }
     }
   }

@@ -114,11 +114,6 @@ export default {
       isUIReady: 'chat/isUIReady',
     }),
     transactions() {
-      // if (!this.getWallet || !this.getAppState) return []
-      // let myAddress = this.getWallet.entry.address
-      // let txs = this.getAppState.data.transactions
-      // console.log('\n\n === Transactions: == \n\n', txs)
-
       return utils.sortByTimestamp(this.txs, 'desc');
     },
   },
@@ -128,31 +123,32 @@ export default {
     //   const appRefresher = setInterval(this.refreshAppState, 10000)
     //   this.addTimer({ key: 'appRefresher', value: appRefresher })
     // }
-    let txs = this.getAppState.data.transactions;
+    try {
+      let txs = this.getAppState.data.transactions;
 
-    this.txs = await Promise.all(
-      txs.map(async (tx) => {
-        const { txId, type, timestamp, from, to } = tx;
-        const strFirst = txId.substring(0, 3);
-        const strLast = txId.substr(txId.length - 3);
+      this.txs = await Promise.all(
+        txs.map(async (tx) => {
+          const { txId, type, timestamp, from, to } = tx;
+          const strFirst = txId.substring(0, 3);
+          const strLast = txId.substr(txId.length - 3);
 
-        console.log('\n\n === here === \n\n', from, to);
-        const from_handle = from ? await utils.getHandle(from) : '';
-        const to_handle = to ? await utils.getHandle(to) : '';
-        console.log('\n\n === here1 === \n\n', from_handle, to_handle);
+          const from_handle = from ? await utils.getHandle(from) : '';
+          const to_handle = to ? await utils.getHandle(to) : '';
 
-        return {
-          txId_str: `${strFirst}...${strLast}`,
-          txId,
-          type,
-          timestamp,
-          timestamp_str: moment(timestamp).calendar(),
-          from: from_handle,
-          to: to_handle,
-          txData: tx
-        };
-      })
-    );
+          return {
+            txId_str: `${strFirst}...${strLast}`,
+            txId,
+            type,
+            timestamp,
+            timestamp_str: moment(timestamp).calendar(),
+            from: from_handle,
+            to: to_handle,
+            txData: tx
+          };
+        })
+      );
+    } catch(e) {
+    }
   },
   methods: {
     ...mapActions({
@@ -168,7 +164,6 @@ export default {
     }),
     redirect (url = '/') {
       this.$router.push(url)
-      console.log('\n\n === redirect === \n', url)
       if (this.isMobile) {
         this.collapsed = true
       }

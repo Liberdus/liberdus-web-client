@@ -118,7 +118,6 @@ export default {
   methods: {
     handleSubmit(e) {
       e.preventDefault();
-      // console.log('\n\n === handleSubmit: \n\n', this.serverUrl, this.txData)
       this.form.validateFields((err, values) => {
         if (!err) {
           console.log('Received values of form: ', values);
@@ -130,16 +129,14 @@ export default {
             this.submitLoading = true
 
             utils.getTxStatus(url, tx).then((data) => {
-              console.log('\n\n === tx status: === \n\n', data);
               const { status, message } = data;
               this.receiptStatus = status;
               this.receiptMessage = message;
               this.submitLoading = false
             });
           } catch (e) {
-            console.log(e);
-              this.receiptStatus = TX_RECEIPT_ERROR;
-              this.receiptMessage = 'Unexpected error occured while checking the transaction.';
+            this.receiptStatus = TX_RECEIPT_ERROR;
+            this.receiptMessage = 'Unexpected error occured while checking the transaction.';
           }
         }
       });
@@ -151,14 +148,12 @@ export default {
         let txId = this.$route.query.txId
         let txs = this.getAppState.data.transactions;
         let tx_query = txs.filter(tx => tx.txId === txId)
-        console.log('\n\n === tx_query === \n\n', tx_query)
 
         if (tx_query && tx_query.length) {
           this.txData = JSON.stringify(tx_query[0], null, 2)
         }
       }
     } catch(e) {
-      console.log(e)
       this.txId = ''
     }
   }

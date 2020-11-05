@@ -101,11 +101,6 @@ export default {
           m => m.timestamp > lastMessageStored.timestamp
         )
       }
-      // console.log('lastMessageStored', lastMessageStored)
-      // console.log('messagesInMemory', messagesInMemory)
-      // console.log('messageList', messageList)
-      // console.log('newMessageList', newMessageList)
-      // console.log(`Receive ${newMessageList.length} new messages`)
 
       for (let i = 0; i < newMessageList.length; i++) {
         utils.updateBadge('message', 'increase')

@@ -68,7 +68,6 @@ export default {
       try {
         await promise;
       } catch (error) {
-        console.log(error);
         if (error.name === "NotAllowedError") {
           this.cameraErrorMessage =
             "ERROR: you need to grant camera access permisson";

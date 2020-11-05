@@ -204,13 +204,10 @@ export default {
 
       try {
         let self = this
-        console.log('\n\n\n=== onCreateAccount: ===\n', this.username)
 
         if (!this.username || this.username.length === 0) return;
 
         const lowUsername = this.username.toLowerCase()
-
-        console.log('\n\n username:\n', lowUsername)
 
         let wallet = null
         let entry = utils.createWallet(lowUsername)
@@ -238,7 +235,6 @@ export default {
           }, 1000)
         }
       } catch(e) {
-        console.log(e)
         this.$notification.error({
           message: `An error occured while creating account.`,
         });
@@ -278,7 +274,6 @@ export default {
       // }
     },
     async checkUsername () {
-      console.log('\n\n\n=== Checking username for: ===\n', this.username)
       if (!this.username) {
         console.log('No username provided')
         this.checkingUsername = false
@@ -297,10 +292,7 @@ export default {
       try {
         localWallets = JSON.parse(localStorage.getItem('wallets'))
       } catch(e) {
-        console.log(e)
       }
-
-      console.log('\n\nlocalWallets:\n', localWallets)
 
       // Check UsernameHash is in remoteNetwork
 
@@ -309,10 +301,7 @@ export default {
       try {
         remoteAddress = await utils.getAddress(lowUsername)
       } catch(e) {
-        console.log(e)
       }
-
-      console.log('\n\nremoteAddress:\n', remoteAddress)
 
       let foundInLocalWallet = null
 
@@ -321,11 +310,7 @@ export default {
           foundInLocalWallet = localWallets.find(w => w.entry.address === remoteAddress)
         }
       } catch(e) {
-        console.log(e)
       }
-
-      console.log('\n\nfoundInLocalWallet:\n', foundInLocalWallet)
-
 
       let foundInLocalWalletByHandle = null
 
@@ -334,12 +319,7 @@ export default {
           foundInLocalWalletByHandle = localWallets.find(w => w.handle === lowUsername)
         }
       } catch(e) {
-        console.log(e)
       }
-
-      console.log('\n\n foundInLocalWalletByHandle:\n', foundInLocalWalletByHandle)
-
-      console.log('\n\nold, new usernames:\n', oldUsername, this.username)
 
       if (oldUsername !== this.username) {
         return;
@@ -361,8 +341,6 @@ export default {
       }
 
       this.checkingUsername = false
-
-      console.log('\n\n\n ==== check username end: ==== \n\n\n\n', this.username)
 
       // OLD LOGIC - DO NOT USE
       // let lowUsername = this.username.toLowerCase()
@@ -462,8 +440,6 @@ export default {
         let lowUsername = this.username.toLowerCase()
         const localValidWallet = utils.loadWallet(lowUsername)
 
-        console.log('\n\nlocalValidWallet: \n', localValidWallet, lowUsername)
-
         // Check the local wallet with remote address
 
         if (localValidWallet) {
@@ -492,7 +468,6 @@ export default {
         this.loadingSignIn = false
         this.$router.push('/')
       } catch(e) {
-        console.log(e)
         this.loadingSignIn = false
         this.$notification.error({
           message: `An error occured while loading your local wallet.`,
