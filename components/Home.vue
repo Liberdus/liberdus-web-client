@@ -441,7 +441,7 @@ export default {
     },
     async refreshAppState () {
       let self = this
-      console.log('Refreshing app state...', self.getWallet, self.isUIReady, self, this, this.getWallet)
+      console.log('Refreshing app state...')
       if (!this.getWindowFocus) return
       if (self.getWallet && self.isUIReady) {
         let myHandle = this.getWallet.handle

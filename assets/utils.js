@@ -140,15 +140,19 @@ utils.createAccount = (keys = crypto.generateKeypair()) => {
 }
 
 utils.saveWallet = newWalletEntry => {
+  console.log('\n\n saveWallet \n\n', newWalletEntry)
   try {
     // eslint-disable-next-line no-undef
     const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
-    const newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
-      .filter(w => w.handle !== newWalletEntry.handle)
-      .concat(newWalletEntry)
+    let newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
+    newWallet = newWallet.filter(w => w.handle !== newWalletEntry.handle)
+    newWallet = newWallet.concat(newWalletEntry)
+      // .filter(w => w.handle !== newWalletEntry.handle)
+      // .concat(newWalletEntry)
     // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify(newWallet))
   } catch (e) {
+    console.log(e)
     // eslint-disable-next-line no-undef
     localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
   }

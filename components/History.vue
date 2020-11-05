@@ -17,7 +17,7 @@
           >Download Transactions JSON</a-button
         >
       </div>
-      <a-table :columns="columns" :data-source="txs" class="tx-table">
+      <a-table :columns="columns" :data-source="txs" class="tx-table" rowKey="txId">
         <span slot="txId" slot-scope="text">
           <span class="history-tx-id">
             {{ text }}
