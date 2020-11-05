@@ -28,7 +28,8 @@
         <a-textarea
           placeholder="Input your transaction data."
           v-model="txData"
-          autosize
+          v-on:input="receiptStatus = 0"
+          autoSize
           allowClear
         />
       </a-form-item>
@@ -156,6 +157,10 @@ export default {
     } catch(e) {
       this.txId = ''
     }
+
+    this.form.setFieldsValue({
+      url: 'https://dev.liberdus.com/explorer'
+    })
   }
 };
 </script>

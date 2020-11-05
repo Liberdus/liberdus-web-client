@@ -123,32 +123,28 @@ export default {
     //   const appRefresher = setInterval(this.refreshAppState, 10000)
     //   this.addTimer({ key: 'appRefresher', value: appRefresher })
     // }
-    try {
-      let txs = this.getAppState.data.transactions;
+    let txs = this.getAppState.data.transactions;
 
-      this.txs = await Promise.all(
-        txs.map(async (tx) => {
-          const { txId, type, timestamp, from, to } = tx;
-          const strFirst = txId.substring(0, 3);
-          const strLast = txId.substr(txId.length - 3);
+    this.txs = await Promise.all(
+      txs.map(async (tx) => {
+        const { txId, type, timestamp, from, to } = tx;
+        const strFirst = txId.substring(0, 8);
 
           const from_handle = from ? await utils.getHandle(from) : '';
           const to_handle = to ? await utils.getHandle(to) : '';
 
-          return {
-            txId_str: `${strFirst}...${strLast}`,
-            txId,
-            type,
-            timestamp,
-            timestamp_str: moment(timestamp).calendar(),
-            from: from_handle,
-            to: to_handle,
-            txData: tx
-          };
-        })
-      );
-    } catch(e) {
-    }
+        return {
+          txId_str: `${strFirst}`,
+          txId,
+          type,
+          timestamp,
+          timestamp_str: moment(timestamp).calendar(),
+          from: from_handle,
+          to: to_handle,
+          txData: tx
+        };
+      })
+    );
   },
   methods: {
     ...mapActions({
