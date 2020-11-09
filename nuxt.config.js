@@ -1,4 +1,5 @@
 export default {
+  telemetry: false,
   mode: 'spa',
   server: {
     port: 3333, // default: 3000
