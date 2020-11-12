@@ -1,6 +1,6 @@
 export default {
   server: {
-    ip: 'localhost',
+    ip: 'monitor.liberdus.com',
     port: 4000
   },
   proxy: {
