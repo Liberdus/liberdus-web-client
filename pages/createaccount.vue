@@ -31,7 +31,6 @@
             <a-row :gutter="[0,5]">
               <a-col :span="24">
                 <a-input 
-                  v-model="username"
                   size="large"
                   placeholder="Username"
                   @keyup="loadAccount"
@@ -385,7 +384,8 @@ export default {
       }
       return false
     },
-    async loadAccount () {
+    async loadAccount ({type, target}) {
+      this.username = target.value;
       this.checkingUsername = true
       this.allowSignIn = false
       // NEW LOGIC
