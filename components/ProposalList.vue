@@ -16,77 +16,50 @@
       >Vote Proposals
     </button> -->
 
-    <a-row 
-      type="flex" 
-      justify="space-around" 
-      align="middle" 
-      class="funding-button-row"
-      style="margin-top:30px;"
-      :gutter="[0,16]"
-    >
+    <a-row type="flex" justify="space-around" align="middle" class="funding-button-row" style="margin-top:30px;" :gutter="[0, 16]">
       <a-col span="24">
-        <a-row 
-          type="flex" 
-          justify="space-around" 
-          align="middle"
-        >
-          <a-button
-            type="primary"
-            shape="round"
-            icon="plus-square"
-            size="large"
-            @click="$router.push('/economy/new/economy')"
-          >
+        <a-row type="flex" justify="space-around" align="middle">
+          <a-button type="primary" shape="round" icon="plus-square" size="large" @click="$router.push('/economy/new/economy')">
             New Economy Proposal
           </a-button>
         </a-row>
       </a-col>
 
       <a-col span="24">
-        <a-row 
-          type="flex" 
-          justify="space-around" 
-          align="middle"
-        >
-          <a-button
-            type="primary"
-            shape="round"
-            icon="check-square"
-            size="large"
-            @click="$router.push('/vote/economy')"
-          >
+        <a-row type="flex" justify="space-around" align="middle">
+          <a-button type="primary" shape="round" icon="check-square" size="large" @click="$router.push('/vote/economy')">
             Vote Proposals
           </a-button>
         </a-row>
       </a-col>
     </a-row>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import MessageListItem from '~/components/MessageListItem'
-import { mapGetters, mapActions } from 'vuex'
-import utils from '../assets/utils'
-import newMessageSoundFile from '../assets/new_message_sound.mp3'
-import ToolBar from '~/components/ToolBar'
-import ProposalListItem from '~/components/ProposalListItem'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
-import { concat } from 'lodash'
+import MessageListItem from '~/components/MessageListItem';
+import { mapGetters, mapActions } from 'vuex';
+import utils from '../assets/utils';
+import newMessageSoundFile from '../assets/new_message_sound.mp3';
+import ToolBar from '~/components/ToolBar';
+import ProposalListItem from '~/components/ProposalListItem';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
+import { concat } from 'lodash';
 export default {
   components: {
     MessageListItem,
     Title,
     ToolBar,
     Button,
-    ProposalListItem
+    ProposalListItem,
   },
-  data: function () {
+  data: function() {
     return {
       proposalList: [],
-      propsalListSubscription: null
-    }
+      propsalListSubscription: null,
+    };
   },
   computed: {
     ...mapGetters({
@@ -97,12 +70,12 @@ export default {
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
-      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals',
     }),
-    shouldRender () {
-      let should = this.isUIReady
-      return should
-    }
+    shouldRender() {
+      let should = this.isUIReady;
+      return should;
+    },
   },
   methods: {
     ...mapActions({
@@ -112,15 +85,15 @@ export default {
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
-      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals'
+      updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
     }),
-    redirect (url) {
-      this.$router.push(url)
-    }
+    redirect(url) {
+      this.$router.push(url);
+    },
   },
-  mounted: function () {},
-  beforeDestroy: function () {}
-}
+  mounted: function() {},
+  beforeDestroy: function() {},
+};
 </script>
 
 <style scoped lang="scss">

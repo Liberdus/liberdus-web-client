@@ -3,10 +3,7 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true }" /> -->
     <!-- TODO: -->
-    <div
-      v-if="getWallet.handle"
-      class="receive-container"
-    >
+    <div v-if="getWallet.handle" class="receive-container">
       <portal to="navigation-tags">
         <a-breadcrumb>
           <a-breadcrumb-item>
@@ -25,16 +22,8 @@
         <p id="username">
           <strong>{{ getWallet.handle }}</strong>
         </p>
-        <qriously
-          :value="getWallet.handle"
-          :size="180"
-          class="qr-code"
-        />
-        <a-button
-          @click="onCopyUsername"
-          size="large"
-          type="primary"
-        >
+        <qriously :value="getWallet.handle" :size="180" class="qr-code" />
+        <a-button @click="onCopyUsername" size="large" type="primary">
           Copy Account Username
         </a-button>
       </div>
@@ -43,83 +32,75 @@
         <p id="public-key">
           <strong>{{ getWallet.entry.keys.publicKey }}</strong>
         </p>
-        <qriously
-          :value="getWallet.entry.keys.publicKey"
-          :size="180"
-          class="qr-code"
-        />
-        <a-button
-          @click="onCopyAddress"
-          size="large"
-          type="primary"
-        >
+        <qriously :value="getWallet.entry.keys.publicKey" :size="180" class="qr-code" />
+        <a-button @click="onCopyAddress" size="large" type="primary">
           Copy Account Address
         </a-button>
       </div>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import VueQriously from 'vue-qriously'
-import { mapGetters, mapActions } from 'vuex'
-import utils from '../../assets/utils'
-import ToolBar from '~/components/ToolBar'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import VueQriously from 'vue-qriously';
+import { mapGetters, mapActions } from 'vuex';
+import utils from '../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
-Vue.use(VueOnsen)
-Vue.use(VueQriously)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Vue.use(VueOnsen);
+Vue.use(VueQriously);
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: {
     Title,
     Button,
-    ToolBar
+    ToolBar,
   },
   layout: 'dashboard',
-  data: function () {
-    return {}
+  data: function() {
+    return {};
   },
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
-      isUIReady: 'chat/isUIReady'
-    })
+      isUIReady: 'chat/isUIReady',
+    }),
   },
   methods: {
-    redirect (url, option) {
-      this.$router.push(url)
+    redirect(url, option) {
+      this.$router.push(url);
       if (url === '/' && option) {
       }
     },
-    onCopyUsername () {
+    onCopyUsername() {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
-      utils.copyToClipboard(this.getWallet.handle)
+      utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert('Copied username to clipboard!')
-      this.$notification.success({message: 'Copied username to clipboard!'})
+      this.$notification.success({ message: 'Copied username to clipboard!' });
     },
-    onCopyAddress () {
+    onCopyAddress() {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
-      utils.copyToClipboard(this.getWallet.entry.keys.publicKey)
-      this.$notification.success({message: 'Copied address to clipboard!'})
-    }
-  }
-}
+      utils.copyToClipboard(this.getWallet.entry.keys.publicKey);
+      this.$notification.success({ message: 'Copied address to clipboard!' });
+    },
+  },
+};
 </script>
 
 <style>

@@ -5,7 +5,7 @@
     </h4>
     <div class="my-vote-detail">
       <p class="label">
-        You voted:
+        You Voted:
       </p>
       <div class="selected-vote">
         <p class="tag">
@@ -15,41 +15,37 @@
       </div>
     </div>
     <div>
-      <div
-        v-for="tag of Object.keys(vote.votePercents)"
-        :key="tag"
-        class="vote-progress-container"
-      >
+      <div v-for="tag of Object.keys(vote.votePercents)" :key="tag" class="vote-progress-container">
         <p>{{ tag }}. {{ vote.votePercents[tag] }}</p>
         <v-ons-progress-bar :value="vote.votePercents[tag]" />
       </div>
     </div>
     <div class="vote-footer">
-      <p>Total {{ vote.voteCount }} votes</p>
+      <p>{{ vote.voteCount }} Total Votes</p>
       <p>{{ timestamp }}</p>
     </div>
   </div>
 </template>
 
 <script>
-import moment from "moment";
-import utils from "../assets/utils";
+import moment from 'moment';
+import utils from '../assets/utils';
 export default {
-  props: ["vote"],
+  props: ['vote'],
   computed: {
     timestamp() {
       return moment(this.vote.timestamp).calendar();
-    }
+    },
   },
   async mounted() {
     // if(this.vote) this.otherPersonHandle = await utils.getHandle(this.vote.otherPersonAddress)
   },
   methods: {
     redirect(url) {
-      console.log("redirect");
+      console.log('redirect');
       this.$router.push(url);
-    }
-  }
+    },
+  },
 };
 </script>
 

@@ -1,73 +1,30 @@
 <template>
   <v-ons-toolbar>
     <div class="left">
-      <button
-        v-if="option.back"
-        class="toolbar-back-button"
-        @click="redirect(option.backUrl || '/')"
-      >
-        <v-ons-icon
-          icon="ion-ios-arrow-back"
-          size="lg"
-        />
+      <button v-if="option.back" class="toolbar-back-button" @click="redirect(option.backUrl || '/')">
+        <v-ons-icon icon="ion-ios-arrow-back" size="lg" />
       </button>
-      <img
-        v-else
-        src="../assets/images/loading-logo.png"
-        class="main-logo"
-      >
+      <img v-else src="../assets/images/loading-logo.png" class="main-logo" />
     </div>
-    <div
-      v-if="option.title"
-      class="center"
-    >
+    <div v-if="option.title" class="center">
       {{ option.title }}
     </div>
     <div class="right">
-      <div
-        v-if="option.notification && getWallet"
-        class="user-alias"
-      >
-        @{{ getWallet.handle }}
-      </div>
-      <button
-        v-if="option.notification"
-        @click="toggleNotification"
-      >
-        <v-ons-icon
-          icon="ion-ios-notifications-outline"
-          size="lg"
-        />
+      <div v-if="option.notification && getWallet" class="user-alias">@{{ getWallet.handle }}</div>
+      <button v-if="option.notification" @click="toggleNotification">
+        <v-ons-icon icon="ion-ios-notifications-outline" size="lg" />
       </button>
-      <button
-        v-if="option.menu"
-        @click="toggleSetting"
-      >
-        <v-ons-icon
-          icon="ion-ios-menu"
-          size="lg"
-        />
+      <button v-if="option.menu" @click="toggleSetting">
+        <v-ons-icon icon="ion-ios-menu" size="lg" />
       </button>
-      <button
-        v-if="option.addFriend"
-        class="add-friend-button"
-        @click="onAddFriend"
-      >
-        <v-ons-icon
-          icon="ion-ios-add-circle"
-          size="lg"
-        />
+      <button v-if="option.addFriend" class="add-friend-button" @click="onAddFriend">
+        <v-ons-icon icon="ion-ios-add-circle" size="lg" />
       </button>
     </div>
 
     <v-ons-modal :visible="settingVisible">
       <button class="close-setting-button">
-        <v-ons-icon
-          v-if="option.menu"
-          icon="ion-ios-close"
-          size="lg"
-          @click="toggleSetting"
-        />
+        <v-ons-icon v-if="option.menu" icon="ion-ios-close" size="lg" @click="toggleSetting" />
       </button>
       <div class="setting-container">
         <h1 class="setting-title">
@@ -104,22 +61,14 @@
     </v-ons-modal>
     <v-ons-modal :visible="notificationVisible">
       <button class="close-setting-button">
-        <v-ons-icon
-          v-if="option.menu"
-          icon="ion-ios-close"
-          size="lg"
-          @click="toggleNotification"
-        />
+        <v-ons-icon v-if="option.menu" icon="ion-ios-close" size="lg" @click="toggleNotification" />
       </button>
       <div class="setting-container">
         <h1 class="setting-title">
           Notifications
         </h1>
         <ul>
-          <li
-            v-for="noti in notificationQueue"
-            :key="noti.id"
-          >
+          <li v-for="noti in notificationQueue" :key="noti.id">
             <div class="notification-item">
               <p class="time">
                 {{ formatTimestamp(noti.timestamp) }}
@@ -138,10 +87,10 @@
   </v-ons-toolbar>
 </template>
 <script>
-import Title from '~/components/baisc/Title'
-import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
-import utils from '../assets/utils'
+import Title from '~/components/basic/Title';
+import { mapGetters, mapActions } from 'vuex';
+import moment from 'moment';
+import utils from '../assets/utils';
 
 export default {
   components: { Title },
@@ -154,80 +103,78 @@ export default {
         back: false,
         menu: false,
         backUrl: '/',
-        addFriend: null
-      }
-    }
+        addFriend: null,
+      },
+    },
   },
-  data: function () {
+  data: function() {
     return {
       settingVisible: false,
-      notificationVisible: false
-    }
+      notificationVisible: false,
+    };
   },
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
       isUIReady: 'chat/isUIReady',
-      getNotificationQueue: 'chat/getNotificationQueue'
+      getNotificationQueue: 'chat/getNotificationQueue',
     }),
-    notificationQueue () {
-      let queue = [...this.getNotificationQueue]
-      return queue.sort((a, b) => b.timestamp - a.timestamp)
-    }
+    notificationQueue() {
+      let queue = [...this.getNotificationQueue];
+      return queue.sort((a, b) => b.timestamp - a.timestamp);
+    },
   },
   methods: {
     ...mapActions({
       updateAppState: 'chat/updateAppState',
-      removeWallet: 'wallet/removeWallet'
+      removeWallet: 'wallet/removeWallet',
     }),
-    formatTimestamp (ts) {
-      return moment(ts).calendar()
+    formatTimestamp(ts) {
+      return moment(ts).calendar();
     },
-    redirect (url = '/') {
-      this.$router.push(url)
+    redirect(url = '/') {
+      this.$router.push(url);
     },
-    toggleSetting () {
-      this.settingVisible = !this.settingVisible
+    toggleSetting() {
+      this.settingVisible = !this.settingVisible;
     },
-    toggleNotification () {
-      this.notificationVisible = !this.notificationVisible
+    toggleNotification() {
+      this.notificationVisible = !this.notificationVisible;
     },
-    onSignOut () {
-      let handle = this.getWallet.handle
-      this.updateAppState(null)
+    onSignOut() {
+      let handle = this.getWallet.handle;
+      this.updateAppState(null);
       // this.removeWallet()
-      let existingWalletList
+      let existingWalletList;
       try {
-        existingWalletList = JSON.parse(localStorage.getItem('wallets'))
+        existingWalletList = JSON.parse(localStorage.getItem('wallets'));
         if (existingWalletList) {
-          let filteredList = existingWalletList.filter(w => w.handle !== handle)
-          console.log(filteredList)
+          let filteredList = existingWalletList.filter((w) => w.handle !== handle);
+          console.log(filteredList);
           // localStorage.setItem('wallets', JSON.stringify(filteredList))
-          localStorage.removeItem('lastMessage')
-          localStorage.removeItem('lastTx')
+          localStorage.removeItem('lastMessage');
+          localStorage.removeItem('lastTx');
         }
       } catch (e) {}
-      this.$router.push('/welcome')
-      window.location.reload(false)
+      this.$router.push('/welcome');
+      window.location.reload(false);
     },
-    onAddFriend () {
-      let handle = this.option.addFriend
-      if (!handle) return
+    onAddFriend() {
+      let handle = this.option.addFriend;
+      if (!handle) return;
       if (handle === this.getWallet.handle) {
-        this.$ons.notification.alert('You cannot add yourself as friend.')
+        this.$ons.notification.alert('You cannot add yourself as friend.');
       } else {
-        this.$ons.notification
-          .confirm(`Confirm to add @${handle} to friend list ?`)
-          .then(result => {
-            if (result === 1) {
-              utils.addFriend(handle, this.getWallet.entry.keys)
-            }
-          })
+        this.$ons.notification.confirm(`Confirm to add @${handle} to friend list ?`).then((result) => {
+          if (result === 1) {
+            utils.addFriend(handle, this.getWallet.entry.keys);
+          }
+        });
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style scoped lang="scss">
 .toolbar-back-button {

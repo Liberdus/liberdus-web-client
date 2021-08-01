@@ -11,65 +11,30 @@
       </portal>
 
       <a-card title="Update Stake">
-        <a-statistic
-          v-if="getAppState"
-          title="Current Staked Amount"
-          :value="currentStakedAmount"
-          suffix="coins"
-        />
+        <a-statistic v-if="getAppState" title="Current Staked Amount" :value="currentStakedAmount" suffix="coins" />
         <span v-else-if="pendingStakeRemoval"> (pending for removal)</span>
 
-        <a-statistic
-          v-else
-          title="Current Staked Amount"
-          :value="'--'"
-        />
+        <a-statistic v-else title="Current Staked Amount" :value="'--'" />
 
         <p v-if="stakeRequired">
           Required Stake: <strong>{{ stakeRequired }} coins</strong>
         </p>
 
-        <form
-          v-if="currentStakedAmount === 0 && stakeRequired > 0"
-          class="toll-form"
-          @submit.prevent="onSubmitStake"
-        >
+        <form v-if="currentStakedAmount === 0 && stakeRequired > 0" class="toll-form" @submit.prevent="onSubmitStake">
           <a-button htmlType="submit">Add Stake</a-button>
         </form>
-        <form
-          v-if="currentStakedAmount > 0 && !pendingStakeRemoval"
-          class="toll-form"
-          @submit.prevent="onSubmitRequestRemoveStake"
-        >
+        <form v-if="currentStakedAmount > 0 && !pendingStakeRemoval" class="toll-form" @submit.prevent="onSubmitRequestRemoveStake">
           <!-- <Button
             v-if="!pendingStakeRemoval"
             text="Request to remove stake"
           /> -->
-          <a-button
-            v-if="!pendingStakeRemoval"
-            htmlType="submit"
-            type="danger"
-            shape="round"
-            size="large"
-            >Request to remove stake</a-button
-          >
+          <a-button v-if="!pendingStakeRemoval" htmlType="submit" type="danger" shape="round" size="large">Request to remove stake</a-button>
         </form>
-        
-        <form
-          v-if="currentStakedAmount > 0 && pendingStakeRemoval"
-          class="toll-form"
-          @submit.prevent="onSubmitRemoveStake"
-        >
+
+        <form v-if="currentStakedAmount > 0 && pendingStakeRemoval" class="toll-form" @submit.prevent="onSubmitRemoveStake">
           <div v-if="pendingStakeRemoval">
             <!-- <Button text="Remove stake" :is-disabled="!isReadyToRemoveStake" /> -->
-            <a-button
-              htmlType="submit"
-              type="danger"
-              shape="round"
-              size="large"
-              :disabled="!isReadyToRemoveStake"
-              >Remove stake</a-button
-            >
+            <a-button htmlType="submit" type="danger" shape="round" size="large" :disabled="!isReadyToRemoveStake">Remove stake</a-button>
             <p style="font-size: 13px">
               Your stake can be removed at
               <strong v-if="timeToRemoveStake">{{ timeToRemoveStake }}</strong>
@@ -102,8 +67,8 @@ import { mapGetters } from 'vuex';
 import moment from 'moment';
 import utils from '../../assets/utils';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 import Vuelidate from 'vuelidate';
 import { required, minLength, between } from 'vuelidate/lib/validators';
@@ -145,23 +110,18 @@ export default {
       else return 0;
     },
     pendingStakeRemoval() {
-      if (this.getAppState)
-        return this.getAppState.data.remove_stake_request !== null;
+      if (this.getAppState) return this.getAppState.data.remove_stake_request !== null;
       else false;
     },
     timestampToRemoveStake() {
       if (this.pendingStakeRemoval && this.network) {
         let nodeRewardInterval = this.network.current.nodeRewardInterval;
-        return (
-          this.getAppState.data.remove_stake_request + 2 * nodeRewardInterval
-        );
+        return this.getAppState.data.remove_stake_request + 2 * nodeRewardInterval;
       }
     },
     timeToRemoveStake() {
       if (this.timestampToRemoveStake) {
-        return moment(this.timestampToRemoveStake).format(
-          'MMMM Do YYYY, h:mm:ss a'
-        );
+        return moment(this.timestampToRemoveStake).format('MMMM Do YYYY, h:mm:ss a');
       }
     },
     isReadyToRemoveStake() {
@@ -179,30 +139,21 @@ export default {
   },
   methods: {
     async onSubmitStake() {
-      let isSubmitted = await utils.addStake(
-        this.stakeRequired,
-        this.getWallet.entry.keys
-      );
+      let isSubmitted = await utils.addStake(this.stakeRequired, this.getWallet.entry.keys);
       if (isSubmitted) {
         this.amount = '';
         this.notify('Your transaction is submitted to network.');
       }
     },
     async onSubmitRemoveStake() {
-      let isSubmitted = await utils.removeStake(
-        this.stakeRequired,
-        this.getWallet.entry.keys
-      );
+      let isSubmitted = await utils.removeStake(this.stakeRequired, this.getWallet.entry.keys);
       if (isSubmitted) {
         this.amount = '';
         this.notify('Your transaction is submitted to network.');
       }
     },
     async onSubmitRequestRemoveStake() {
-      let isSubmitted = await utils.requestRemoveStake(
-        this.stakeRequired,
-        this.getWallet.entry.keys
-      );
+      let isSubmitted = await utils.requestRemoveStake(this.stakeRequired, this.getWallet.entry.keys);
       if (isSubmitted) {
         this.amount = '';
         this.notify('Your transaction is submitted to network.');

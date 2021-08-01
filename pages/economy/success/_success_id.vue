@@ -13,60 +13,57 @@
       <h2 class="title-2">
         Your Votes are submitted !
       </h2>
-      <ButtonOutline
-        text="Back To Proposals"
-        :on-click="onBackToHome"
-      />
+      <ButtonOutline text="Back To Proposals" :on-click="onBackToHome" />
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import { mapGetters, mapActions } from 'vuex'
-import utils from '../../../assets/utils'
-import ToolBar from '~/components/ToolBar'
-import ProposalListItem from '~/components/ProposalListItem'
-import Choice from '~/components/Choice'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
-import ButtonOutline from '~/components/baisc/ButtonOutline'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import { mapGetters, mapActions } from 'vuex';
+import utils from '../../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import ProposalListItem from '~/components/ProposalListItem';
+import Choice from '~/components/Choice';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
+import ButtonOutline from '~/components/basic/ButtonOutline';
 
-Vue.use(VueOnsen)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Vue.use(VueOnsen);
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: {
     ToolBar,
     ButtonOutline,
     Title,
-    Choice
+    Choice,
   },
   layout: 'dashboard',
-  data: function () {
+  data: function() {
     return {
-      voteState: 'select'
-    }
+      voteState: 'select',
+    };
   },
   computed: {
-    previousRoute: function () {
-      return this.$route.params.success_id
-    }
+    previousRoute: function() {
+      return this.$route.params.success_id;
+    },
   },
   methods: {
-    onBackToHome () {
-      console.log(this.$route.params)
-      this.$router.push(`/vote/${this.previousRoute}`)
-    }
-  }
-}
+    onBackToHome() {
+      console.log(this.$route.params);
+      this.$router.push(`/vote/${this.previousRoute}`);
+    },
+  },
+};
 </script>
 
 <style>

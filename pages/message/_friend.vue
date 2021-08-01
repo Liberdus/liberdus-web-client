@@ -24,22 +24,14 @@
     </portal>
 
     <div class="message-list-container">
-      <chat-text
-        v-for="(message, index) in messages"
-        :key="`chat${index}`"
-        :message="message"
-      />
+      <chat-text v-for="(message, index) in messages" :key="`chat${index}`" :message="message" />
       <chat-text v-if="pendingMessage" :message="pendingMessage" />
       <!-- <a-empty
         v-if="(!messages || messages.length === 0) && !pendingMessage"
         description="No messages."
       /> -->
     </div>
-    <chat-input
-      :friend="friend"
-      :is-friend="isFriend"
-      :set-pending-message="setPendingMessage"
-    />
+    <chat-input :friend="friend" :is-friend="isFriend" :set-pending-message="setPendingMessage" />
     <p class="end-of-history">
       End of History
     </p>
@@ -59,8 +51,8 @@ import { mapGetters, mapActions } from 'vuex';
 import utils from '../../assets/utils';
 import sentSoundFile from '../../assets/sent_sound.mp3';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
@@ -115,11 +107,7 @@ export default {
       if (chatId) {
         const encryptedChatList = await utils.queryEncryptedChats(chatId);
         const decryptedMessages = encryptedChatList.map((sealed) => {
-          return utils.decryptMessage(
-            sealed,
-            self.otherPersonAddress,
-            this.secretKey
-          );
+          return utils.decryptMessage(sealed, self.otherPersonAddress, this.secretKey);
         });
         // console.log('decrypted', decryptedMessages)
         // console.log('PENDING => ', this.pendingMessage)
@@ -143,10 +131,7 @@ export default {
           if (this.pendingMessage) {
             console.log('PENDING => ', this.pendingMessage);
             console.log('LAST_MESSAGE => ', lastMessage);
-            if (
-              this.pendingMessage.handle === lastMessage.handle &&
-              this.pendingMessage.body === lastMessage.body
-            ) {
+            if (this.pendingMessage.handle === lastMessage.handle && this.pendingMessage.body === lastMessage.body) {
               this.pendingMessage = null;
               utils.playSoundFile(sentSoundFile);
             }
@@ -166,12 +151,8 @@ export default {
         content: `Confirm to add @${this.friend} to friend list ?`,
         async onOk() {
           if (result === 1) {
-            let isSubmitted = await utils.addFriend(
-              this.friend,
-              this.getWallet.entry.keys
-            );
-            if (isSubmitted)
-              this.notify('Add Friend transaction is submitted.');
+            let isSubmitted = await utils.addFriend(this.friend, this.getWallet.entry.keys);
+            if (isSubmitted) this.notify('Add Friend transaction is submitted.');
           }
         },
       });

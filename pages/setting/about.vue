@@ -5,57 +5,48 @@
     <div class="about-container">
       <Title text="Liberdus" />
       <p class="about-liberdus">
-        <a
-          href="https://liberdus.com"
-          target="_blank"
-        >Liberdus</a> is a payment
-        network and the first application to be built with the
-        <a
-          href="https://shardus.com"
-          target="_blank"
-        >Shardus</a> distributed
-        ledger framework. The main purpose of Liberdus network is to enable
-        people to govern their own money; and as a result, participate in a more
-        fair and sustainable economy.
+        <a href="https://liberdus.com" target="_blank">Liberdus</a> is a payment network and the first application to be built with the
+        <a href="https://shardus.com" target="_blank">Shardus</a> distributed ledger framework. The main purpose of Liberdus network is to enable
+        people to govern their own money; and as a result, participate in a more fair and sustainable economy.
       </p>
       <p class="version-number">
         Version <strong>{{ version }}</strong>
       </p>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import { mapGetters } from 'vuex'
-import utils from '../../assets/utils'
-import ToolBar from '~/components/ToolBar'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
-import config from '~/config'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import { mapGetters } from 'vuex';
+import utils from '../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
+import config from '~/config';
 
-import Vuelidate from 'vuelidate'
-import { required, minLength, between } from 'vuelidate/lib/validators'
-Vue.use(VueOnsen)
-Vue.use(Vuelidate)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+import Vuelidate from 'vuelidate';
+import { required, minLength, between } from 'vuelidate/lib/validators';
+Vue.use(VueOnsen);
+Vue.use(Vuelidate);
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: { Title, ToolBar },
   layout: 'dashboard',
-  data: function () {
+  data: function() {
     return {
-      version: config.version
-    }
-  }
-}
+      version: config.version,
+    };
+  },
+};
 </script>
 
 <style lang="scss">

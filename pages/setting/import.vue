@@ -7,23 +7,13 @@
         <strong>Secret Key</strong> to import your account.
       </p>
       <q-reader :on-detect-q-r="onDetectSk" :scanning="showScanner" />
-      <v-ons-button
-        v-if="showScanner"
-        class="new-message-btn"
-        modifier="quiet"
-        @click="onClickQRScanner"
-      >
+      <v-ons-button v-if="showScanner" class="new-message-btn" modifier="quiet" @click="onClickQRScanner">
         Close QR Scanner
       </v-ons-button>
 
       <div class="secret-input-container">
-        <a-input placeholder="Secret Key" size="large" v-model="secretKey">
-        </a-input>
-        <a-button
-          slot="enterButton"
-          @click="onClickQRScanner"
-          class="qr-code-btn"
-        >
+        <a-input placeholder="Secret Key" size="large" v-model="secretKey"> </a-input>
+        <a-button slot="enterButton" @click="onClickQRScanner" class="qr-code-btn">
           <img src="../../assets/qrcode.png" alt="qr-code" />
         </a-button>
         <!-- <input
@@ -62,8 +52,8 @@ import QReader from '~/components/QReader';
 import utils from '../../assets/utils';
 import { mapActions } from 'vuex';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
@@ -107,9 +97,7 @@ export default {
     },
     async onImportAccount() {
       try {
-        let { handle, entry } = await utils.importWallet(
-          this.secretKey.toLowerCase()
-        );
+        let { handle, entry } = await utils.importWallet(this.secretKey.toLowerCase());
         let wallet = {
           handle: handle,
           entry: entry,
@@ -117,8 +105,7 @@ export default {
         utils.saveWallet(wallet);
         this.addWallet(wallet);
         this.$router.push('/?tabIndex=0');
-      } catch(e) {
-      }
+      } catch (e) {}
     },
   },
 };
