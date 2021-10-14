@@ -2,5 +2,6 @@
 node_modules/
 dist/
 static/sw.*
+coverage/
 .vscode/
 .DS_Store
