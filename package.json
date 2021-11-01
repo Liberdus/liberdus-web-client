@@ -1,6 +1,6 @@
 {
   "name": "liberdus-web-client",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "liberdus payment network using shardus",
   "author": "thantsintoe",
   "private": true,
