@@ -5,18 +5,8 @@
 
     <div class="toll-container">
       <a-card title="Update toll amount">
-        <a-statistic
-          v-if="getAppState"
-          title="Current Toll Amount"
-          :value="getAppState.data.toll || '0'"
-          suffix="LBD"
-        />
-        <a-statistic
-          v-else
-          title="Current Toll Amount"
-          :value="'--'"
-          suffix="LBD"
-        />
+        <a-statistic v-if="getAppState" title="Current Toll Amount" :value="getAppState.data.toll || '0'" suffix="LBD" />
+        <a-statistic v-else title="Current Toll Amount" :value="'--'" suffix="LBD" />
         <!-- <p v-if="getAppState">
           Current Toll Amount:
           <strong>{{ getAppState.data.toll || '0' }} Coins</strong>
@@ -27,28 +17,13 @@
 
         <form class="toll-form" @submit.prevent="onUpdateToll">
           <div class="toll-amount-input-container">
-            <a-input
-              v-model="newToll"
-              type="text"
-              placeholder="New toll amount"
-              size="large"
-            />
+            <a-input v-model="newToll" type="text" placeholder="New toll amount" size="large" />
 
-            <p
-              v-if="$v.newToll.required && !$v.newToll.between"
-              class="input-error-message"
-            >
+            <p v-if="$v.newToll.required && !$v.newToll.between" class="input-error-message">
               Invalid toll amount
             </p>
           </div>
-          <a-button
-            @click="onUpdateToll"
-            :disabled="!isTollVaild"
-            size="large"
-            shape="round"
-            type="primary"
-            >Update Toll Amount</a-button
-          >
+          <a-button @click="onUpdateToll" :disabled="!isTollVaild" size="large" shape="round" type="primary">Update Toll Amount</a-button>
         </form>
       </a-card>
     </div>
@@ -67,8 +42,8 @@ import ChatInput from '~/components/ChatInput';
 import { mapGetters } from 'vuex';
 import utils from '../../assets/utils';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 import Vuelidate from 'vuelidate';
 import { required, minLength, between } from 'vuelidate/lib/validators';
@@ -106,10 +81,7 @@ export default {
   },
   methods: {
     async onUpdateToll() {
-      let isSubmitted = await utils.setToll(
-        this.newToll,
-        this.getWallet.entry.keys
-      );
+      let isSubmitted = await utils.setToll(this.newToll, this.getWallet.entry.keys);
       if (isSubmitted) {
         this.newToll = '';
         this.notify('Your transaction is submitted to network.');

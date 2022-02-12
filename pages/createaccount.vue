@@ -1,26 +1,13 @@
 <template>
   <v-ons-page class="create-account-page">
-    <div
-      class="create-account-container"
-      :style="{ backgroundImage: `url(${backgroundUrl})` }"
-    >
+    <div class="create-account-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
       <tool-bar :option="{ menu: false, back: true, backUrl: '/welcome' }" />
-      <div
-        v-if="creatingHandle"
-        class="create-account-content"
-      >
+      <div v-if="creatingHandle" class="create-account-content">
         <h3>Creating New Account</h3>
         <v-ons-progress-bar indeterminate />
       </div>
-      <div
-        v-else
-        class="create-account-content"
-      >
-        <a-row
-          type="flex"
-          justify="space-around"
-          :gutter="[20,20]"
-        >
+      <div v-else class="create-account-content">
+        <a-row type="flex" justify="space-around" :gutter="[20, 20]">
           <a-col :span="24">
             <h1>Sign In or Create Account</h1>
           </a-col>
@@ -28,51 +15,29 @@
             <h2>Enter your username to sign in existing account or create a new one</h2>
           </a-col>
           <a-col :span="24">
-            <a-row :gutter="[0,5]">
+            <a-row :gutter="[0, 5]">
               <a-col :span="24">
-                <a-input 
-                  size="large"
-                  placeholder="Username"
-                  @keyup="loadAccount"
-                />
+                <a-input size="large" placeholder="Username" @keyup="loadAccount" />
               </a-col>
               <a-col :span="24">
                 <div v-if="!allowSignIn">
-                  <p
-                    v-if="!isNodeOnline"
-                    class="input-error-message"
-                  >
+                  <p v-if="!isNodeOnline" class="input-error-message">
                     Unable to connect to server node.
                   </p>
-                  <p
-                    v-else-if="$v.username.required && !$v.username.alphaNum"
-                    class="input-error-message"
-                  >
+                  <p v-else-if="$v.username.required && !$v.username.alphaNum" class="input-error-message">
                     Username can contain only alphabets and numberic characters
                   </p>
-                  <p
-                    v-else-if="$v.username.required && !$v.username.minLength"
-                    class="input-error-message"
-                  >
+                  <p v-else-if="$v.username.required && !$v.username.minLength" class="input-error-message">
                     Username must be at least 3 characters long
                   </p>
                   <div v-else-if="!checkingUsername">
-                    <p
-                      v-if="isUsernameTaken"
-                      class="input-error-message"
-                    >
+                    <p v-if="isUsernameTaken" class="input-error-message">
                       Username is already taken.
                     </p>
-                    <p
-                      v-else-if="isUsernameAnotherNetwork"
-                      class="input-error-message"
-                    >
+                    <p v-else-if="isUsernameAnotherNetwork" class="input-error-message">
                       Username is on another network.
                     </p>
-                    <p
-                      v-else-if="isUsernameAvailable"
-                      class="input-success-message"
-                    >
+                    <p v-else-if="isUsernameAvailable" class="input-success-message">
                       Username is available.
                     </p>
                   </div>
@@ -114,13 +79,8 @@
           </a-col>
           <a-col :span="24">
             <p class="already-registered">
-              Already registered ? Please import your account
-              <nuxt-link
-                class="link-to-import"
-                to="/setting/import"
-              >
-                <strong>here</strong>
-              </nuxt-link>.
+              Already registered?
+              <nuxt-link class="link-to-import" to="/setting/import"> <strong>Import your account</strong> </nuxt-link>.
             </p>
           </a-col>
         </a-row>
@@ -130,34 +90,34 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import Vuelidate from 'vuelidate'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import utils from '../assets/utils'
-import { mapActions, mapGetters } from 'vuex'
-import { required, minLength, alphaNum } from 'vuelidate/lib/validators'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
-import ToolBar from '~/components/ToolBar'
-import backgroundUrl from '~/assets/images/liberdus_background.png'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import Vuelidate from 'vuelidate';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import utils from '../assets/utils';
+import { mapActions, mapGetters } from 'vuex';
+import { required, minLength, alphaNum } from 'vuelidate/lib/validators';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
+import ToolBar from '~/components/ToolBar';
+import backgroundUrl from '~/assets/images/liberdus_background.png';
 
-Vue.use(Vuelidate)
-Vue.use(VueOnsen)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Vue.use(Vuelidate);
+Vue.use(VueOnsen);
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 export default {
   components: { Title, Button, ToolBar },
   filters: {
-    lowerCase: str => {
-      if (!str) return
-      return str.toLowerCase()
-    }
+    lowerCase: (str) => {
+      if (!str) return;
+      return str.toLowerCase();
+    },
   },
-  data: function () {
+  data: function() {
     return {
       username: '',
       isUsernameTaken: false,
@@ -173,73 +133,69 @@ export default {
       localWallet: null,
       nameCheckerTimeout: null,
       loadingSignIn: false,
-      loadingCreateAccount: false
-    }
+      loadingCreateAccount: false,
+    };
   },
   validations: {
     username: {
       required,
       minLength: minLength(3),
-      alphaNum
-    }
+      alphaNum,
+    },
   },
   computed: {
-    isUsernameValid () {
-      return (
-        !this.$v.username.$invalid &&
-        !this.isUsernameTaken &&
-        !this.checkingUsername
-      )
-    }
+    isUsernameValid() {
+      return !this.$v.username.$invalid && !this.isUsernameTaken && !this.checkingUsername;
+    },
   },
   methods: {
     ...mapActions({
       addWallet: 'wallet/addWallet',
       updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx'
+      updateLastTx: 'chat/updateLastTx',
     }),
-    async onCreateAccount () {
-      this.loadingCreateAccount = true
+    async onCreateAccount() {
+      this.loadingCreateAccount = true;
 
       try {
-        let self = this
+        let self = this;
 
         if (!this.username || this.username.length === 0) return;
 
-        const lowUsername = this.username.toLowerCase()
+        const lowUsername = this.username.toLowerCase();
 
-        let wallet = null
-        let entry = utils.createWallet(lowUsername)
+        let wallet = null;
+        let entry = utils.createWallet(lowUsername);
 
         wallet = {
           handle: lowUsername,
-          entry
-        }
+          entry,
+        };
 
-        this.addWallet(wallet)
+        this.addWallet(wallet);
 
-        let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry)
+        let isSubmitted = await utils.registerAlias(wallet.handle, wallet.entry);
 
         if (isSubmitted) {
-          this.creatingHandle = true
-          let isCreated
+          this.creatingHandle = true;
+          let isCreated;
           let accountCreatedChecker = setInterval(async () => {
-            isCreated = await self.checkAccountCreated(wallet.handle)
+            isCreated = await self.checkAccountCreated(wallet.handle);
             if (isCreated) {
-              clearInterval(accountCreatedChecker)
-              accountCreatedChecker = null
-              utils.saveWallet(wallet)
-              self.$router.push('/')
+              clearInterval(accountCreatedChecker);
+              accountCreatedChecker = null;
+              utils.saveWallet(wallet);
+              self.$router.push('/');
             }
-          }, 1000)
+          }, 1000);
         }
-      } catch(e) {
+      } catch (e) {
         this.$notification.error({
           message: `An error occured while creating account.`,
         });
       }
 
-      this.loadingCreateAccount = false
+      this.loadingCreateAccount = false;
 
       // OLD LOGIC - DO NOT USE
       // let self = this
@@ -272,74 +228,70 @@ export default {
       //   }, 1000)
       // }
     },
-    async checkUsername () {
+    async checkUsername() {
       if (!this.username) {
-        console.log('No username provided')
-        this.checkingUsername = false
-        this.allowSignIn = false
-        this.isUsernameAvailable = false
-        return
+        console.log('No username provided');
+        this.checkingUsername = false;
+        this.allowSignIn = false;
+        this.isUsernameAvailable = false;
+        return;
       }
       /* ===== NEW LOGIC ===== */
       // Check UsernameHash is in localStore
-      let oldUsername = this.username
-      let lowUsername = oldUsername.toLowerCase()
+      let oldUsername = this.username;
+      let lowUsername = oldUsername.toLowerCase();
 
       // Check UsernameHash is in localStore
-      let localWallets = null
+      let localWallets = null;
 
       try {
-        localWallets = JSON.parse(localStorage.getItem('wallets'))
-      } catch(e) {
-      }
+        localWallets = JSON.parse(localStorage.getItem('wallets'));
+      } catch (e) {}
 
       // Check UsernameHash is in remoteNetwork
 
-      let remoteAddress = null
+      let remoteAddress = null;
 
       try {
-        remoteAddress = await utils.getAddress(lowUsername)
-      } catch(e) {
-      }
+        remoteAddress = await utils.getAddress(lowUsername);
+      } catch (e) {}
 
-      let foundInLocalWallet = null
+      let foundInLocalWallet = null;
 
       try {
         if (localWallets && remoteAddress) {
-          foundInLocalWallet = localWallets.find(w => w.entry.address === remoteAddress)
+          foundInLocalWallet = localWallets.find((w) => w.entry.address === remoteAddress);
         }
-      } catch(e) {
-      }
+      } catch (e) {}
 
-      let foundInLocalWalletByHandle = null
+      let foundInLocalWalletByHandle = null;
 
       try {
         if (localWallets) {
-          foundInLocalWalletByHandle = localWallets.find(w => w.handle === lowUsername)
+          foundInLocalWalletByHandle = localWallets.find((w) => w.handle === lowUsername);
         }
-      } catch(e) {
-      }
+      } catch (e) {}
 
       if (oldUsername !== this.username) {
         return;
       }
 
-      this.isUsernameTaken = false
-      this.isUsernameAvailable = false
-      this.allowSignIn = false
-      this.isUsernameAnotherNetwork = false
+      this.isUsernameTaken = false;
+      this.isUsernameAvailable = false;
+      this.allowSignIn = false;
+      this.isUsernameAnotherNetwork = false;
 
       if (remoteAddress && !foundInLocalWallet) {
-        this.isUsernameTaken = true
+        this.isUsernameTaken = true;
       } else if (remoteAddress && foundInLocalWallet) {
-        this.allowSignIn = true
+        this.allowSignIn = true;
       } else if (!remoteAddress && foundInLocalWalletByHandle) {
-        this.isUsernameAnotherNetwork = true
+        this.isUsernameAnotherNetwork = true;
       } else if (!remoteAddress && !foundInLocalWallet) {
-        this.isUsernameAvailable = true
+        this.isUsernameAvailable = true;
       }
 
-      this.checkingUsername = false
+      this.checkingUsername = false;
 
       // OLD LOGIC - DO NOT USE
       // let lowUsername = this.username.toLowerCase()
@@ -376,26 +328,26 @@ export default {
       //   this.checkingUsername = false
       // }
     },
-    async checkAccountCreated (handle) {
-      let address = await utils.getAddress(handle)
+    async checkAccountCreated(handle) {
+      let address = await utils.getAddress(handle);
       if (address) {
-        console.log(`Account created successfully.`)
-        return true
+        console.log(`Account created successfully.`);
+        return true;
       }
-      return false
+      return false;
     },
-    async loadAccount ({type, target}) {
+    async loadAccount({ type, target }) {
       this.username = target.value;
-      this.checkingUsername = true
-      this.allowSignIn = false
+      this.checkingUsername = true;
+      this.allowSignIn = false;
       // NEW LOGIC
       // setTimeout to call loadAccount after 0.5 second; if already set then clear timeout and set it again
       if (this.nameCheckerTimeout) {
-        clearTimeout(this.nameCheckerTimeout)
-        this.nameCheckerTimeout = null
+        clearTimeout(this.nameCheckerTimeout);
+        this.nameCheckerTimeout = null;
       }
 
-      this.nameCheckerTimeout = setTimeout(this.checkUsername, 500)
+      this.nameCheckerTimeout = setTimeout(this.checkUsername, 500);
 
       // OLD LOGIC - DO NOT USE
       // if (this.nameCheckerTimeout) {
@@ -425,50 +377,50 @@ export default {
       // }
       // this.checkingUsername = false
     },
-    async onSignIn () {
+    async onSignIn() {
       // NEW LOGIC
-      this.loadingSignIn = true
+      this.loadingSignIn = true;
 
       try {
-        await this.checkUsername()
+        await this.checkUsername();
 
         if (!this.allowSignIn) {
-          this.loadingSignIn = false
+          this.loadingSignIn = false;
           return;
         }
-        let validAccount = null
-        let lowUsername = this.username.toLowerCase()
-        const localValidWallet = utils.loadWallet(lowUsername)
+        let validAccount = null;
+        let lowUsername = this.username.toLowerCase();
+        const localValidWallet = utils.loadWallet(lowUsername);
 
         // Check the local wallet with remote address
 
         if (localValidWallet) {
-          const remoteAddress = await utils.getAddress(localValidWallet.handle)
-          const localAddress = localValidWallet.entry.address
+          const remoteAddress = await utils.getAddress(localValidWallet.handle);
+          const localAddress = localValidWallet.entry.address;
 
           if (remoteAddress === localAddress) {
-            validAccount = localValidWallet
+            validAccount = localValidWallet;
           } else {
-            this.loadingSignIn = false
+            this.loadingSignIn = false;
             return;
           }
         }
 
-        this.addWallet(validAccount)
-        const lastMessage = utils.loadLastMessage(lowUsername)
-        const lastTx = utils.loadLastTx(lowUsername)
+        this.addWallet(validAccount);
+        const lastMessage = utils.loadLastMessage(lowUsername);
+        const lastTx = utils.loadLastTx(lowUsername);
 
         if (lastMessage) {
-          this.updateLastMessage(lastMessage)
+          this.updateLastMessage(lastMessage);
         }
 
         if (lastTx) {
-          this.updateLastTx(lastTx)
+          this.updateLastTx(lastTx);
         }
-        this.loadingSignIn = false
-        this.$router.push('/')
-      } catch(e) {
-        this.loadingSignIn = false
+        this.loadingSignIn = false;
+        this.$router.push('/');
+      } catch (e) {
+        this.loadingSignIn = false;
         this.$notification.error({
           message: `An error occured while loading your local wallet.`,
         });
@@ -485,17 +437,17 @@ export default {
       //   this.updateLastTx(lastTx)
       // }
       // this.$router.push('/')
-    }
+    },
   },
-  mounted: function () {
-    let self = this
+  mounted: function() {
+    let self = this;
     setTimeout(() => {
       try {
-        self.$refs['usenameInput'].focus()
+        self.$refs['usenameInput'].focus();
       } catch (e) {}
-    }, 500)
-  }
-}
+    }, 500);
+  },
+};
 </script>
 
 <style lang="scss">
@@ -554,7 +506,6 @@ export default {
     width: 100%;
   }
 }
-
 
 .link-to-import {
   color: #43b8e7 !important;

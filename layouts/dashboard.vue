@@ -1,24 +1,10 @@
 <template>
   <a-layout id="components-layout-demo-responsive">
-    <a-layout-sider
-      breakpoint="lg"
-      collapsed-width="0"
-      @collapse="onCollapse"
-      @breakpoint="onBreakpoint"
-      v-model="collapsed"
-      v-if="getWallet"
-    >
+    <a-layout-sider breakpoint="lg" collapsed-width="0" @collapse="onCollapse" @breakpoint="onBreakpoint" v-model="collapsed" v-if="getWallet">
       <div class="header-logo">
-        <a-row
-          type="flex"
-          align="middle"
-          :gutter="16"
-        >
+        <a-row type="flex" align="middle" :gutter="16">
           <a-col flex="30px">
-            <img
-              src="icon.png"
-              class="main-logo"
-            >
+            <img src="icon.png" class="main-logo" />
           </a-col>
 
           <a-col flex="auto">
@@ -27,125 +13,77 @@
         </a-row>
       </div>
 
-      <a-menu 
-        theme="dark" 
-        mode="inline" 
-        :default-selected-keys="['home']"
-        :default-open-keys="['settings']"
-      >
-        <a-menu-item
-          key="home"
-          @click="redirect('/')"
-        >
+      <a-menu theme="dark" mode="inline" :default-selected-keys="['home']" :default-open-keys="['settings']">
+        <a-menu-item key="home" @click="redirect('/')">
           <a-icon type="home" />
           <span class="nav-text">Home</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="message"
-          @click="redirect('/message')"
-        >
+        <a-menu-item key="message" @click="redirect('/message')">
           <a-icon type="message" />
           <span class="nav-text">Message</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="friends"
-          @click="redirect('/setting/friends')"
-        >
+        <a-menu-item key="friends" @click="redirect('/setting/friends')">
           <a-icon type="usergroup-add" />
           <span class="nav-text">Friends</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="history"
-          @click="redirect('/history')"
-        >
+        <a-menu-item key="history" @click="redirect('/history')">
           <a-icon type="history" />
           <span class="nav-text">Tx History</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="tx-receipts"
-          @click="redirect('/receipt')"
-        >
+        <a-menu-item key="tx-receipts" @click="redirect('/receipt')">
           <a-icon type="hdd" />
           <span class="nav-text">Tx Receipts</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="stake"
-          @click="redirect('/setting/stake')"
-        >
+        <a-menu-item key="stake" @click="redirect('/setting/stake')">
           <a-icon type="dollar" />
           <span class="nav-text">Stake</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="funding"
-          @click="redirect('/funding')"
-        >
+        <a-menu-item key="funding" @click="redirect('/funding')">
           <a-icon type="fund" />
           <span class="nav-text">Funding</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="economy"
-          @click="redirect('/economy')"
-        >
+        <a-menu-item key="economy" @click="redirect('/economy')">
           <a-icon type="check-square" />
           <span class="nav-text">Economy</span>
         </a-menu-item>
 
         <a-sub-menu key="settings">
           <span slot="title"><a-icon type="setting" />Settings</span>
-          <a-menu-item
-            key="network"
-            @click="redirect('/setting/network')"
-          >
+          <a-menu-item key="network" @click="redirect('/setting/network')">
             <a-icon type="wifi" />
             <span class="nav-text">Network</span>
           </a-menu-item>
 
-          <a-menu-item
-            key="toll"
-            @click="redirect('/setting/toll')"
-          >
+          <a-menu-item key="toll" @click="redirect('/setting/toll')">
             <a-icon type="share-alt" />
             <span class="nav-text">Toll</span>
           </a-menu-item>
         </a-sub-menu>
 
-        <a-menu-item
-          key="about"
-          @click="redirect('/setting/about')"
-        >
+        <a-menu-item key="about" @click="redirect('/setting/about')">
           <a-icon type="pic-left" />
           <span class="nav-text">About</span>
         </a-menu-item>
 
-        <a-menu-item
-          key="sign-out"
-          @click="onSignOut"
-        >
+        <a-menu-item key="sign-out" @click="onSignOut">
           <a-icon type="logout" />
-          <span class="nav-text">Sign out</span>
+          <span class="nav-text">Sign Out</span>
         </a-menu-item>
       </a-menu>
     </a-layout-sider>
     <a-layout class="main-layout">
       <a-layout-header :style="{ background: '#fff', padding: 0 }" class="header-toolbar">
         <div class="header-logo-mobile">
-          <a-row
-            type="flex"
-            align="middle"
-            :gutter="16"
-          >
+          <a-row type="flex" align="middle" :gutter="16">
             <a-col flex="30px">
-              <img
-                src="icon.png"
-                class="main-logo"
-              >
+              <img src="icon.png" class="main-logo" />
             </a-col>
 
             <a-col flex="auto">
@@ -164,13 +102,13 @@
           </a-avatar> -->
           <span class="username-container">
             <a-avatar style="backgroundColor:#87d068" icon="user" />
-            <span>{{ getWallet ? getWallet.handle : "No User" }}</span>
+            <span>{{ getWallet ? getWallet.handle : 'No User' }}</span>
           </span>
 
           <a-menu slot="overlay">
             <a-menu-item @click="redirect('/setting/export')">
               <a-icon type="user" />
-              @{{ getWallet ? getWallet.handle : "No User" }}
+              @{{ getWallet ? getWallet.handle : 'No User' }}
             </a-menu-item>
             <a-menu-item @click="redirect('/email/register')">
               <a-icon type="mail" />
@@ -185,7 +123,6 @@
       </a-layout-header>
 
       <a-layout-content :style="{ margin: '10px 16px 0' }">
-
         <portal-target name="navigation-tags" class="navigation-tags"></portal-target>
 
         <div :style="{ padding: '24px', background: '#fff', minHeight: '360px' }">
@@ -195,20 +132,18 @@
         </div>
       </a-layout-content>
 
-      <a-layout-footer style="textAlign: center">
-        Liberdus ©2020 Created by Shardus team
-      </a-layout-footer>
+      <a-layout-footer style="textAlign: center"> Liberdus © {{ new Date().getFullYear() }}. Created by the Shardus team.</a-layout-footer>
     </a-layout>
   </a-layout>
 </template>
 <script>
-import Vue from 'vue'
-import { mapGetters, mapActions } from 'vuex'
-import moment from 'moment'
-import PortalVue from 'portal-vue'
-import utils from '../assets/utils'
+import Vue from 'vue';
+import { mapGetters, mapActions } from 'vuex';
+import moment from 'moment';
+import PortalVue from 'portal-vue';
+import utils from '../assets/utils';
 
-Vue.use(PortalVue)
+Vue.use(PortalVue);
 export default {
   props: {
     option: {
@@ -220,75 +155,75 @@ export default {
           back: false,
           menu: false,
           backUrl: '/',
-          addFriend: null
-        }
-      }
-    }
+          addFriend: null,
+        };
+      },
+    },
   },
-  data: function () {
+  data: function() {
     return {
       settingVisible: false,
       notificationVisible: false,
       collapsed: true,
       isMobile: false,
-    }
+    };
   },
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
       isUIReady: 'chat/isUIReady',
-      getNotificationQueue: 'chat/getNotificationQueue'
+      getNotificationQueue: 'chat/getNotificationQueue',
     }),
-    notificationQueue () {
-      let queue = [...this.getNotificationQueue]
-      return queue.sort((a, b) => b.timestamp - a.timestamp)
-    }
+    notificationQueue() {
+      let queue = [...this.getNotificationQueue];
+      return queue.sort((a, b) => b.timestamp - a.timestamp);
+    },
   },
   beforeMount: function() {
     if (!this.isUIReady) {
-      console.log('beforeMount')
-      this.$router.push('/loading')
+      console.log('beforeMount');
+      this.$router.push('/loading');
     }
   },
   methods: {
     ...mapActions({
       updateAppState: 'chat/updateAppState',
-      removeWallet: 'wallet/removeWallet'
+      removeWallet: 'wallet/removeWallet',
     }),
     onCollapse(collapsed, type) {
       console.log(collapsed, type);
-      this.collapsed = collapsed
+      this.collapsed = collapsed;
     },
     onBreakpoint(broken) {
       console.log(broken);
       this.isMobile = broken;
     },
-    redirect (url = '/') {
-      this.$router.push(url)
+    redirect(url = '/') {
+      this.$router.push(url);
       if (this.isMobile) {
-        this.collapsed = true
+        this.collapsed = true;
       }
     },
-    onSignOut () {
-      let handle = this.getWallet.handle
-      this.updateAppState(null)
+    onSignOut() {
+      let handle = this.getWallet.handle;
+      this.updateAppState(null);
       // this.removeWallet()
-      let existingWalletList
+      let existingWalletList;
       try {
-        existingWalletList = JSON.parse(localStorage.getItem('wallets'))
+        existingWalletList = JSON.parse(localStorage.getItem('wallets'));
         if (existingWalletList) {
-          let filteredList = existingWalletList.filter(w => w.handle !== handle)
-          console.log(filteredList)
+          let filteredList = existingWalletList.filter((w) => w.handle !== handle);
+          console.log(filteredList);
           // localStorage.setItem('wallets', JSON.stringify(filteredList))
-          localStorage.removeItem('lastMessage')
-          localStorage.removeItem('lastTx')
+          localStorage.removeItem('lastMessage');
+          localStorage.removeItem('lastTx');
         }
       } catch (e) {}
-      window.location.href = '/'
-    }
-  }
-}
+      window.location.href = '/';
+    },
+  },
+};
 </script>
 
 <style lang="scss">
@@ -333,7 +268,8 @@ export default {
   margin: 16px;
 }
 
-.header-logo, .header-logo-mobile {
+.header-logo,
+.header-logo-mobile {
   img {
     width: 30px;
   }
@@ -367,5 +303,4 @@ export default {
   min-width: unset;
   left: calc(100% - 150px);
 }
-
 </style>

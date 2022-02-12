@@ -13,9 +13,7 @@
         </v-ons-list-item>
       </v-ons-list> -->
       <div style="justify-content:flex-end; display:flex;">
-        <a-button type="primary" @click="downloadJSONFile"
-          >Download Transactions JSON</a-button
-        >
+        <a-button type="primary" @click="downloadJSONFile">Download Transactions As JSON</a-button>
       </div>
       <a-table :columns="columns" :data-source="txs" class="tx-table" rowKey="txId">
         <span slot="txId" slot-scope="text">
@@ -29,7 +27,7 @@
             Verify
           </a-button>
           <a-button @click="() => exportJSONFile(record.txData)">
-            Export JSON
+            Export As JSON
           </a-button>
         </span>
       </a-table>
@@ -44,8 +42,8 @@ import { map, filter, concat, flow, chain } from 'lodash';
 import * as _ from 'lodash';
 import utils from '../assets/utils';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 import Notification from '~/components/Notification';
 import moment from 'moment';
 export default {
@@ -94,8 +92,8 @@ export default {
         title: 'Action',
         key: 'action',
         dataIndex: 'txId',
-        scopedSlots: { customRender: 'action' }
-      }
+        scopedSlots: { customRender: 'action' },
+      },
     ];
 
     return {
@@ -130,8 +128,8 @@ export default {
         const { txId, type, timestamp, from, to } = tx;
         const strFirst = txId.substring(0, 8);
 
-          const from_handle = from ? await utils.getHandle(from) : '';
-          const to_handle = to ? await utils.getHandle(to) : '';
+        const from_handle = from ? await utils.getHandle(from) : '';
+        const to_handle = to ? await utils.getHandle(to) : '';
 
         return {
           txId_str: `${strFirst}`,
@@ -141,7 +139,7 @@ export default {
           timestamp_str: moment(timestamp).calendar(),
           from: from_handle,
           to: to_handle,
-          txData: tx
+          txData: tx,
         };
       })
     );
@@ -158,10 +156,10 @@ export default {
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
       addTimer: 'chat/addTimer',
     }),
-    redirect (url = '/') {
-      this.$router.push(url)
+    redirect(url = '/') {
+      this.$router.push(url);
       if (this.isMobile) {
-        this.collapsed = true
+        this.collapsed = true;
       }
     },
     getLastTxFromAPI() {
@@ -185,7 +183,7 @@ export default {
       element.download = 'transaction.json';
       document.body.appendChild(element); // Required for this to work in FireFox
       element.click();
-    }
+    },
   },
 };
 </script>

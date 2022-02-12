@@ -2,108 +2,89 @@
   <v-ons-page>
     <v-ons-list>
       <v-ons-list-item>
-        <nuxt-link
-          to="/setting/toll"
-          class="nuxt-link"
-        >
+        <nuxt-link to="/setting/toll" class="nuxt-link">
           <div>
             <p class="setting-name">
               Toll
             </p>
             <p class="setting-description">
-              Update your toll setting
+              Update Your Toll Setting
             </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
       <v-ons-list-item>
-        <nuxt-link
-          to="/setting/friends"
-          class="nuxt-link"
-        >
+        <nuxt-link to="/setting/friends" class="nuxt-link">
           <div>
             <p class="setting-name">
               Friends
             </p>
             <p class="setting-description">
-              Add or remove friends
+              Add/Remove Friends
             </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
       <v-ons-list-item>
-        <nuxt-link
-          to="/setting/import"
-          class="nuxt-link"
-        >
+        <nuxt-link to="/setting/import" class="nuxt-link">
           <div>
             <p class="setting-name">
               Import
             </p>
             <p class="setting-description">
-              Import your account
+              Import Your Account
             </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
       <v-ons-list-item>
-        <nuxt-link
-          to="/setting/export"
-          class="nuxt-link"
-        >
+        <nuxt-link to="/setting/export" class="nuxt-link">
           <div>
             <p class="setting-name">
               Export
             </p>
             <p class="setting-description">
-              Export account secret key
+              Export Account Secret Key
             </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
       <v-ons-list-item>
-        <nuxt-link
-          to="/setting/network"
-          class="nuxt-link"
-        >
+        <nuxt-link to="/setting/network" class="nuxt-link">
           <div>
             <p class="setting-name">
               Network
             </p>
             <p class="setting-description">
-              Change network setting
+              Change Network Setting
             </p>
           </div>
         </nuxt-link>
       </v-ons-list-item>
     </v-ons-list>
-    <v-ons-button
-      class="new-message-btn"
-      modifier="quiet"
-      @click="onSignOut"
-    >
+    <v-ons-button class="new-message-btn" modifier="quiet" @click="onSignOut">
       Sign Out
     </v-ons-button>
   </v-ons-page>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions } from 'vuex';
 export default {
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
+      updateAppState: 'chat/updateAppState',
       // removeWallet: "wallet/removeWallet"
     }),
     onSignOut() {
       this.updateAppState(null);
       // this.removeWallet();
-      localStorage.removeItem("account");
-      localStorage.removeItem("lastMessage");
-      localStorage.removeItem("lastTx");
-      this.$router.push("/welcome");
-    }
-  }
+      localStorage.removeItem('account');
+      localStorage.removeItem('lastMessage');
+      localStorage.removeItem('lastTx');
+      this.$router.push('/welcome');
+    },
+  },
 };
 </script>
 

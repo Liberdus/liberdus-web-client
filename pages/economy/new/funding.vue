@@ -10,7 +10,7 @@
       }"
     /> -->
     <!-- {{ window }} -->
-    <div class="funding-create-container">  
+    <div class="funding-create-container">
       <portal to="navigation-tags">
         <a-breadcrumb>
           <a-breadcrumb-item>
@@ -23,73 +23,44 @@
       <h2>
         New Funding Proposal
       </h2>
-      <div
-        v-if="loading"
-        class="loading-status"
-      >
+      <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate />
       </div>
-      <div
-        v-else-if="!loading && (!window || !window.devProposalWindow)"
-      >
+      <div v-else-if="!loading && (!window || !window.devProposalWindow)">
         Unable to get funding proposal window from server
       </div>
       <div v-else>
         <p class="body">
           Submit new proposal when proposal window is active.
         </p>
-        <window-info
-          v-if="window"
-          :window="window"
-          :current-window-name="currentWindowName"
-        />
+        <window-info v-if="window" :window="window" :current-window-name="currentWindowName" />
         <div>
           <p class="input-label-text">
             Title
           </p>
-          <a-input
-            v-model="title"
-            size="large"
-            placeholder="Input title"
-          />
+          <a-input v-model="title" size="large" placeholder="Input title" />
         </div>
 
         <div>
           <p class="input-label-text">
             Description
           </p>
-          <a-textarea
-            v-model="description"
-            name="description-input"
-            cols="30"
-            rows="5"
-            placeholder="Input description"
-          />
+          <a-textarea v-model="description" name="description-input" cols="30" rows="5" placeholder="Input description" />
         </div>
 
         <div>
           <p class="input-label-text">
             Proposed Amount
           </p>
-          <a-input
-            v-model="amount"
-            placeholder="Input amount"
-          />
+          <a-input v-model="amount" placeholder="Input amount" />
         </div>
         <div>
           <p class="input-label-text">
             Payment Plan
           </p>
           <div class="drop-down-container">
-            <a-radio-group
-              v-model="selectedPaymentType"
-              style="width: 40%"
-            >
-              <a-radio-button
-                v-for="item in paymentType"
-                :key="item.id"
-                :value="item.value"
-              >
+            <a-radio-group v-model="selectedPaymentType" style="width: 40%">
+              <a-radio-button v-for="item in paymentType" :key="item.id" :value="item.value">
                 {{ item.text }}
               </a-radio-button>
             </a-radio-group>
@@ -100,85 +71,60 @@
           <p class="input-label-text">
             Payment Count
           </p>
-          <a-input
-            v-model="paymentCount"
-            type="text"
-            placeholder="5"
-          />
+          <a-input v-model="paymentCount" type="text" placeholder="5" />
         </div>
 
         <div v-if="selectedPaymentType === 'multiple'">
           <p class="input-label-text">
             Delay between payments (in minutes)
           </p>
-          <a-input
-            v-model="delay"
-            type="text"
-            placeholder="0"
-          />
+          <a-input v-model="delay" type="text" placeholder="0" />
         </div>
-        <p
-          v-if="!allowProposal"
-          class="coin-usage-warning"
-        >
+        <p v-if="!allowProposal" class="coin-usage-warning">
           Proposal window will start in
           <strong v-if="nextDevProposalStart">{{ secondsToDhms }}</strong>
         </p>
-        <p
-          v-else
-          class="coin-usage-warning"
-        >
+        <p v-else class="coin-usage-warning">
           Proposal window will expire in
-          <strong>{{ secondsToDhms }}</strong>.
+          <strong>{{ secondsToDhms }}</strong
+          >.
         </p>
         <p v-if="allowProposal && !isDevIssueGenerated">
           Waiting to get developer issue number.
         </p>
-        <a-button
-          @click="onSubmitProposal"
-          :disabled="!allowProposal || !isDevIssueGenerated"
-          size="large"
-          style="width:100%;"
-          type="primary"
-        >
+        <a-button @click="onSubmitProposal" :disabled="!allowProposal || !isDevIssueGenerated" size="large" style="width:100%;" type="primary">
           Submit Proposal
         </a-button>
-        <p
-          v-if="
-            networkParameters.current.devProposalFee &&
-              networkParameters.current.transactionFee
-          "
-        >
+        <p v-if="networkParameters.current.devProposalFee && networkParameters.current.transactionFee">
           Submitting proposal will cost Proposal Fee:
-          <strong>{{ networkParameters.current.devProposalFee }}</strong> coins
-          + Transaction Fee:
+          <strong>{{ networkParameters.current.devProposalFee }}</strong> coins + Transaction Fee:
           <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import WindowInfo from '~/components/WindowInfo'
-import { mapGetters, mapActions } from 'vuex'
-import utils from '../../../assets/utils'
-import ToolBar from '~/components/ToolBar'
-import ProposalListItem from '~/components/ProposalListItem'
-import Choice from '~/components/Choice'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import WindowInfo from '~/components/WindowInfo';
+import { mapGetters, mapActions } from 'vuex';
+import utils from '../../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import ProposalListItem from '~/components/ProposalListItem';
+import Choice from '~/components/Choice';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
-Vue.use(VueOnsen)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Vue.use(VueOnsen);
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: {
@@ -186,10 +132,10 @@ export default {
     Button,
     WindowInfo,
     Title,
-    Choice
+    Choice,
   },
   layout: 'dashboard',
-  data: function () {
+  data: function() {
     return {
       selectedPaymentType: 'single',
       amount: '',
@@ -199,13 +145,13 @@ export default {
         {
           id: 1,
           text: 'Single',
-          value: 'single'
+          value: 'single',
         },
         {
           id: 2,
           text: 'Multiple',
-          value: 'multiple'
-        }
+          value: 'multiple',
+        },
       ],
       paymentCount: 1,
       delay: 0,
@@ -218,161 +164,138 @@ export default {
       loading: true,
       window: null,
       previousWindow: null,
-      isDevIssueGenerated: null
-    }
+      isDevIssueGenerated: null,
+    };
   },
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
       getAppState: 'chat/getAppState',
-      getWindowFocus: 'chat/getWindowFocus'
+      getWindowFocus: 'chat/getWindowFocus',
     }),
-    secondsToDhms () {
-      let seconds = this.remainingSecondToProposalWindow
-      seconds = Number(seconds)
-      let d = Math.floor(seconds / (3600 * 24))
-      let h = Math.floor((seconds % (3600 * 24)) / 3600)
-      let m = Math.floor((seconds % 3600) / 60)
-      let s = Math.floor(seconds % 60)
+    secondsToDhms() {
+      let seconds = this.remainingSecondToProposalWindow;
+      seconds = Number(seconds);
+      let d = Math.floor(seconds / (3600 * 24));
+      let h = Math.floor((seconds % (3600 * 24)) / 3600);
+      let m = Math.floor((seconds % 3600) / 60);
+      let s = Math.floor(seconds % 60);
 
-      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : ''
-      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : ''
-      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : ''
-      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
-      return dDisplay + hDisplay + mDisplay + sDisplay
+      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : '';
+      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : '';
+      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : '';
+      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : '';
+      return dDisplay + hDisplay + mDisplay + sDisplay;
     },
-    currentWindowName () {
-      if (!this.window) return
-      const now = Date.now()
+    currentWindowName() {
+      if (!this.window) return;
+      const now = Date.now();
       try {
-        if (
-          now >= this.window.devProposalWindow[0] &&
-          now < this.window.devProposalWindow[1]
-        ) {
-          return 'PROPOSAL'
-        } else if (
-          now >= this.window.devVotingWindow[0] &&
-          now < this.window.devVotingWindow[1]
-        ) {
-          return 'VOTING'
-        } else if (
-          now >= this.window.devGraceWindow[0] &&
-          now < this.window.devGraceWindow[1]
-        ) {
-          return 'GRACE'
-        } else if (
-          now >= this.window.devApplyWindow[0] &&
-          now < this.window.devApplyWindow[1]
-        ) {
-          return 'APPLY'
+        if (now >= this.window.devProposalWindow[0] && now < this.window.devProposalWindow[1]) {
+          return 'PROPOSAL';
+        } else if (now >= this.window.devVotingWindow[0] && now < this.window.devVotingWindow[1]) {
+          return 'VOTING';
+        } else if (now >= this.window.devGraceWindow[0] && now < this.window.devGraceWindow[1]) {
+          return 'GRACE';
+        } else if (now >= this.window.devApplyWindow[0] && now < this.window.devApplyWindow[1]) {
+          return 'APPLY';
         }
       } catch (e) {
-        return null
+        return null;
       }
-    }
+    },
   },
-  mounted: async function () {
-    this.allowProposal = await this.isDevProposalWindowOpen()
-    this.getRemainingSecondToProposal()
+  mounted: async function() {
+    this.allowProposal = await this.isDevProposalWindowOpen();
+    this.getRemainingSecondToProposal();
 
     this.proposalWindowChecker = setInterval(async () => {
-      this.allowProposal = await this.isDevProposalWindowOpen()
-      this.isDevIssueGenerated = await this.checkDevIssue()
-    }, 10000)
+      this.allowProposal = await this.isDevProposalWindowOpen();
+      this.isDevIssueGenerated = await this.checkDevIssue();
+    }, 10000);
 
-    this.proposalWindowTimer = setInterval(
-      this.getRemainingSecondToProposal,
-      10000
-    )
+    this.proposalWindowTimer = setInterval(this.getRemainingSecondToProposal, 10000);
   },
-  beforeDestroy: function () {
-    clearInterval(this.proposalWindowChecker)
-    clearInterval(this.proposalWindowTimer)
-    this.proposalWindowTimer = null
-    this.proposalWindowTimer = null
+  beforeDestroy: function() {
+    clearInterval(this.proposalWindowChecker);
+    clearInterval(this.proposalWindowTimer);
+    this.proposalWindowTimer = null;
+    this.proposalWindowTimer = null;
   },
   methods: {
-    async checkDevIssue () {
-      if (!this.getWindowFocus) return
-      let latestDevIssue = await utils.queryLatestDevIssue()
-      if (latestDevIssue) return true
+    async checkDevIssue() {
+      if (!this.getWindowFocus) return;
+      let latestDevIssue = await utils.queryLatestDevIssue();
+      if (latestDevIssue) return true;
     },
-    async isDevProposalWindowOpen () {
+    async isDevProposalWindowOpen() {
       try {
-        if (!this.getWindowFocus) return
-        console.log('Checking if dev proposal window is opened')
+        if (!this.getWindowFocus) return;
+        console.log('Checking if dev proposal window is opened');
         // this.loading = true
-        let networkParameters = await utils.queryParameters()
-        console.log(networkParameters)
-        if (!this.networkParameters) this.networkParameters = networkParameters
+        let networkParameters = await utils.queryParameters();
+        console.log(networkParameters);
+        if (!this.networkParameters) this.networkParameters = networkParameters;
         if (!this.previousWindow) {
-          this.window = networkParameters['devWindows']
-          this.previousWindow = networkParameters['devWindows']
-        } else if (
-          networkParameters['devWindows'].devProposalWindow[0] > Date.now()
-        ) {
-          this.window = { ...this.previousWindow }
+          this.window = networkParameters['devWindows'];
+          this.previousWindow = networkParameters['devWindows'];
+        } else if (networkParameters['devWindows'].devProposalWindow[0] > Date.now()) {
+          this.window = { ...this.previousWindow };
         } else {
-          this.window = networkParameters['devWindows']
-          this.previousWindow = networkParameters['devWindows']
+          this.window = networkParameters['devWindows'];
+          this.previousWindow = networkParameters['devWindows'];
         }
 
-        let proposalWindow = this.window.devProposalWindow
-        let applyWindow = this.window.devApplyWindow
-        this.loading = false
-        if (
-          this.window.devProposalWindow &&
-          this.window.devProposalWindow >= Date.now()
-        ) {
-          this.nextDevProposalStart = this.window.devProposalWindow[0]
+        let proposalWindow = this.window.devProposalWindow;
+        let applyWindow = this.window.devApplyWindow;
+        this.loading = false;
+        if (this.window.devProposalWindow && this.window.devProposalWindow >= Date.now()) {
+          this.nextDevProposalStart = this.window.devProposalWindow[0];
         } else {
-          const wholeCycleDuration = utils.calculateWholeCycleDuration(
-            this.window
-          )
-          this.nextDevProposalStart =
-            this.window.devProposalWindow[0] + wholeCycleDuration
+          const wholeCycleDuration = utils.calculateWholeCycleDuration(this.window);
+          this.nextDevProposalStart = this.window.devProposalWindow[0] + wholeCycleDuration;
         }
-        let now = Date.now()
+        let now = Date.now();
         if (now > proposalWindow[0] && now < proposalWindow[1]) {
-          return true
+          return true;
         }
-        return false
+        return false;
       } catch (e) {
-        this.loading = false
-        return false
+        this.loading = false;
+        return false;
       }
     },
-    redirect (url) {
-      this.$router.push(url)
+    redirect(url) {
+      this.$router.push(url);
     },
-    async onSubmitProposal () {
+    async onSubmitProposal() {
       try {
-        let myWallet = this.getWallet
+        let myWallet = this.getWallet;
         let proposal = {
           description: this.description,
           totalAmount: parseFloat(this.amount),
           paymentCount: parseInt(this.paymentCount),
           delay: this.delay * 60 * 1000,
           paymentType: this.selectedPaymentType,
-          title: this.title
-        }
-        let proposalTx = await utils.createDevProposal(myWallet, proposal)
-        console.log(proposalTx)
-        let isSubmitted = await utils.submitProposl(proposalTx)
+          title: this.title,
+        };
+        let proposalTx = await utils.createDevProposal(myWallet, proposal);
+        console.log(proposalTx);
+        let isSubmitted = await utils.submitProposl(proposalTx);
         if (isSubmitted) {
-          this.$ons.notification.alert('Dev Proposal is submitted.')
-          this.amount = ''
-          this.selectedPaymentType = 'single'
-          this.delay = 0
-          this.paymentCount = 1
-          this.title = ''
-          this.description = ''
-          this.redirect('/')
+          this.$ons.notification.alert('Dev Proposal is submitted.');
+          this.amount = '';
+          this.selectedPaymentType = 'single';
+          this.delay = 0;
+          this.paymentCount = 1;
+          this.title = '';
+          this.description = '';
+          this.redirect('/');
         }
       } catch (e) {
-        console.error(e)
-        console.error(e.message)
-        this.$ons.notification.alert(`Fail to submit: ${e.message}`)
+        console.error(e);
+        console.error(e.message);
+        this.$ons.notification.alert(`Fail to submit: ${e.message}`);
         // this.amount = ''
         // this.selectedPaymentType = 'single'
         // this.delay = 0
@@ -382,35 +305,25 @@ export default {
         // this.redirect('/')
       }
     },
-    getRemainingSecondToProposal () {
-      if (!this.getWindowFocus) return
+    getRemainingSecondToProposal() {
+      if (!this.getWindowFocus) return;
       if (this.window) {
-        let now = Date.now()
+        let now = Date.now();
         if (!this.allowProposal) {
           if (now < this.window.devProposalWindow[0]) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.window.devProposalWindow[0] - now) / 1000
-            )
-          } else if (
-            now > this.window.devProposalWindow[0] &&
-            this.nextDevProposalStart &&
-            now < this.nextDevProposalStart
-          ) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.nextDevProposalStart - now) / 1000
-            )
+            this.remainingSecondToProposalWindow = Math.round((this.window.devProposalWindow[0] - now) / 1000);
+          } else if (now > this.window.devProposalWindow[0] && this.nextDevProposalStart && now < this.nextDevProposalStart) {
+            this.remainingSecondToProposalWindow = Math.round((this.nextDevProposalStart - now) / 1000);
           }
         } else if (this.allowProposal) {
           if (this.window.devProposalWindow[1] >= now) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.window.devProposalWindow[1] - now) / 1000
-            )
+            this.remainingSecondToProposalWindow = Math.round((this.window.devProposalWindow[1] - now) / 1000);
           }
         }
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss">

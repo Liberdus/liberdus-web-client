@@ -17,21 +17,14 @@
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate />
       </div>
-      <div
-        v-else-if="!loading && (!window || !window.proposalWindow)"
-        class="loading-status"
-      >
+      <div v-else-if="!loading && (!window || !window.proposalWindow)" class="loading-status">
         Unable to get proposal window from server
       </div>
       <div v-else>
         <p class="body">
           Submit new proposal when proposal window is active.
         </p>
-        <window-info
-          v-if="window"
-          :window="window"
-          :current-window-name="currentWindowName"
-        />
+        <window-info v-if="window" :window="window" :current-window-name="currentWindowName" />
 
         <table id="network-table">
           <thead>
@@ -170,24 +163,13 @@
           <p class="label">
             Title
           </p>
-          <a-input
-            v-model="form.title"
-            name="title-input"
-            size="large"
-            placeholder="Input title"
-          />
+          <a-input v-model="form.title" name="title-input" size="large" placeholder="Input title" />
         </div>
         <div>
           <p class="label">
             Description
           </p>
-          <a-textarea
-            v-model="form.description"
-            name="description-input"
-            cols="30"
-            rows="5"
-            placeholder="Input description"
-          />
+          <a-textarea v-model="form.description" name="description-input" cols="30" rows="5" placeholder="Input description" />
         </div>
 
         <p v-if="!allowProposal" class="coin-usage-warning">
@@ -213,15 +195,9 @@
         >
           Submit Proposal
         </a-button>
-        <p
-          v-if="
-            networkParameters.current.proposalFee &&
-              networkParameters.current.transactionFee
-          "
-        >
+        <p v-if="networkParameters.current.proposalFee && networkParameters.current.transactionFee">
           Submitting proposal will cost Proposal Fee:
-          <strong>{{ networkParameters.current.proposalFee }}</strong> coins +
-          Transaction Fee:
+          <strong>{{ networkParameters.current.proposalFee }}</strong> coins + Transaction Fee:
           <strong>{{ networkParameters.current.transactionFee }}</strong> coins
         </p>
       </div>
@@ -245,8 +221,8 @@ import ToolBar from '~/components/ToolBar';
 import ProposalListItem from '~/components/ProposalListItem';
 import WindowInfo from '~/components/WindowInfo';
 import Choice from '~/components/Choice';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
@@ -360,25 +336,13 @@ export default {
       // console.log(`APPLY END: ${new Date(this.window.applyWindow[1])}`)
       if (!this.window) return;
       const now = Date.now();
-      if (
-        now >= this.window.proposalWindow[0] &&
-        now < this.window.proposalWindow[1]
-      ) {
+      if (now >= this.window.proposalWindow[0] && now < this.window.proposalWindow[1]) {
         return 'PROPOSAL';
-      } else if (
-        now >= this.window.votingWindow[0] &&
-        now < this.window.votingWindow[1]
-      ) {
+      } else if (now >= this.window.votingWindow[0] && now < this.window.votingWindow[1]) {
         return 'VOTING';
-      } else if (
-        now >= this.window.graceWindow[0] &&
-        now < this.window.graceWindow[1]
-      ) {
+      } else if (now >= this.window.graceWindow[0] && now < this.window.graceWindow[1]) {
         return 'GRACE';
-      } else if (
-        now >= this.window.applyWindow[0] &&
-        now < this.window.applyWindow[1]
-      ) {
+      } else if (now >= this.window.applyWindow[0] && now < this.window.applyWindow[1]) {
         return 'APPLY';
       }
     },
@@ -390,10 +354,7 @@ export default {
     this.proposalWindowChecker = setInterval(async () => {
       this.allowProposal = await this.isProposalWindowOpen();
     }, 10000);
-    this.proposalWindowTimer = setInterval(
-      this.getRemainingSecondToProposal,
-      10000
-    );
+    this.proposalWindowTimer = setInterval(this.getRemainingSecondToProposal, 10000);
     this.issueChecker = setInterval(this.checkIssueGenerated, 10000);
   },
   beforeDestroy: function() {
@@ -462,9 +423,7 @@ export default {
           this.window = newNetworkParameters['windows'];
           this.devWindow = newNetworkParameters['devWindows'];
           this.previousWindow = newNetworkParameters['windows'];
-        } else if (
-          newNetworkParameters['windows'].proposalWindow[0] > Date.now()
-        ) {
+        } else if (newNetworkParameters['windows'].proposalWindow[0] > Date.now()) {
           // this.window = JSON.parse(JSON.stringify(this.previousWindow))
           this.window = { ...this.previousWindow };
         } else {
@@ -476,16 +435,10 @@ export default {
         this.loading = false;
         // console.log(formatDate(proposalWindow[0]), formatDate(proposalWindow[1]));
 
-        if (
-          this.window.proposalWindow &&
-          this.window.proposalWindow[0] >= Date.now()
-        ) {
+        if (this.window.proposalWindow && this.window.proposalWindow[0] >= Date.now()) {
           this.nextProposalStart = this.window.proposalWindow[0];
         } else {
-          const wholeCycleDuration = utils.calculateWholeCycleDuration(
-            this.window,
-            this.devWindow
-          );
+          const wholeCycleDuration = utils.calculateWholeCycleDuration(this.window, this.devWindow);
           this.nextProposalStart = proposalWindow[0] + wholeCycleDuration;
         }
 
@@ -507,23 +460,13 @@ export default {
         let now = Date.now();
         if (!this.allowProposal) {
           if (now < this.window.proposalWindow[0]) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.window.proposalWindow[0] - now) / 1000
-            );
-          } else if (
-            now > this.window.proposalWindow[0] &&
-            this.nextProposalStart &&
-            now < this.nextProposalStart
-          ) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.nextProposalStart - now) / 1000
-            );
+            this.remainingSecondToProposalWindow = Math.round((this.window.proposalWindow[0] - now) / 1000);
+          } else if (now > this.window.proposalWindow[0] && this.nextProposalStart && now < this.nextProposalStart) {
+            this.remainingSecondToProposalWindow = Math.round((this.nextProposalStart - now) / 1000);
           }
         } else if (this.allowProposal) {
           if (this.window.proposalWindow[1] >= now) {
-            this.remainingSecondToProposalWindow = Math.round(
-              (this.window.proposalWindow[1] - now) / 1000
-            );
+            this.remainingSecondToProposalWindow = Math.round((this.window.proposalWindow[1] - now) / 1000);
           }
         }
       }

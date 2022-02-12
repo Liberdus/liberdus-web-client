@@ -3,14 +3,7 @@
   <div>
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="new-message-input-container">
-      <a-input
-        ref="username-input"
-        v-model="alias"
-        type="text"
-        placeholder="Search a username"
-        @keyup="searchAlias"
-        size="large"
-      />
+      <a-input ref="username-input" v-model="alias" type="text" placeholder="Search a username" @keyup="searchAlias" size="large" />
     </div>
 
     <portal to="navigation-tags">
@@ -37,15 +30,9 @@
 
     <a-list bordered :data-source="availabeAlias" class="available-alias-list">
       <a-list-item slot="renderItem" slot-scope="alias, index" :key="index">
-        <nuxt-link 
-          :key="index"
-          :to="`/message/${alias}`"
-          style="width: 100%;"
-        >
+        <nuxt-link :key="index" :to="`/message/${alias}`" style="width: 100%;">
           <div style="width: 100%;">
-            <a-list-item-meta
-              :key="index"
-            >
+            <a-list-item-meta :key="index">
               <span slot="title">{{ alias }}</span>
               <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
             </a-list-item-meta>
@@ -76,14 +63,9 @@
 
       <a-list :grid="{ gutter: 16, xs: 1, sm: 1, md: 1, lg: 2, xl: 2, xxl: 3 }" :data-source="getAppState.data.friends">
         <a-list-item slot="renderItem" slot-scope="alias, index" :key="index">
-          <nuxt-link 
-            :key="index"
-            :to="`/message/${alias}`"
-          >
+          <nuxt-link :key="index" :to="`/message/${alias}`">
             <a-card class="friends-list-item-card">
-              <a-list-item-meta
-                :key="index"
-              >
+              <a-list-item-meta :key="index">
                 <span slot="title">{{ alias }}</span>
                 <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
               </a-list-item-meta>
@@ -92,26 +74,26 @@
         </a-list-item>
       </a-list>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import utils from "../../assets/utils";
-import { mapGetters } from "vuex";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import utils from '../../assets/utils';
+import { mapGetters } from 'vuex';
+import ToolBar from '~/components/ToolBar';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: {
@@ -119,7 +101,7 @@ export default {
     ChatInput,
     ToolBar,
     Title,
-    Button
+    Button,
   },
   layout: 'dashboard',
   validate({ params }) {
@@ -127,25 +109,24 @@ export default {
   },
   data: function() {
     return {
-      alias: "",
-      availabeAlias: []
+      alias: '',
+      availabeAlias: [],
     };
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      getAppState: 'chat/getAppState',
+      isUIReady: 'chat/isUIReady',
     }),
     friend() {
       return this.$route.params.friend;
-    }
+    },
   },
   mounted() {
     try {
-      this.$refs['username-input'].focus()
-    } catch(e) {
-    }
+      this.$refs['username-input'].focus();
+    } catch (e) {}
   },
   methods: {
     async searchAlias() {
@@ -154,24 +135,20 @@ export default {
       try {
         queryAccount = await utils.queryAccount(this.alias);
 
-        if(queryAccount.account.alias !== this.alias) {
+        if (queryAccount.account.alias !== this.alias) {
           return;
         }
 
-        if (
-          queryAccount.account &&
-          queryAccount.account.alias !== this.getWallet.handle
-        ) {
+        if (queryAccount.account && queryAccount.account.alias !== this.getWallet.handle) {
           this.availabeAlias = [queryAccount.account.alias];
         } else if (this.alias.length === 0) {
           this.availabeAlias = [];
         } else {
           this.availabeAlias = [];
         }
-      } catch(e) {
-      }
-    }
-  }
+      } catch (e) {}
+    },
+  },
 };
 </script>
 

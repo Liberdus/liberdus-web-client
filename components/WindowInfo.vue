@@ -1,8 +1,5 @@
 <template>
-  <div
-    v-if="derivedWindow"
-    class="window-info-container"
-  >
+  <div v-if="derivedWindow" class="window-info-container">
     <div class="switch-container">
       <!-- <v-ons-switch
         v-model="showAllWindow"
@@ -12,27 +9,21 @@
         <a-icon slot="checkedChildren" type="check" />
         <a-icon slot="unCheckedChildren" type="close" />
       </a-switch>
-      <span class="body">Show all windows</span>
+      <span class="body">Show All Windows</span>
     </div>
     <!-- {{ derivedWindow }} -->
     <a-card
       v-if="currentWindowName === 'PROPOSAL' || showAllWindow"
       :class="{
         active: currentWindowName === 'PROPOSAL',
-        'green-bg': currentWindowName === 'PROPOSAL' && showAllWindow
+        'green-bg': currentWindowName === 'PROPOSAL' && showAllWindow,
       }"
       size="small"
       title="Proposal Window"
     >
-      <label
-        v-if="currentWindowName === 'PROPOSAL'"
-        class="current-window-label"
-      >Current Active Window</label>
+      <label v-if="currentWindowName === 'PROPOSAL'" class="current-window-label">Current Active Window</label>
       <!-- <h5>Proposal Window</h5> -->
-      <div
-        v-if="currentWindowName === 'PROPOSAL'"
-        class="timers"
-      >
+      <div v-if="currentWindowName === 'PROPOSAL'" class="timers">
         <p class="coin-usage-warning">
           Proposal window will expire in
           <strong>{{ remainingSecondProposalWindow }}</strong>
@@ -62,19 +53,13 @@
       v-if="currentWindowName === 'VOTING' || showAllWindow"
       :class="{
         active: currentWindowName === 'VOTING',
-        'green-bg': currentWindowName === 'VOTING' && showAllWindow
+        'green-bg': currentWindowName === 'VOTING' && showAllWindow,
       }"
       size="small"
       title="Voting Window"
     >
-      <label
-        v-if="currentWindowName === 'VOTING'"
-        class="current-window-label"
-      >Current Active Window</label>
-      <div
-        v-if="currentWindowName === 'VOTING'"
-        class="timers"
-      >
+      <label v-if="currentWindowName === 'VOTING'" class="current-window-label">Current Active Window</label>
+      <div v-if="currentWindowName === 'VOTING'" class="timers">
         <p class="coin-usage-warning">
           Voting window will expire in
           <strong>{{ remainingSecondVotingWindow }}</strong>
@@ -103,21 +88,15 @@
     <a-card
       v-if="currentWindowName === 'GRACE' || showAllWindow"
       :class="{
-        'green-bg': currentWindowName === 'GRACE' && showAllWindow
+        'green-bg': currentWindowName === 'GRACE' && showAllWindow,
       }"
       size="small"
       title="Grace Window"
     >
-      <label
-        v-if="currentWindowName === 'GRACE'"
-        class="current-window-label"
-      >Current Active Window</label>
-      <div
-        v-if="currentWindowName === 'GRACE'"
-        class="timers"
-      >
+      <label v-if="currentWindowName === 'GRACE'" class="current-window-label">Current Active Window</label>
+      <div v-if="currentWindowName === 'GRACE'" class="timers">
         <p class="coin-usage-warning">
-          Grace window will expire in
+          Grace Window Will Expire In
           <strong>{{ remainingSecondGraceWindow }}</strong>
         </p>
       </div>
@@ -145,21 +124,15 @@
       v-if="currentWindowName === 'APPLY' || showAllWindow"
       :class="{
         active: currentWindowName === 'APPLY',
-        'green-bg': currentWindowName === 'APPLY' && showAllWindow
+        'green-bg': currentWindowName === 'APPLY' && showAllWindow,
       }"
       size="small"
       title="Apply Window"
     >
-      <label
-        v-if="currentWindowName === 'APPLY'"
-        class="current-window-label"
-      >Current Active Window</label>
-      <div
-        v-if="currentWindowName === 'APPLY'"
-        class="timers"
-      >
+      <label v-if="currentWindowName === 'APPLY'" class="current-window-label">Current Active Window</label>
+      <div v-if="currentWindowName === 'APPLY'" class="timers">
         <p class="coin-usage-warning">
-          Apply window will expire in
+          Apply Window Will Expire In
           <strong>{{ remainingSecondApplyWindow }}</strong>
         </p>
       </div>
@@ -185,72 +158,72 @@
   </div>
 </template>
 <script>
-import moment from 'moment'
+import moment from 'moment';
 export default {
   props: {
     window: {
       type: Object,
-      required: true
+      required: true,
     },
     currentWindowName: {
-      type: String
-    }
+      type: String,
+    },
   },
-  data: function () {
+  data: function() {
     return {
       showAllWindow: false,
-      moment
-    }
+      moment,
+    };
   },
   computed: {
-    derivedWindow () {
+    derivedWindow() {
       if (this.window.proposalWindow) {
-        return Object.assign({}, this.window)
+        return Object.assign({}, this.window);
       } else if (this.window.devProposalWindow) {
         return {
           proposalWindow: this.window.devProposalWindow,
           votingWindow: this.window.devVotingWindow,
           graceWindow: this.window.devGraceWindow,
-          applyWindow: this.window.devApplyWindow
-        }
+          applyWindow: this.window.devApplyWindow,
+        };
       }
     },
-    remainingSecondProposalWindow () {
-      let seconds = this.derivedWindow.proposalWindow[1] - Date.now()
-      return this.secondsToDhms(seconds)
+    remainingSecondProposalWindow() {
+      let seconds = this.derivedWindow.proposalWindow[1] - Date.now();
+      return this.secondsToDhms(seconds);
     },
-    remainingSecondVotingWindow () {
-      let seconds = this.derivedWindow.votingWindow[1] - Date.now()
-      return this.secondsToDhms(seconds)
+    remainingSecondVotingWindow() {
+      let seconds = this.derivedWindow.votingWindow[1] - Date.now();
+      return this.secondsToDhms(seconds);
     },
-    remainingSecondGraceWindow () {
-      let seconds = this.derivedWindow.graceWindow[1] - Date.now()
-      return this.secondsToDhms(seconds)
+    remainingSecondGraceWindow() {
+      let seconds = this.derivedWindow.graceWindow[1] - Date.now();
+      return this.secondsToDhms(seconds);
     },
-    remainingSecondApplyWindow () {
-      let seconds = this.derivedWindow.applyWindow[1] - Date.now()
-      return this.secondsToDhms(seconds)
-    }
+    remainingSecondApplyWindow() {
+      let seconds = this.derivedWindow.applyWindow[1] - Date.now();
+      return this.secondsToDhms(seconds);
+    },
   },
   methods: {
-    formatDate (ts) {
-      return moment(ts)
+    formatDate(ts) {
+      return moment(ts);
     },
-    secondsToDhms (milisecond) {
-      let seconds = Number(milisecond) / 1000
-      let d = Math.floor(seconds / (3600 * 24))
-      let h = Math.floor((seconds % (3600 * 24)) / 3600)
-      let m = Math.floor((seconds % 3600) / 60)
-      let s = Math.floor(seconds % 60)
+    secondsToDhms(milisecond) {
+      let seconds = Number(milisecond) / 1000;
+      let d = Math.floor(seconds / (3600 * 24));
+      let h = Math.floor((seconds % (3600 * 24)) / 3600);
+      let m = Math.floor((seconds % 3600) / 60);
+      let s = Math.floor(seconds % 60);
 
-      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : ''
-      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : ''
-      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : ''
-      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : ''
-      return dDisplay + hDisplay + mDisplay + sDisplay
-    }
-  }
-}
+      let dDisplay = d > 0 ? d + (d == 1 ? ' day, ' : ' days, ') : '';
+      let hDisplay = h > 0 ? h + (h == 1 ? ' hour, ' : ' hours, ') : '';
+      let mDisplay = m > 0 ? m + (m == 1 ? ' minute, ' : ' minutes, ') : '';
+      let sDisplay = s > 0 ? s + (s == 1 ? ' second' : ' seconds') : '';
+      return dDisplay + hDisplay + mDisplay + sDisplay;
+    },
+  },
+};
 </script>
 <style lang="scss">
 .switch__toggle {

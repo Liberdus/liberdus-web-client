@@ -1,16 +1,9 @@
 <template>
   <v-ons-page>
-    <div
-      class="welcome-container"
-      :style="{ backgroundImage: `url(${backgroundUrl})` }"
-    >
+    <div class="welcome-container" :style="{ backgroundImage: `url(${backgroundUrl})` }">
       <div class="welcome-content">
         <!-- <Title text="Getting Started" /> -->
-        <a-row
-          type="flex"
-          justify="space-around"
-          :gutter="[20,20]"
-        >
+        <a-row type="flex" justify="space-around" :gutter="[20, 20]">
           <a-col :span="24">
             <h1>Get Started</h1>
           </a-col>
@@ -18,37 +11,25 @@
             <h2>Welcome to the Liberdus web wallet v{{ version }}</h2>
           </a-col>
           <a-col :span="12">
-            <a-button
-              type="primary"
-              size="large"
-              @click="onCreateAccount"
-              :disabled="btnDisabled"
-            >
+            <a-button type="primary" size="large" @click="onCreateAccount" :disabled="btnDisabled">
               Sign In
             </a-button>
           </a-col>
           <a-col :span="12">
-            <a-button
-              size="large"
-              @click="onImportAccount"
-              :disabled="btnDisabled"
-            >
+            <a-button size="large" @click="onImportAccount" :disabled="btnDisabled">
               Import Account
             </a-button>
           </a-col>
           <a-col :span="12">
             <p style="text-align: center">
               Change network setting
-              <nuxt-link
-                class="link-to-import"
-                to="/setting/network"
-              >
-                <strong>here</strong>
-              </nuxt-link>.
+              <nuxt-link class="link-to-import" to="/setting/network">
+                <strong>here</strong> </nuxt-link
+              >.
             </p>
           </a-col>
         </a-row>
-        
+
         <!-- <a-button type="primary">
           Primary
         </a-button>
@@ -63,41 +44,41 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import 'onsenui/css/onsenui.css'
-import 'onsenui/css/onsen-css-components.css'
-import VueOnsen from 'vue-onsenui/esm'
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
 // import { Button } from 'ant-design-vue';
-import OnsenComponents from '~/components/Onsen'
-import ChatText from '~/components/ChatText'
-import ChatInput from '~/components/ChatInput'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
-import ButtonOutline from '~/components/baisc/ButtonOutline'
-import backgroundUrl from '~/assets/images/liberdus_background.png'
-import config from '~/config'
-import utils from "../assets/utils";
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
+import ButtonOutline from '~/components/basic/ButtonOutline';
+import backgroundUrl from '~/assets/images/liberdus_background.png';
+import config from '~/config';
+import utils from '../assets/utils';
 
-Vue.use(VueOnsen)
+Vue.use(VueOnsen);
 // Vue.use(Button)
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c))
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 export default {
   components: { Button, ButtonOutline, Title },
-  data: function () {
+  data: function() {
     return {
       username: '',
       backgroundUrl,
       version: config.version,
       btnDisabled: false,
-    }
+    };
   },
   methods: {
-    onCreateAccount () {
-      this.$router.push('/createaccount')
+    onCreateAccount() {
+      this.$router.push('/createaccount');
     },
-    onImportAccount () {
-      this.$router.push('/setting/import')
-    }
+    onImportAccount() {
+      this.$router.push('/setting/import');
+    },
   },
   async mounted() {
     let self = this;
@@ -105,16 +86,16 @@ export default {
     try {
       randomHost = await utils.getRandomHost();
     } catch (e) {
-      console.log("Cannot get a random host");
-      this.btnDisabled = true
+      console.log('Cannot get a random host');
+      this.btnDisabled = true;
       // this.$ons.notification.alert(
       //   "Seed Node server is offline. Please change the seed node from network settings."
       // );
       // self.setUIReady();
       // this.$router.push("/welcome");
     }
-  }
-}
+  },
+};
 </script>
 
 <style lang="scss">

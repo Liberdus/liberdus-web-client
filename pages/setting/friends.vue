@@ -11,12 +11,7 @@
       </portal>
 
       <div class="new-message-input-container">
-        <a-input
-          placeholder="Search a friend"
-          v-model="queryHandle"
-          @change="searchAccount"
-          size="large"
-        />
+        <a-input placeholder="Search a friend" v-model="queryHandle" @change="searchAccount" size="large" />
       </div>
 
       <div class="search-result-container">
@@ -29,11 +24,7 @@
                   <em>Toll: {{ foundAccount.data.toll }} Coin</em>
                 </p>
               </div>
-              <v-ons-icon
-                v-if="isFriend"
-                icon="ion-ios-person"
-                size="lg"
-              ></v-ons-icon>
+              <v-ons-icon v-if="isFriend" icon="ion-ios-person" size="lg"></v-ons-icon>
               <v-ons-icon
                 v-else
                 icon="ion-ios-add-circle"
@@ -51,18 +42,10 @@
           My Friends List
         </a-divider>
         <v-ons-list v-if="getAppState">
-          <v-ons-list-item
-            v-for="alias in getAppState.data.friends"
-            :key="alias"
-          >
+          <v-ons-list-item v-for="alias in getAppState.data.friends" :key="alias">
             <p style="margin-bottom: 0px">@{{ alias }}</p>
             <!-- <v-ons-icon icon="ion-ios-person" size="lg"></v-ons-icon> -->
-            <v-ons-icon
-              icon="ion-ios-close-circle-outline"
-              size="lg"
-              @click="onClickRemoveFriend(alias)"
-              style="cursor: pointer"
-            ></v-ons-icon>
+            <v-ons-icon icon="ion-ios-close-circle-outline" size="lg" @click="onClickRemoveFriend(alias)" style="cursor: pointer"></v-ons-icon>
           </v-ons-list-item>
         </v-ons-list>
       </div>
@@ -72,7 +55,6 @@
 </template>
 
 <script>
-
 import Vue from 'vue';
 import 'onsenui/css/onsenui.css';
 import 'onsenui/css/onsen-css-components.css';
@@ -83,8 +65,8 @@ import ChatInput from '~/components/ChatInput';
 import { mapGetters } from 'vuex';
 import utils from '../../assets/utils';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
 Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
@@ -110,9 +92,7 @@ export default {
     }),
     isFriend() {
       if (!this.foundAccount || !this.getAppState) return false;
-      return (
-        this.getAppState.data.friends.indexOf(this.foundAccount.alias) >= 0
-      );
+      return this.getAppState.data.friends.indexOf(this.foundAccount.alias) >= 0;
     },
   },
   methods: {
@@ -138,8 +118,7 @@ export default {
         }
 
         this.foundAccount = null;
-      } catch(e) {
-      }
+      } catch (e) {}
     },
     onClickAddFriend(handle) {
       let self = this;
@@ -148,10 +127,7 @@ export default {
           title: 'Confirm',
           content: `Confirm to add ${this.foundAccount.alias} to your friends list?`,
           onOk() {
-            utils.addFriend(
-              self.foundAccount.alias,
-              self.getWallet.entry.keys
-            );
+            utils.addFriend(self.foundAccount.alias, self.getWallet.entry.keys);
             self.queryHandle = '';
             self.foundAccount = null;
           },
@@ -167,14 +143,11 @@ export default {
         cancelText: 'No',
         content: `Confirm to remove ${alias} from your friends list?`,
         async onOk() {
-          let isSubmitted = await utils.removeFriend(
-            alias,
-            self.getWallet.entry.keys
-          );
+          let isSubmitted = await utils.removeFriend(alias, self.getWallet.entry.keys);
           if (isSubmitted) {
             self.$notification.success({
               message: 'Remove friend tx is submitted',
-              description: ''
+              description: '',
             });
           }
         },

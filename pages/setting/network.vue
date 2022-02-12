@@ -11,16 +11,16 @@
     <div v-if="checkingSeedNode" class="checking-container">
       <v-ons-progress-circular indeterminate />
       <p class="body">
-        Checking seed node
+        Checking Seed Node...
       </p>
     </div>
     <div v-else class="network-container">
       <a-card title="Change Seed Node">
         <a-descriptions title="Current Seed Node Info" bordered>
-          <a-descriptions-item v-if="seedNode" label="Node Ip">
+          <a-descriptions-item v-if="seedNode" label="Node IP">
             {{ seedNode.ip }}
           </a-descriptions-item>
-          <a-descriptions-item v-else label="Node Ip"> </a-descriptions-item>
+          <a-descriptions-item v-else label="Node IP"> </a-descriptions-item>
 
           <a-descriptions-item v-if="seedNode" label="Node Port">
             {{ seedNode.port }}
@@ -29,35 +29,22 @@
         </a-descriptions>
 
         <form class="network-form">
-          <a-input
-            v-model="newIP"
-            type="text"
-            placeholder="New ip address"
-            size="large"
-            style="margin-top:20px"
-          />
+          <a-input v-model="newIP" type="text" placeholder="New IP Address" size="large" style="margin-top:20px" spellcheck="false" />
           <a-input
             v-model="newPort"
-            type="text"
-            placeholder="New port number"
+            min="1024"
+            max="49151"
+            type="number"
+            placeholder="New Port Number"
             size="large"
             style="margin-top:20px"
+            spellcheck="false"
           />
-          <a-button
-            @click="onUpdateSeedNode"
-            size="large"
-            type="primary"
-            shape="round"
-            style="margin-top:20px"
-          >
+          <a-button @click="onUpdateSeedNode" size="large" type="primary" shape="round" style="margin-top:20px">
             Update Network
           </a-button>
         </form>
-        <v-ons-button
-          class="new-message-btn"
-          modifier="quiet"
-          @click="onResetNetwork"
-        >
+        <v-ons-button class="new-message-btn" modifier="quiet" @click="onResetNetwork">
           Reset to Default Network
         </v-ons-button>
 
@@ -98,8 +85,8 @@ import { mapGetters, mapActions } from 'vuex';
 import CONFIG from '../../config';
 import utils from '../../assets/utils';
 import ToolBar from '~/components/ToolBar';
-import Title from '~/components/baisc/Title';
-import Button from '~/components/baisc/Button';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 const defaultSeedNode = Object.assign({}, CONFIG.server);
 
 console.log(`default`, defaultSeedNode);
@@ -146,14 +133,14 @@ export default {
     const storedSeedNodeHost = localStorage.getItem('seednode');
     const seedNodeHost = storedSeedNodeHost || defaultSeedNodeHost;
     this.seedNode = utils.getCurrentSeedNode(seedNodeHost);
-    self.setUIReady()
+    self.setUIReady();
   },
   methods: {
     ...mapActions({
       updateNetwork: 'chat/updateNetwork',
       updateAppState: 'chat/updateAppState',
       removeWallet: 'wallet/removeWallet',
-      setUIReady: "chat/setUIReady",
+      setUIReady: 'chat/setUIReady',
     }),
     redirect(url, option) {
       console.log(`Pushing to ${url}`);
@@ -164,10 +151,7 @@ export default {
     async onUpdateSeedNode(e) {
       e.preventDefault();
       this.checkingSeedNode = true;
-      const isSeedNodeOnline = await utils.isSeedNodeOnline(
-        this.newIP,
-        this.newPort
-      );
+      const isSeedNodeOnline = await utils.isSeedNodeOnline(this.newIP, this.newPort);
       if (isSeedNodeOnline) {
         console.log('Updating Seednode and network');
         utils.updateSeedNodeHostLocally(this.newIP, this.newPort);
@@ -211,10 +195,7 @@ export default {
       console.log('Resetting Seednode and network');
       this.seedNode.ip = this.defaultSeedNode.ip;
       this.seedNode.port = this.defaultSeedNode.port;
-      utils.updateSeedNodeHostLocally(
-        this.defaultSeedNode.ip,
-        this.defaultSeedNode.port
-      );
+      utils.updateSeedNodeHostLocally(this.defaultSeedNode.ip, this.defaultSeedNode.port);
       this.updateChatServerHost();
       this.newIP = '';
       this.newPort = '';

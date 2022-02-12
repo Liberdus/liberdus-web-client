@@ -13,50 +13,41 @@
           <strong>Secret Key</strong> to anyone
         </p>
 
-        <qriously
-          :value="secretKey"
-          :size="200"
-          class="qr-code"
-        />
-        
-        <a-button
-          @click="onCopy"
-          size="large"
-          shape="round"
-          type="primary"
-        >
+        <qriously :value="secretKey" :size="200" class="qr-code" />
+
+        <a-button @click="onCopy" size="large" shape="round" type="primary">
           Copy Secret Key
         </a-button>
       </a-card>
     </div>
-  <!-- </v-ons-page> -->
+    <!-- </v-ons-page> -->
   </div>
 </template>
 
 <script>
-import Vue from "vue";
-import "onsenui/css/onsenui.css";
-import "onsenui/css/onsen-css-components.css";
-import VueOnsen from "vue-onsenui/esm";
-import OnsenComponents from "~/components/Onsen";
-import ChatText from "~/components/ChatText";
-import ChatInput from "~/components/ChatInput";
-import VueQriously from "vue-qriously";
-import { mapGetters, mapActions } from "vuex";
-import utils from "../../assets/utils";
-import ToolBar from "~/components/ToolBar";
-import Title from "~/components/baisc/Title";
-import Button from "~/components/baisc/Button";
+import Vue from 'vue';
+import 'onsenui/css/onsenui.css';
+import 'onsenui/css/onsen-css-components.css';
+import VueOnsen from 'vue-onsenui/esm';
+import OnsenComponents from '~/components/Onsen';
+import ChatText from '~/components/ChatText';
+import ChatInput from '~/components/ChatInput';
+import VueQriously from 'vue-qriously';
+import { mapGetters, mapActions } from 'vuex';
+import utils from '../../assets/utils';
+import ToolBar from '~/components/ToolBar';
+import Title from '~/components/basic/Title';
+import Button from '~/components/basic/Button';
 
 Vue.use(VueOnsen);
 Vue.use(VueQriously);
-Object.values(OnsenComponents).forEach(c => Vue.component(c.name, c));
+Object.values(OnsenComponents).forEach((c) => Vue.component(c.name, c));
 
 export default {
   components: {
     Title,
     Button,
-    ToolBar
+    ToolBar,
   },
   layout: 'dashboard',
   data: function() {
@@ -64,13 +55,13 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getWallet: "wallet/getWallet",
-      isUIReady: "chat/isUIReady"
+      getWallet: 'wallet/getWallet',
+      isUIReady: 'chat/isUIReady',
     }),
     secretKey() {
       return this.getWallet.entry.keys.secretKey.toLowerCase();
       // return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
-    }
+    },
   },
   methods: {
     redirect(url, option) {
@@ -78,9 +69,9 @@ export default {
     },
     onCopy() {
       utils.copyToClipboard(this.secretKey);
-      this.$ons.notification.alert("Copied to clipboard!");
-    }
-  }
+      this.$ons.notification.alert('Copied to clipboard!');
+    },
+  },
 };
 </script>
 
