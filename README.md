@@ -13,3 +13,11 @@ For more info, please checkout our [Whitepaper](https://liberdus.com/Liberdus-Wh
 ## To Do List
 
 - add network parameters to vuex store
+
+## Usage
+
+1. Clone the repo
+2. Run `npm install` to install
+3. Run `npm run dev` to start the web client
+4. Click `Sign In` to use an existing account or use an existing one
+5. Follow the instructions to send coins between accounts
