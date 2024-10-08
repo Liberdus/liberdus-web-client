@@ -783,11 +783,12 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
       timestamp: Date.now(),
       handle: source
     })
-    const encryptedMsg = crypto.encrypt(
-      message,
-      crypto.convertSkToCurve(source.keys.secretKey),
-      crypto.convertPkToCurve(tgtAddress)
-    )
+    // const encryptedMsg = crypto.encrypt(
+    //   message,
+    //   crypto.convertSkToCurve(source.keys.secretKey),
+    //   crypto.convertPkToCurve(tgtAddress)
+    // )
+    const encryptedMsg = message
     messages.push(encryptedMsg)
     requiredAmount += await getToll(tgtAddress, source.address)
   }
@@ -1306,13 +1307,15 @@ utils.updateBadge = (tabName, type) => {
 }
 
 utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
-  return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
+  // return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
+  return message
 }
 
 utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-  return JSON.parse(
-    crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
-  )
+  // return JSON.parse(
+  //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
+  // )
+  return encryptedMessage
 }
 
 utils.queryEncryptedChats = async function (chatId) {
