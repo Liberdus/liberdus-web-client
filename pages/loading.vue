@@ -61,11 +61,13 @@ export default {
       this.$router.push("/welcome");
     }
     this.host = `${randomHost.ip}:${randomHost.port}`;
-    this.updateNetwork(Object.assign({}, randomHost));
+
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`);
       self.setUIReady();
     });
+    this.updateNetwork(Object.assign({}, randomHost));
+
     setTimeout(async () => {
       if (self.isUIReady) {
         if (this.getWallet) {

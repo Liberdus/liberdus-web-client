@@ -5,3 +5,4 @@ static/sw.*
 coverage/
 .vscode/
 .DS_Store
+.idea
