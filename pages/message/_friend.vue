@@ -114,6 +114,7 @@ export default {
       let chatId = chats[this.otherPersonAddress];
       if (chatId) {
         const encryptedChatList = await utils.queryEncryptedChats(chatId);
+        console.log('encryptedChatList', encryptedChatList);
         const decryptedMessages = encryptedChatList.map((sealed) => {
           return utils.decryptMessage(
             sealed,

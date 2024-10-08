@@ -82,8 +82,11 @@ export default {
         let handles = Object.keys(chats)
         let list = []
         for (let handle in chats) {
-          if (!chats[handle].messages || chats[handle].messages.length === 0)
+          if (!chats[handle].messages || chats[handle].messages.length === 0) {
+            console.log('no messages')
             continue
+          }
+
           list.push({
             handle,
             timestamp: last(chats[handle].messages).timestamp,

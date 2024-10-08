@@ -1320,7 +1320,7 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
 
 utils.queryEncryptedChats = async function (chatId) {
   const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
-  return res.data.messages
+  return res.data.messages.map(m => JSON.parse(m))
 }
 
 utils.calculateWholeCycleDuration = function (window, devWindow) {
