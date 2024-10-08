@@ -33,7 +33,6 @@
 
 <script>
 import moment from "moment";
-import utils from "../assets/utils";
 export default {
   props: ["vote"],
   computed: {

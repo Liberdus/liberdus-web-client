@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
+import * as crypto from '@shardus/crypto-web'
 import axios from 'axios'
-import crypto from 'shardus-crypto-web'
 import stringify from 'fast-stable-stringify'
 // eslint-disable-next-line no-unused-vars
 import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
