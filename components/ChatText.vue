@@ -13,9 +13,26 @@
 
       <a-col :span="24" class="chat-message-col">
         <div class="chat">
-          <p class="chat-message">
-            {{ message.body }}
-          </p>
+          <div v-if="isPending">
+            <img class="attached-img" v-if="pendingMessage.attachment" :src="pendingMessage.attachment"
+                 alt="avatar"/>
+            <br v-if="pendingMessage.attachment">
+          </div>
+          <div v-else>
+            <img class="attached-img" v-if="confirmedMessage.attachment" :src="confirmedMessage.attachment"
+                 alt="avatar"/>
+            <br v-if="confirmedMessage.attachment">
+          </div>
+
+          <div class="chat-raw-text">
+            <p v-if="isPending" class="chat-message">
+              {{ pendingMessage.text }}
+            </p>
+            <p v-else class="chat-message">
+              {{ confirmedMessage.text }}
+            </p>
+          </div>
+
         </div>
       </a-col>
     </a-row>
@@ -43,13 +60,31 @@ export default {
     isPending () {
       return this.message.timestamp === null
     },
+    pendingMessage() {
+      try {
+        return JSON.parse(this.message.message).body
+      } catch (e) {
+        console.log(this.message.message)
+        return 'parse error'
+      }
+    },
+    confirmedMessage () {
+      return this.message.body
+    },
     formattedTimestamp () {
       if (this.isPending) return 'pending...'
       else return moment(this.message.timestamp).calendar()
     }
   },
   mounted () {
-    console.log('mounted chat text...')
+    console.log('mounted chat text...', this.message, this.message.body)
+    if (typeof this.message.body === 'string') {
+      try {
+        this.message.body = JSON.parse(this.message.body)
+      } catch (e) {
+        console.log('error parsing message body', e)
+      }
+    }
   }
 }
 </script>
@@ -60,7 +95,7 @@ export default {
 }
 .chat-text-container .chat {
   width: auto;
-  padding: 10px;
+  //padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
   max-width: 70%;
@@ -101,19 +136,22 @@ export default {
     text-align: left;
   }
 }
-.chat-text-container.isUser .chat {
+.chat-text-container.isUser .chat .chat-raw-text {
   background: #dbf4fd;
   border-radius: 5px;
   margin-left: auto;
+  padding: 5px 10px;
 }
-.chat-text-container.isFriend .chat {
+.chat-text-container.isFriend .chat .chat-raw-text {
   background: #f2f6f9;
   border-radius: 5px;
+  padding: 5px 10px;
 }
-.chat-text-container.isPending .chat {
+.chat-text-container.isPending .chat .chat-raw-text {
   background: #e8e8e8;
   border: 1px solid #d7d6d6;
   margin-left: auto;
+  padding: 5px 10px;
 }
 .chat-text-container.isUser .chat-timestamp {
   text-align: right;

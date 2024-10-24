@@ -131,6 +131,7 @@ export default {
           messagesChanged = true;
 
           let lastMessage = this.messages[this.messages.length - 1];
+          console.log('LAST_MESSAGE => ', lastMessage);
           if (lastMessage.handle !== this.getWallet.handle) {
             this.updateLastMessage({
               ...lastMessage,
@@ -143,9 +144,12 @@ export default {
           if (this.pendingMessage) {
             console.log('PENDING => ', this.pendingMessage);
             console.log('LAST_MESSAGE => ', lastMessage);
+            console.log('LAST_MESSAGE_HASH => ', utils.hashMessage(lastMessage));
+
+            // check if the last message is the same as the pending message
             if (
               this.pendingMessage.handle === lastMessage.handle &&
-              this.pendingMessage.body === lastMessage.body
+              this.pendingMessage.messageHash === utils.hashMessage(lastMessage)
             ) {
               this.pendingMessage = null;
               utils.playSoundFile(sentSoundFile);
@@ -210,7 +214,7 @@ export default {
   mounted: async function() {
     let self = this;
     this.refreshMessages();
-    this.refresher = setInterval(self.refreshMessages, 10000);
+    this.refresher = setInterval(self.refreshMessages, 5000);
   },
   updated: function() {
     if (messagesChanged) {
