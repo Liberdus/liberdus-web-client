@@ -48,7 +48,7 @@
             type="primary" 
             shape="round" 
             size="large" 
-            icon="check" 
+            icon="upload"
             @click="$router.push('/wallet/send')"
           >
             Send
@@ -306,8 +306,8 @@ export default {
     },
     getLastTxFromAPI () {
       if (!this.getAppState) return
-      let txs = this.getAppState.data.transactions
-      return txs[txs.length - 1]
+      // let txs = this.getAppState.data.transactions
+      // return txs[txs.length - 1]
     },
     getLatestMessageFromServer (processedState) {
       let chats = processedState.data.chats

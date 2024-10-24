@@ -123,6 +123,11 @@ export default {
     //   const appRefresher = setInterval(this.refreshAppState, 10000)
     //   this.addTimer({ key: 'appRefresher', value: appRefresher })
     // }
+    if (this.getAppState.data && this.getAppState.data.transactions == null) {
+      // this.txs = await this.getTransactions();
+      this.txs = [];
+      return
+    }
     let txs = this.getAppState.data.transactions;
 
     this.txs = await Promise.all(

@@ -27,28 +27,35 @@
       </a-col>
 
       <a-col :span="24">
-        <a-row type="flex" :gutter="16">
-          <a-col flex="auto">
-            <a-input
-              v-model="message"
-              type="text"
-              placeholder="Type your message"
-              :disabled="notEnoughCoin"
-              @keyup.enter="submitMessage"
-              style="width: 100%"
-            />
-          </a-col>
+        <a-row>
+          <img class="attached-img" v-if="imageUrl" :src="imageUrl" alt="avatar"/>
+          <p v-if="imageUrl">File size: {{ fileSize  }} KB <a-icon  @click="removeAttachment" type="delete" /></p>
 
-          <a-col flex="40px">
-            <a-button
-              type="primary"
-              @click="submitMessage"
-              style="width: 100%"
-            >
-              Send
-            </a-button>
+        </a-row>
+        <a-row :gutter="16">
+          <a-col :span="24">
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <a-input
+                  v-model="message"
+                  type="text"
+                  placeholder="Type your message"
+                  :disabled="notEnoughCoin"
+                  @keyup.enter="submitMessage"
+                  style="flex: 1;"
+              />
+              <a-upload
+                  name="avatar"
+                  class="avatar-uploader"
+                  :show-upload-list="false"
+                  :before-upload="beforeUpload"
+                  @change="handleChange"
+              >
+                <a-icon type="paper-clip" />
+              </a-upload>
+            </div>
           </a-col>
         </a-row>
+
       </a-col>
     </a-row>
   </div>
@@ -57,13 +64,28 @@
 <script>
 import utils from '../assets/utils'
 import { mapGetters } from 'vuex'
+import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
+import { message } from 'ant-design-vue'
+
+function getBase64 (img, callback) {
+  const reader = new FileReader()
+  reader.addEventListener('load', () => callback(reader.result))
+  reader.readAsDataURL(img)
+}
 export default {
   props: ['friend', 'isFriend', 'setPendingMessage'],
+  components: {
+    PlusOutlined,
+    LoadingOutlined
+  },
   data: function () {
     return {
       message: '',
       requiredToll: null,
-      requiredFee: 0.0
+      requiredFee: 0.0,
+      loading: false,
+      imageUrl: '',
+      fileSize: 0
     }
   },
   computed: {
@@ -88,27 +110,156 @@ export default {
   },
   methods: {
     async submitMessage () {
-      let messageToSend = this.message
+      let messageToSend = {
+        text: this.message,
+        attachment: this.imageUrl ? this.imageUrl : null
+      }
       this.message = ''
       let myWallet = this.getWallet
-      let isSubmitted = await utils.sendMessage(
+      let {success, pendingTx} = await utils.sendMessage(
         messageToSend,
         myWallet,
         this.friend
       )
-      this.setPendingMessage({
-        handle: this.getWallet.handle,
-        timestamp: null,
-        body: messageToSend
-      })
+      this.imageUrl = ''
+      if (success) {
+        this.setPendingMessage({
+          handle: this.getWallet.handle,
+          timestamp: null,
+          message: pendingTx.message,
+          messageHash: utils.hashMessage(JSON.parse(pendingTx.message)),
+        })
+      } else {
+        message.error('Failed to send message')
+      }
+    },
+    /**
+     * Handle the change event when a file is selected.
+     */
+    handleChange (info) {
+      if (info.file.status === 'uploading') {
+        this.loading = true
+        return
+      }
+      if (info.file.status === 'done') {
+
+        // Convert the uploaded file to Base64
+        this.getBase64(info.file.originFileObj, (base64) => {
+          // this.imageUrl = base64
+          this.loading = false
+        })
+      }
+    },
+    /**
+     * Validate the file before upload and convert to Base64 if valid.
+     */
+    beforeUpload(file) {
+      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      if (!isJpgOrPng) {
+        message.error('You can only upload JPG/PNG files!');
+        return false;
+      }
+
+      const maxSizeInKB = 4;
+      // Check if the file size is less than 5 KB
+      if (file.size / 1024 < maxSizeInKB) {
+        this.getBase64(file, (base64) => {
+          this.imageUrl = base64;
+          this.loading = false;
+          this.fileSize = (file.size / 1024).toFixed(2);
+        });
+        return false;
+      }
+
+      // If file is larger than 10 KB, resize it
+      this.resizeImage(file, maxSizeInKB, (resizedBase64) => {
+        this.imageUrl = resizedBase64;
+        // Calculate the size of the Base64 string in KB
+        const base64Length = this.imageUrl.length;
+        const sizeInBytes = (base64Length * 3) / 4 -
+            (this.imageUrl.endsWith('==') ? 2 : this.imageUrl.endsWith('=') ? 1 : 0);
+        const sizeInKB = sizeInBytes / 1024;
+        this.fileSize = sizeInKB.toFixed(2);
+        this.loading = false;
+      });
+
+      return false; // Prevent the default upload behavior
+    },
+    removeAttachment() {
+      this.imageUrl = ''
+    },
+    /**
+     * Helper function to convert a file to a Base64 string.
+     */
+    getBase64 (file, callback) {
+      const reader = new FileReader()
+      reader.addEventListener('load', () => callback(reader.result))
+      reader.readAsDataURL(file)
+    },
+    async resizeImage(file, maxSizeInKB, callback) {
+      const img = await this.loadImageFromFile(file); // Load image asynchronously
+      const initialScale = 0.5; // Reduce size initially to optimize performance
+
+      let width = img.width * initialScale;
+      let height = img.height * initialScale;
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      let attempt = 0;
+      const MAX_TRIES = 10; // Limit the number of compression attempts
+
+      // Throttle to avoid performance issues during resizing
+      const compressImage = async () => {
+        console.log(`Attempt ${attempt + 1}: Resizing image to ${width}x${height}`);
+        canvas.width = width;
+        canvas.height = height;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const base64 = canvas.toDataURL('image/jpeg', 0.7); // Adjust quality as needed
+        const sizeInKB = (base64.length * 3) / 4 / 1024; // Estimate size in KB
+
+        if (sizeInKB < maxSizeInKB || attempt >= MAX_TRIES) {
+          callback(base64); // Return the resized Base64 image
+          return;
+        }
+
+        // Reduce size further and try again
+        width *= 0.5;
+        height *= 0.5;
+        attempt++;
+
+        // Throttle the loop to avoid performance issues
+        await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay to prevent blocking
+
+        compressImage(); // Retry compression
+      };
+      compressImage(); // Start compression
+    },
+    loadImageFromFile(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => resolve(img);
+          img.onerror = (err) => reject(err);
+        };
+
+        reader.onerror = (err) => reject(err);
+      });
     }
+
   }
 }
 </script>
 
 <style>
 .chat-input-container {
-  height: 63px;
+  //height: 63px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -123,7 +274,7 @@ export default {
 
   padding-left: 20px;
   padding-right: 20px;
-  padding-bottom: 15px;
+  padding-bottom: 25px;
 }
 @media screen and (max-width: 992px) {
   .chat-input-container {
@@ -154,4 +305,31 @@ input[type='number'],
 textarea {
   font-size: 16px !important;
 }
+
+.avatar-uploader > .ant-upload {
+  width: 128px;
+  height: 128px;
+}
+
+.ant-upload-select-picture-card i {
+  font-size: 32px;
+  color: #999;
+}
+
+.ant-upload-select-picture-card .ant-upload-text {
+  margin-top: 8px;
+  color: #666;
+}
+
+.attached-img {
+  //width: 50px;
+  //height: 50px;
+  margin: 10px;
+}
+
+.avatar-uploader > .ant-upload {
+  width: 0px;
+  height: 0px;
+}
+
 </style>

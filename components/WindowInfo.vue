@@ -24,10 +24,10 @@
       size="small"
       title="Proposal Window"
     >
-      <label
-        v-if="currentWindowName === 'PROPOSAL'"
-        class="current-window-label"
-      >Current Active Window</label>
+<!--      <label-->
+<!--        v-if="currentWindowName === 'PROPOSAL'"-->
+<!--        class="current-window-label"-->
+<!--      >Current Active Window</label>-->
       <!-- <h5>Proposal Window</h5> -->
       <div
         v-if="currentWindowName === 'PROPOSAL'"
@@ -67,10 +67,10 @@
       size="small"
       title="Voting Window"
     >
-      <label
-        v-if="currentWindowName === 'VOTING'"
-        class="current-window-label"
-      >Current Active Window</label>
+<!--      <label-->
+<!--        v-if="currentWindowName === 'VOTING'"-->
+<!--        class="current-window-label"-->
+<!--      >Current Active Window</label>-->
       <div
         v-if="currentWindowName === 'VOTING'"
         class="timers"
@@ -108,10 +108,10 @@
       size="small"
       title="Grace Window"
     >
-      <label
-        v-if="currentWindowName === 'GRACE'"
-        class="current-window-label"
-      >Current Active Window</label>
+<!--      <label-->
+<!--        v-if="currentWindowName === 'GRACE'"-->
+<!--        class="current-window-label"-->
+<!--      >Current Active Window</label>-->
       <div
         v-if="currentWindowName === 'GRACE'"
         class="timers"
@@ -150,10 +150,10 @@
       size="small"
       title="Apply Window"
     >
-      <label
-        v-if="currentWindowName === 'APPLY'"
-        class="current-window-label"
-      >Current Active Window</label>
+<!--      <label-->
+<!--        v-if="currentWindowName === 'APPLY'"-->
+<!--        class="current-window-label"-->
+<!--      >Current Active Window</label>-->
       <div
         v-if="currentWindowName === 'APPLY'"
         class="timers"
@@ -280,7 +280,7 @@ export default {
     border-radius: 10px;
     padding: 10px;
     border-radius: 5px;
-    background: #fbfbfb;
+    background: #f8f8f8;
     transition: 0.6s;
     .current-window-label {
       font-size: 11px;

@@ -724,42 +724,48 @@ utils.requestRemoveStake = (stake, keys) => {
   })
 }
 
-utils.sendMessage = async (text, sourceAcc, targetHandle) => {
+utils.hashMessage = message => {
+  if (typeof message !== 'object') {
+    console.log('Message must be an object')
+    return
+  }
+  return crypto.hashObj(message)
+}
+
+utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
   const source = sourceAcc.entry
   const targetAddress = await getAddress(targetHandle)
   if (targetAddress === undefined || targetAddress === null) {
     console.log("Target account doesn't exist for: ", targetHandle)
     return
   }
+  const tollAmount = await getToll(targetAddress, source.address)
+  const messageTimestamp = Date.now()
   const message = stringify({
-    body: text,
-    timestamp: Date.now(),
+    body: msgObject,
+    timestamp: messageTimestamp,
     handle: sourceAcc.handle
   })
-  const encryptedMsg = utils.encryptMessage(
-    message,
-    targetAddress,
-    source.keys.secretKey
-  )
+  const encryptedMsg = message
+  const tx = {
+    type: 'message',
+    network,
+    from: source.address,
+    to: targetAddress,
+    chatId: crypto.hash([source.address, targetAddress].sort().join``),
+    message: encryptedMsg,
+    amount: tollAmount,
+    timestamp: messageTimestamp
+  }
+  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  console.log(`signed message`, tx)
   return new Promise(resolve => {
-    getToll(targetAddress, source.address).then(toll => {
-      const tx = {
-        type: 'message',
-        network,
-        from: source.address,
-        to: targetAddress,
-        chatId: crypto.hash([source.address, targetAddress].sort().join``),
-        message: encryptedMsg,
-        amount: toll,
-        timestamp: Date.now()
-      }
-      crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
-      injectTx(tx).then(res => {
-        console.log(res)
-        if (res.result.success) resolve(true)
-        else resolve(false)
-      })
+    injectTx(tx).then(res => {
+      console.log(res)
+      if (res.result.success === true) resolve({success: true, pendingTx: tx})
+      else resolve({success: false, pendingTx: null})
     })
+
   })
 }
 

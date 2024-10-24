@@ -12,7 +12,7 @@
 
     <form class="proposal-create-container" @submit="onSubmitProposal">
       <h2 class="title-2">
-        New Economy Proposal
+        Network Economy Proposal
       </h2>
       <div v-if="loading" class="loading-status">
         <v-ons-progress-circular indeterminate />
@@ -211,7 +211,8 @@
           style="width:100%"
           size="large"
         >
-          Submit Proposal
+          <span v-if="allowProposal && !issueGenerated">Waiting New Issue</span>
+          <span v-else>Submit Proposal</span>
         </a-button>
         <p
           v-if="
@@ -392,7 +393,7 @@ export default {
     }, 10000);
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
-      10000
+      1000
     );
     this.issueChecker = setInterval(this.checkIssueGenerated, 10000);
   },

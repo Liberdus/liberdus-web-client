@@ -21,7 +21,7 @@
       </portal>
 
       <h2>
-        New Funding Proposal
+        Development Funding Proposal
       </h2>
       <div
         v-if="loading"
@@ -282,7 +282,7 @@ export default {
 
     this.proposalWindowTimer = setInterval(
       this.getRemainingSecondToProposal,
-      10000
+      1000
     )
   },
   beforeDestroy: function () {
