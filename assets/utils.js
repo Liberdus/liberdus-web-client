@@ -840,6 +840,7 @@ utils.withdrawStake = async (nominee, keys) => {
     type: 'withdraw_stake',
     nominator: keys.publicKey,
     nominee,
+    force: false,
     timestamp: Date.now()
   }
   await signObj(tx, keys)
