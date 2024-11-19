@@ -1,9 +1,11 @@
 /* eslint-disable no-console */
 import * as crypto from '@shardus/crypto-web'
 import axios from 'axios'
-import stringify from 'fast-stable-stringify'
+import { Utils } from '@shardus/types'
+import { ethers } from 'ethers'
+
 // eslint-disable-next-line no-unused-vars
-import { map, filter, sort, sortBy, orderBy, flow, concat } from 'lodash'
+import { map, filter, sort, sortBy, orderBy, flow, concat, keys, get } from 'lodash'
 import config from '../config'
 import {
   TX_RECEIPT_APPLIED,
@@ -23,9 +25,9 @@ const network = '0'.repeat(64)
 
 utils.init = async defaultHost => {
   host = defaultHost
-  await crypto.initialize(
-    '69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc'
-  )
+  crypto.initialize('69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc')
+  console.log('crypto initialized')
+  // crypto.setCustomStringifier(Utils.safeStringify, 'shardus_safeStringify')
   const sampleHash = crypto.hash('Hello World')
   return sampleHash
 }
@@ -66,21 +68,28 @@ utils.getProxyUrl = function (url, option) {
       ip = option.ip
       port = option.port
     }
+    console.log(ip, port)
     if (ip === 'localhost' || ip === '127.0.0.1') {
       return `http://localhost:${port}${url}`
     }
+
+    if (ip.includes('192.168.1')) {
+      return `http://${ip}:${port}${url}`
+    }
     return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
-  } catch(e) {
+  } catch (e) {
     return ''
   }
 }
 
 utils.getProxyUrlWithRandomHost = async function (url, option) {
   const randomHost = await this.getRandomHost()
-  const {ip, port} = randomHost
-
+  const { ip, port } = randomHost
   if (ip === 'localhost' || ip === '127.0.0.1') {
     return `http://localhost:${port}${url}`
+  }
+  if (ip.includes('192.168.1')) {
+    return `http://${ip}:${port}${url}`
   }
   return `https://${config.proxy.ip}:${config.proxy.port}/rproxy/${ip}:${port}${url}`
 }
@@ -132,10 +141,69 @@ utils.getSeedNode = async (ip, port) => {
   }
 }
 
-utils.createAccount = (keys = crypto.generateKeypair()) => {
-  return {
-    address: keys.publicKey,
-    keys
+utils.createAccount = () => {
+  let keys = {
+    address: '',
+    keys: {
+      publicKey: '',
+      secretKey: ''
+    }
+  }
+  if (config.useEthereumAddress) {
+    const newAccount = ethers.Wallet.createRandom()
+    keys.address = toShardusAddress(newAccount.address)
+    keys.keys.publicKey = keys.address
+    keys.keys.secretKey = newAccount.privateKey
+  } else {
+    const newAccount = crypto.generateKeys()
+    keys.address = newAccount.publicKey
+    keys.keys.publicKey = newAccount.publicKey
+    keys.keys.secretKey = newAccount.secretKey
+  }
+  console.log('keys', keys)
+  return keys
+}
+
+const toShardusAddress = (addressStr) => {
+  //  change this: 0x665eab3be2472e83e3100b4233952a16eed20c76
+  //  to this: 665eab3be2472e83e3100b4233952a16eed20c76000000000000000000000000
+  return addressStr.slice(2).toLowerCase() + '0'.repeat(24)
+}
+
+const signObj = async (tx, keys) => {
+  if (config.useEthereumAddress) {
+    await signEthereumTx(tx, keys ? keys : USER.keys)
+  } else {
+    crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  }
+}
+
+const signEthereumTx = async (tx, keys) => {
+  if (!keys) {
+    throw new Error('Keys are required for signing')
+  }
+
+  // Create a copy of the tx without any existing sign field
+  const dataToSign = Object.assign({}, tx)
+  delete dataToSign.sign
+
+  // Convert the object to a string with BigInt support
+  const message = crypto.hashObj(dataToSign)
+
+  try {
+    // Create wallet from private key
+    const wallet = new ethers.Wallet(keys.secretKey)
+
+    // Sign the message
+    const signature = await wallet.signMessage(message)
+
+    // Add signature to transaction
+    tx.sign = {
+      owner: keys.publicKey,
+      sig: signature
+    }
+  } catch (error) {
+    throw new Error(`Failed to sign transaction: ${error.message}`)
   }
 }
 
@@ -143,18 +211,18 @@ utils.saveWallet = newWalletEntry => {
   console.log('\n\n saveWallet \n\n', newWalletEntry)
   try {
     // eslint-disable-next-line no-undef
-    const existingWalletList = JSON.parse(localStorage.getItem('wallets'))
+    const existingWalletList = Utils.safeJsonParse(localStorage.getItem('wallets'))
     let newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
     newWallet = newWallet.filter(w => w.handle !== newWalletEntry.handle)
     newWallet = newWallet.concat(newWalletEntry)
-      // .filter(w => w.handle !== newWalletEntry.handle)
-      // .concat(newWalletEntry)
+    // .filter(w => w.handle !== newWalletEntry.handle)
+    // .concat(newWalletEntry)
     // eslint-disable-next-line no-undef
-    localStorage.setItem('wallets', JSON.stringify(newWallet))
+    localStorage.setItem('wallets', Utils.safeStringify(newWallet))
   } catch (e) {
     console.log(e)
     // eslint-disable-next-line no-undef
-    localStorage.setItem('wallets', JSON.stringify([newWalletEntry]))
+    localStorage.setItem('wallets', Utils.safeStringify([newWalletEntry]))
   }
 }
 
@@ -162,7 +230,7 @@ utils.loadWallet = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('wallets')
-    const walletList = JSON.parse(loadedEntries)
+    const walletList = Utils.safeJsonParse(loadedEntries)
     return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
@@ -173,7 +241,7 @@ utils.loadLastMessage = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastMessage')
-    const lastMessage = JSON.parse(loadedEntries)
+    const lastMessage = Utils.safeJsonParse(loadedEntries)
     return lastMessage[username]
   } catch (e) {
     return null
@@ -184,7 +252,7 @@ utils.loadLastTx = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastTx')
-    const lastTx = JSON.parse(loadedEntries)
+    const lastTx = Utils.safeJsonParse(loadedEntries)
     return lastTx[username]
   } catch (e) {
     return null
@@ -192,39 +260,55 @@ utils.loadLastTx = username => {
 }
 
 utils.createAccountAndStoreInWallet = (name, id) => {
+  console.log('createAccountAndStoreInWallet', name, id)
   const account = utils.createAccount()
+  console.log('account', account)
   if (typeof id === 'undefined' || id === null) {
     id = crypto.hash(name)
   }
   account.id = id
+  console.log('account', account)
   return account
 }
 
-function getInjectUrl () {
+function getInjectUrl() {
   return utils.getProxyUrl('/inject')
 }
 
-function getAccountsUrl () {
+function getAccountsUrl() {
   return utils.getProxyUrl('/accounts')
 }
 
-function getAccountUrl (id) {
+function getAccountUrl(id) {
   return utils.getProxyUrl(`/account/${id}`)
 }
 
-async function getJSON (url) {
-  const response = await axios(url)
-  return response.data
+async function getJSON(url) {
+  try {
+    const response = await axios(url)
+    if (response.data) {
+      return Utils.safeJsonParse(Utils.safeStringify(response.data))
+    }
+  } catch (err) {
+    console.log(err)
+    return err
+  }
 }
 
-async function postJSON (url, obj) {
+async function postJSON(url, obj) {
   const response = await axios.post(url, obj)
   return response.data
 }
 
-async function injectTx (tx) {
+async function injectTx(tx) {
   try {
-    const res = await postJSON(getInjectUrl(), tx)
+    console.log(tx)
+    const data = Utils.safeStringify(tx)
+    console.log(data.sign || tx.sign)
+    const url = getInjectUrl()
+    console.log(url)
+    const res = await postJSON(url, { tx: data })
+    console.log(res)
     return res
   } catch (err) {
     console.warn(err)
@@ -239,23 +323,23 @@ utils.getTxStatus = async (url, tx) => {
     const txData = convert(tx)
     const res = await postJSON(`${url}/api/tx/status`, txData)
     console.warn(res)
-    
+
     if (res.success) {
       const appliedHash = crypto.hashObj({ tx: tx, status: 'applied', netId: '123abc' });
       const rejectedHash = crypto.hashObj({ tx: tx, status: 'rejected', netId: '123abc' });
-      
+
       console.log('\n\n === hash result: \n\n', appliedHash, rejectedHash)
 
-      if (appliedHash.toString().substring(0,8) === res.result[0]) {
+      if (appliedHash.toString().substring(0, 8) === res.result[0]) {
         // Transaction was applied
         return {
           status: TX_RECEIPT_APPLIED,
           message: 'Applied'
         }
-        
+
       } else {
         // Transaction was rejected
-        return { 
+        return {
           status: TX_RECEIPT_REJECTED,
           message: 'Rejected'
         }
@@ -276,7 +360,7 @@ utils.getTxStatus = async (url, tx) => {
 }
 
 function convert(tx) {
-  const orig = JSON.parse(JSON.stringify(tx))
+  const orig = Utils.safeJsonParse(Utils.safeStringify(tx))
   const txid = crypto.hashObj(orig, true)
   const addresses = getKeyFromTransaction(orig)
   const address = getClosestAddress(txid, addresses)
@@ -360,22 +444,26 @@ function getKeyFromTransaction(tx) {
       result.sourceKeys = [tx.from];
       result.targetKeys = [tx.to, tx.network];
       break;
-    case 'stake':
-      result.sourceKeys = [tx.from];
-      result.targetKeys = [tx.network];
-      break;
-    case 'remove_stake':
-      result.sourceKeys = [tx.from];
-      result.targetKeys = [tx.network];
-      break;
-    case 'remove_stake_request':
-      result.sourceKeys = [tx.from];
-      result.targetKeys = [tx.network];
-      break;
-    case 'claim_reward':
-      result.sourceKeys = [tx.from];
-      result.targetKeys = [tx.network];
-      break;
+    // case 'stake':
+    //   result.sourceKeys = [tx.from];
+    //   result.targetKeys = [tx.network];
+    //   break;
+    // case 'remove_stake':
+    //   result.sourceKeys = [tx.from];
+    //   result.targetKeys = [tx.network];
+    //   break;
+    // case 'remove_stake_request':
+    //   result.sourceKeys = [tx.from];
+    //   result.targetKeys = [tx.network];
+    //   break;
+    // case 'deposit_stake':
+    //   result.sourceKeys = [tx.nominator]; 
+    //   result.targetKeys = [tx.nominee];
+    //   break;
+    // case 'withdraw_stake':
+    //   result.sourceKeys = [tx.nominator];
+    //   result.targetKeys = [tx.nominee];
+    //   break;
     case 'snapshot_claim':
       result.sourceKeys = [tx.from];
       result.targetKeys = [tx.network];
@@ -444,7 +532,7 @@ function getKeyFromTransaction(tx) {
   return result.allKeys;
 };
 
-async function getAccountData (id) {
+async function getAccountData(id) {
   try {
     const accountData = await getJSON(
       typeof id !== 'undefined' && id !== null
@@ -457,7 +545,7 @@ async function getAccountData (id) {
   }
 }
 
-async function getToll (friendId, yourId) {
+async function getToll(friendId, yourId) {
   try {
     const { toll } = await getJSON(
       utils.getProxyUrl(`/account/${friendId}/${yourId}/toll`)
@@ -468,11 +556,11 @@ async function getToll (friendId, yourId) {
   }
 }
 
-async function getAddress (handle) {
+async function getAddress(handle) {
   if (!handle) return
   if (handle.length === 64) return handle
   try {
-    for (let i = 0; i < 3; i ++) {
+    for (let i = 0; i < 3; i++) {
       const randomUrl = await utils.getProxyUrlWithRandomHost(`/address/${crypto.hash(handle)}`)
       const data = await getJSON(randomUrl)
       const { address, error } = data
@@ -488,7 +576,7 @@ async function getAddress (handle) {
   return null
 }
 
-async function pollMessages (from, to, timestamp) {
+async function pollMessages(from, to, timestamp) {
   try {
     const url = utils.getProxyUrl(`/messages/${to}/${from}`)
     const { messages } = await getJSON(url)
@@ -531,9 +619,9 @@ utils.importWallet = async sk => {
 utils.listWallet = name => {
   const wallet = walletEntries[name]
   if (typeof wallet !== 'undefined' && wallet !== null) {
-    console.log(`${JSON.stringify(wallet, null, 2)}`)
+    console.log(`${Utils.safeStringify(wallet, null, 2)}`)
   } else {
-    console.log(`${JSON.stringify(walletEntries, null, 2)}`)
+    console.log(`${Utils.safeStringify(walletEntries, null, 2)}`)
   }
 }
 
@@ -545,7 +633,7 @@ utils.registerAlias = async (handle, source) => {
     alias: handle,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, source.keys)
   console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
@@ -572,10 +660,10 @@ utils.addFriend = async (tgt, keys) => {
     alias: tgt,
     from: keys.publicKey,
     to: targetAddress,
-    amount: 1,
+    amount: BigInt(1),
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -600,10 +688,10 @@ utils.removeFriend = async (tgt, keys) => {
     alias: tgt,
     from: keys.publicKey,
     to: targetAddress,
-    amount: 1,
+    amount: BigInt(1),
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -616,14 +704,14 @@ utils.removeFriend = async (tgt, keys) => {
   })
 }
 
-utils.claimTokens = keys => {
+utils.claimTokens = async keys => {
   const tx = {
     type: 'claim_coins',
     network,
     srcAcc: keys.publicKey,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -636,15 +724,15 @@ utils.claimTokens = keys => {
   })
 }
 
-utils.setToll = (toll, keys) => {
+utils.setToll = async (toll, keys) => {
   const tx = {
     type: 'toll',
     network,
     from: keys.publicKey,
-    toll: parseFloat(toll),
+    toll: BigInt(toll),
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
@@ -658,16 +746,83 @@ utils.setToll = (toll, keys) => {
   })
 }
 
-utils.addStake = (stake, keys) => {
+// utils.addStake = (stake, keys) => {
+//   const tx = {
+//     type: 'stake',
+//     network,
+//     from: keys.publicKey,
+//     stake: stake,
+//     timestamp: Date.now()
+//   }
+//   signObj(tx, keys)
+//   console.log(tx)
+//   return new Promise(resolve => {
+//     injectTx(tx).then(res => {
+//       console.log(res)
+//       if (res.result.success) {
+//         resolve(true)
+//       } else {
+//         resolve(false)
+//       }
+//     })
+//   })
+// }
+
+// utils.removeStake = (stake, keys) => {
+//   const tx = {
+//     type: 'remove_stake',
+//     network,
+//     from: keys.publicKey,
+//     stake: stake,
+//     timestamp: Date.now()
+//   }
+//   signObj(tx, keys)
+//   console.log(tx)
+//   return new Promise(resolve => {
+//     injectTx(tx).then(res => {
+//       console.log(res)
+//       if (res.result.success) {
+//         resolve(true)
+//       } else {
+//         resolve(false)
+//       }
+//     })
+//   })
+// }
+
+// utils.requestRemoveStake = (stake, keys) => {
+//   const tx = {
+//     type: 'remove_stake_request',
+//     network,
+//     from: keys.publicKey,
+//     stake: stake,
+//     timestamp: Date.now()
+//   }
+//   signObj(tx, keys)
+//   console.log(tx)
+//   return new Promise(resolve => {
+//     injectTx(tx).then(res => {
+//       console.log(res)
+//       if (res.result.success) {
+//         resolve(true)
+//       } else {
+//         resolve(false)
+//       }
+//     })
+//   })
+// }
+
+utils.depositStake = async (nominee, stake, keys) => {
+  console.log(keys)
   const tx = {
-    type: 'stake',
-    network,
-    from: keys.publicKey,
-    stake: stake,
+    type: 'deposit_stake',
+    nominator: keys.publicKey,
+    nominee,
+    stake: BigInt(stake),
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
   console.log(tx)
+  await signObj(tx, keys)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -680,37 +835,14 @@ utils.addStake = (stake, keys) => {
   })
 }
 
-utils.removeStake = (stake, keys) => {
+utils.withdrawStake = async (nominee, keys) => {
   const tx = {
-    type: 'remove_stake',
-    network,
-    from: keys.publicKey,
-    stake: stake,
+    type: 'withdraw_stake',
+    nominator: keys.publicKey,
+    nominee,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
-  console.log(tx)
-  return new Promise(resolve => {
-    injectTx(tx).then(res => {
-      console.log(res)
-      if (res.result.success) {
-        resolve(true)
-      } else {
-        resolve(false)
-      }
-    })
-  })
-}
-
-utils.requestRemoveStake = (stake, keys) => {
-  const tx = {
-    type: 'remove_stake_request',
-    network,
-    from: keys.publicKey,
-    stake: stake,
-    timestamp: Date.now()
-  }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
@@ -757,13 +889,13 @@ utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
     amount: tollAmount,
     timestamp: messageTimestamp
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, keys)
   console.log(`signed message`, tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
-      if (res.result.success === true) resolve({success: true, pendingTx: tx})
-      else resolve({success: false, pendingTx: null})
+      if (res.result.success === true) resolve({ success: true, pendingTx: tx })
+      else resolve({ success: false, pendingTx: null })
     })
 
   })
@@ -773,7 +905,7 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
   const source = walletEntries[sourceAcc]
   const targetAccs = []
   const messages = []
-  let requiredAmount = 0
+  let requiredAmount = BigInt(0)
   for (let i = 0; i < recipients.length; i++) {
     console.log('RECIP: ', recipients[i])
     const tgtAddress = await getAddress(recipients[i])
@@ -801,7 +933,7 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
     amount: requiredAmount,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, source.keys)
   injectTx(tx).then(res => {
     console.log(res)
   })
@@ -832,37 +964,34 @@ utils.queryAccount = async handle => {
 }
 
 utils.queryProposals = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals'))
-  return res.data.proposals
+  const { proposals } = await getJSON(utils.getProxyUrl('/proposals'))
+  return proposals
 }
 
 utils.queryDevProposals = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals/dev'))
-  return res.data.devProposals
+  const { devProposals } = await getJSON(utils.getProxyUrl('/proposals/dev'))
+  return devProposals
 }
 
 utils.queryLatestProposals = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals/latest'))
-  return res.data.proposals
+  const { proposals } = await getJSON(utils.getProxyUrl('/proposals/latest'))
+  return proposals
 }
 
 utils.queryLatestDevProposals = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals/dev/latest'))
-  return res.data.devProposals
-  // return res.data.count
+  const { devProposals } = await getJSON(utils.getProxyUrl('/proposals/dev/latest'))
+  return devProposals
 }
 
 utils.getProposalCount = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals/count'))
-  // return res.data.proposalCount
-  return res.data.count
+  const { count } = await getJSON(utils.getProxyUrl('/proposals/count'))
+  return count ? count : 0
 }
 
 utils.getDevProposalCount = async function () {
-  const res = await axios.get(utils.getProxyUrl('/proposals/dev/count'))
-  // return res.data.devProposalCount
-  if (res.data.count) return res.data.count
-  else return 0
+  const { count } = await getJSON(utils.getProxyUrl('/proposals/dev/count'))
+  return count ? count : 0
+
 }
 
 utils.isTransferTx = tx => tx.type === 'transfer'
@@ -873,8 +1002,10 @@ utils.isDevVoteTx = tx => tx.type === 'dev_vote'
 utils.isDevPaymentTx = tx => tx.type === 'developer_payment'
 utils.isMessageTx = tx => tx.type === 'message'
 utils.isRegisterTx = tx => tx.type === 'register'
-utils.isStakeTx = tx => tx.type === 'stake'
-utils.isRemoveStakeTx = tx => tx.type === 'remove_stake'
+// utils.isStakeTx = tx => tx.type === 'stake'
+// utils.isRemoveStakeTx = tx => tx.type === 'remove_stake'
+utils.isDepositStakeTx = tx => tx.type === 'deposit_stake'
+utils.isWithdrawStakeTx = tx => tx.type === 'withdraw_stake'
 utils.isRewardTx = tx => tx.type === 'node_reward'
 utils.isSender = (tx, myAddress) => tx.from === myAddress
 utils.getTransferType = (tx, myAddress) =>
@@ -890,8 +1021,10 @@ utils.filterByTxType = (txList, type) => {
   else if (type === 'developer_payment') return filter(txList, utils.isDevPaymentTx)
   else if (type === 'message') return filter(txList, utils.isMessageTx)
   else if (type === 'register') return filter(txList, utils.isRegisterTx)
-  else if (type === 'stake') return filter(txList, utils.isStakeTx)
-  else if (type === 'remove_stake') return filter(txList, utils.isRemoveStakeTx)
+  // else if (type === 'stake') return filter(txList, utils.isStakeTx)
+  // else if (type === 'remove_stake') return filter(txList, utils.isRemoveStakeTx)
+  else if (type === 'deposit_stake') return filter(txList, utils.isDepositStakeTx)
+  else if (type === 'withdraw_stake') return filter(txList, utils.isWithdrawStakeTx)
   else if (type === 'node_reward') return filter(txList, utils.isRewardTx)
 }
 
@@ -903,7 +1036,7 @@ utils.sortByTimestamp = (list, direction) => {
   }
 }
 
-function isIosSafari () {
+function isIosSafari() {
   var ua = window.navigator.userAgent
   var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i)
   var webkit = !!ua.match(/WebKit/i)
@@ -913,56 +1046,56 @@ function isIosSafari () {
 
 utils.queryParameters = async function (component) {
   // console.log(`Calling from ${component}`)
-  const res = await axios.get(utils.getProxyUrl('/network/parameters'))
-  if (res.data.error) {
-    return res.data.error
+  const {parameters, error }= await getJSON(utils.getProxyUrl('/network/parameters'))
+  console.log('parameters', parameters)
+  if (error) {
+    return error
   } else {
-    return res.data.parameters
+    return parameters
   }
 }
 
 utils.queryNodeParameters = async function () {
-  const res = await axios.get(utils.getProxyUrl('/network/parameters/node'))
-  if (res.data.error) {
-    return res.data.error
+  const {parameters, error } = await getJSON(utils.getProxyUrl('/network/parameters/node'))
+  if (error) {
+    return error
   } else {
-    return res.data.parameters
+    return parameters
   }
 }
 
 utils.queryIssues = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues'))
-  return res.data.issues
+  const { issues } = await getJSON(utils.getProxyUrl('/issues'))
+  return issues
 }
 
 utils.queryDevIssues = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues/dev'))
-  return res.data.devIssues
+  const { devIssues } = await getJSON(utils.getProxyUrl('/issues/dev'))
+  return devIssues
 }
 
 utils.queryLatestIssue = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues/latest'))
-  return res.data.issue
+  const { issue } = await getJSON(utils.getProxyUrl('/issues/latest'))
+  return issue
 }
 
 utils.queryLatestDevIssue = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues/dev/latest'))
-  return res.data.devIssue
+  const { devIssue } = await getJSON(utils.getProxyUrl('/issues/dev/latest'))
+  return devIssue
 }
 
 utils.getIssueCount = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues/count'))
-  // return res.data.issueCount
-  return res.data.count
+  const { count } = await getJSON(utils.getProxyUrl('/issues/count'))
+  return count ? count : 0
 }
 
 utils.getDevIssueCount = async function () {
-  const res = await axios.get(utils.getProxyUrl('/issues/dev/count'))
+  const { count } = await getJSON(utils.getProxyUrl('/issues/dev/count'))
   // return res.data.devIssueCount
-  return res.data.count
+  return count ? count : 0
 }
 
-function iosCopyClipboard (str) {
+function iosCopyClipboard(str) {
   const el = document.createElement('textarea')
   el.value = str
   el.setAttribute('readonly', '')
@@ -1005,7 +1138,7 @@ utils.createProposal = async function (sourceAcc, newParameters) {
       description: newParameters.description || '',
       timestamp: Date.now()
     }
-    crypto.signObj(proposalTx, source.keys.secretKey, source.keys.publicKey)
+    await signObj(proposalTx, source.keys)
     return proposalTx
   } else {
     if (!issueCount) throw new Error('Unable to get issue count')
@@ -1052,7 +1185,7 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
       payAddress: source.address,
       timestamp: Date.now()
     }
-    crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+    await signObj(tx, source.keys)
     return tx
   } else {
     if (!issueCount) throw new Error('Unable to get issue count')
@@ -1062,14 +1195,14 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   }
 }
 
-utils.createEmailTx = function (email, sourceAcc) {
+utils.createEmailTx = async function (email, sourceAcc) {
   const source = sourceAcc.entry
   console.log(source)
   const signedTx = {
     emailHash: crypto.hash(email),
     from: source.address
   }
-  crypto.signObj(signedTx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(signedTx, source.keys)
   const tx = {
     type: 'email',
     network,
@@ -1080,7 +1213,7 @@ utils.createEmailTx = function (email, sourceAcc) {
   return tx
 }
 
-utils.createVerifyTx = function (code, sourceAcc) {
+utils.createVerifyTx = async function (code, sourceAcc) {
   const source = sourceAcc.entry
   const tx = {
     type: 'verify',
@@ -1089,7 +1222,7 @@ utils.createVerifyTx = function (code, sourceAcc) {
     code: code,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, source.keys)
   return tx
 }
 
@@ -1144,7 +1277,7 @@ utils.createVote = async function (
   sourceAcc,
   proposalNumber = 1,
   approve = true,
-  amount = 50
+  amount = BigInt(50)
 ) {
   const source = sourceAcc.entry
   const issueCount = await utils.getIssueCount()
@@ -1159,14 +1292,14 @@ utils.createVote = async function (
     amount: amount,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, source.keys)
   return tx
 }
 
 utils.createDevVote = async function (
   sourceAcc,
   proposalNumber = 1,
-  amount = 50,
+  amount = BigInt(50),
   approve = true
 ) {
   const source = sourceAcc.entry
@@ -1183,7 +1316,7 @@ utils.createDevVote = async function (
     approve,
     timestamp: Date.now()
   }
-  crypto.signObj(tx, source.keys.secretKey, source.keys.publicKey)
+  await signObj(tx, source.keys)
   return tx
 }
 
@@ -1197,7 +1330,7 @@ utils.submitVote = async function (tx) {
   })
 }
 
-function fallbackCopyTextToClipboard (text) {
+function fallbackCopyTextToClipboard(text) {
   var textArea = document.createElement('textarea')
   textArea.value = text
   document.body.appendChild(textArea)
@@ -1215,7 +1348,7 @@ function fallbackCopyTextToClipboard (text) {
   document.body.removeChild(textArea)
 }
 
-function copyTextToClipboard (text) {
+function copyTextToClipboard(text) {
   if (!navigator.clipboard) {
     console.log("Navigator.clipboard doesn't exist")
     fallbackCopyTextToClipboard(text)
@@ -1247,12 +1380,12 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
     type: 'transfer',
     from: keys.publicKey,
     to: targetAddress,
-    amount: parseFloat(amount),
+    amount: BigInt(amount),
     timestamp: Date.now(),
     network,
-    fee: parameters.current.transactionFee || 0.001
+    fee: parameters.current.transactionFee || BigInt(1)
   }
-  crypto.signObj(tx, keys.secretKey, keys.publicKey)
+  await signObj(tx, keys)
   console.log(tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
@@ -1303,7 +1436,7 @@ utils.updateBadge = (tabName, type) => {
         badgeElementList[3].innerHTML = ''
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
@@ -1312,7 +1445,7 @@ utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
 }
 
 utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-  // return JSON.parse(
+  // return Utils.safeJsonParse(
   //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
   // )
   return encryptedMessage
@@ -1320,7 +1453,7 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
 
 utils.queryEncryptedChats = async function (chatId) {
   const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
-  return res.data.messages.map(m => JSON.parse(m))
+  return res.data.messages.map(m => Utils.safeJsonParse(m))
 }
 
 utils.calculateWholeCycleDuration = function (window, devWindow) {

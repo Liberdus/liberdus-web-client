@@ -14,8 +14,9 @@
     >
       <!-- <p v-if="getAppState">{{ getAppState }}</p> -->
       <div class="total-balance">
+        // <h1>{{ getAppState.data.balance }}</h1>
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
-          {{ getAppState.data.balance.toFixed(3) }}
+          {{ getAppState.data.balance }}
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
@@ -128,8 +129,10 @@ export default {
       const RawTransferTxs = utils.filterByTxType(txs, 'transfer')
       const RawMessageTxs = utils.filterByTxType(txs, 'message')
       const RawRegisterTxs = utils.filterByTxType(txs, 'register')
-      const RawStakeTxs = utils.filterByTxType(txs, 'stake')
-      const RawRemoveStakeTxs = utils.filterByTxType(txs, 'remove_stake')
+      // const RawStakeTxs = utils.filterByTxType(txs, 'stake')
+      // const RawRemoveStakeTxs = utils.filterByTxType(txs, 'remove_stake')
+      const RawDepositStakeTXs = utils.filterByTxType(txs, 'deposit_stake')
+      const RawWithdrawStakeTxs = utils.filterByTxType(txs, 'withdraw_stake')
       const RawRewardTxs = utils.filterByTxType(txs, 'node_reward')
       const RawProposalTxs = utils.filterByTxType(txs, 'proposal')
       const RawDevProposalTxs = utils.filterByTxType(txs, 'dev_proposal')
@@ -149,26 +152,45 @@ export default {
             fee: tx.fee
           }
         })
-      const processRawStakeTxs = txList =>
+      // const processRawStakeTxs = txList =>
+      //   map(txList, tx => {
+      //     return {
+      //       type: 'stake',
+      //       timestamp: tx.timestamp,
+      //       otherPersonAddress: 'NETWORK',
+      //       amount: tx.stake,
+      //       fee: 0
+      //     }
+      //   })
+      // const processRawRemoveStakeTxs = txList =>
+      //   map(txList, tx => {
+      //     return {
+      //       type: 'remove_stake',
+      //       timestamp: tx.timestamp,
+      //       otherPersonAddress: 'NETWORK',
+      //       amount: tx.stake,
+      //       fee: 0
+      //     }
+      //   })
+      const processRawDepositStakeTxs = txList =>
         map(txList, tx => {
           return {
-            type: 'stake',
+            type: 'deposit_stake',
             timestamp: tx.timestamp,
-            otherPersonAddress: 'NETWORK',
+            otherPersonAddress: tx.nominee,
             amount: tx.stake,
             fee: 0
           }
         })
-      const processRawRemoveStakeTxs = txList =>
+      const processRawWithdrawStakeTxs = txList =>
         map(txList, tx => {
           return {
-            type: 'remove_stake',
+            type: 'withdraw_stake',
             timestamp: tx.timestamp,
-            otherPersonAddress: 'NETWORK',
-            amount: tx.stake,
+            otherPersonAddress: tx.nominee,
             fee: 0
           }
-        })
+      })
       const processRawRewardTxs = txList =>
         map(txList, tx => {
           return {
@@ -253,8 +275,8 @@ export default {
           }
         })
       const transferTxs = processRawTransferTxs(RawTransferTxs)
-      const stakeTxs = processRawStakeTxs(RawStakeTxs)
-      const removeStakeTxs = processRawRemoveStakeTxs(RawRemoveStakeTxs)
+      // const stakeTxs = processRawStakeTxs(RawStakeTxs)
+      // const removeStakeTxs = processRawRemoveStakeTxs(RawRemoveStakeTxs)
       const rewardTxs = processRawRewardTxs(RawRewardTxs)
       const messageeTxs = processRawMessageTxs(RawMessageTxs)
       const registerTx = processRegisterTxs(RawRegisterTxs)
@@ -267,8 +289,8 @@ export default {
         transferTxs,
         messageeTxs,
         registerTx,
-        stakeTxs,
-        removeStakeTxs,
+        // stakeTxs,
+        // removeStakeTxs,
         rewardTxs,
         proposalTxs,
         devProposalTxs,

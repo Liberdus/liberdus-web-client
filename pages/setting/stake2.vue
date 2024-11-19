@@ -17,7 +17,7 @@
           :value="currentStakedAmount"
           suffix="coins"
         />
-        <!-- <span v-else-if="pendingStakeRemoval"> (pending for removal)</span> -->
+        <span v-else-if="pendingStakeRemoval"> (pending for removal)</span>
 
         <a-statistic
           v-else
@@ -29,63 +29,53 @@
           Required Stake: <strong>{{ stakeRequired }} coins</strong>
         </p>
 
-        <!-- Input fields for stake and nominee -->
-        <div class="input-container">
-          <a-input
-            v-model="stake"
-            placeholder="Enter Stake Amount"
-            type="number"
-            min="1"
-            max="1000"
-            style="margin-bottom: 20px;"
+        <form
+          v-if="currentStakedAmount === 0 && stakeRequired > 0"
+          class="toll-form"
+          @submit.prevent="onSubmitStake"
+        >
+          <a-button htmlType="submit">Add Stake</a-button>
+        </form>
+        <form
+          v-if="currentStakedAmount > 0 && !pendingStakeRemoval"
+          class="toll-form"
+          @submit.prevent="onSubmitRequestRemoveStake"
+        >
+          <Button
+            v-if="!pendingStakeRemoval"
+            text="Request to remove stake"
           />
-
-          <a-statistic
-          v-if="nominee"
-          title="Nominee Address"
-          :value="nominee"
-          valueStyle="margin-bottom: 20px; font-size: small;"
-        />
-
-          <a-input
-            v-else
-            v-model="nominee"
-            placeholder="Enter Nominee Address"
-            type="text"
-            style="margin-bottom: 20px;"
-          />
-        </div>
-
-        <div class="button-container">
-          <form
-            v-if="nominee"
-            class="button-form"
-            @submit.prevent="onSubmitWithdrawStake"
+          <a-button
+            v-if="!pendingStakeRemoval"
+            htmlType="submit"
+            type="danger"
+            shape="round"
+            size="large"
+            >Request to remove stake</a-button
           >
+        </form>
+        
+        <form
+          v-if="currentStakedAmount > 0 && pendingStakeRemoval"
+          class="toll-form"
+          @submit.prevent="onSubmitRemoveStake"
+        >
+          <div v-if="pendingStakeRemoval">
+            <!-- <Button text="Remove stake" :is-disabled="!isReadyToRemoveStake" /> -->
             <a-button
               htmlType="submit"
               type="danger"
               shape="round"
               size="large"
+              :disabled="!isReadyToRemoveStake"
+              >Remove stake</a-button
             >
-              Withdraw Stake
-            </a-button>
-          </form>
-
-          <form
-            class="button-form"
-            @submit.prevent="onSubmitDepositStake"
-          >
-            <a-button
-              htmlType="submit"
-              type="primary"
-              shape="round"
-              size="large"
-            >
-              Deposit Stake
-            </a-button>
-          </form>
-        </div>
+            <p style="font-size: 13px">
+              Your stake can be removed at
+              <strong v-if="timeToRemoveStake">{{ timeToRemoveStake }}</strong>
+            </p>
+          </div>
+        </form>
       </a-card>
       <!-- <p v-if="getAppState">
         Current Staked Amount:
@@ -133,8 +123,6 @@ export default {
       network: null,
       amount: '',
       stakeRequired: null,
-      stake: '', // New input for stake
-      nominee: '', // New input for nominee
     };
   },
   validations: {
@@ -153,8 +141,7 @@ export default {
       if (this.$v.amount.required && this.$v.amount.between) return true;
     },
     currentStakedAmount() {
-      console.log(this.getAppState);
-      if (this.getAppState) return this.getAppState.operatorAccountInfo?.stake || 0;
+      if (this.getAppState) return this.getAppState.data.stake || 0;
       else return 0;
     },
     pendingStakeRemoval() {
@@ -189,7 +176,6 @@ export default {
     this.network = network;
 
     this.stakeRequired = network.current.stakeRequired;
-    this.nominee = this.getAppState?.operatorAccountInfo?.nominee || '';
   },
   methods: {
     //   async onSubmitStake() {
@@ -223,33 +209,23 @@ export default {
     //     }
     //   },
     async onSubmitDepositStake() {
-      if (!this.stake || !this.nominee) {
-        this.notify('Please enter both Stake and Nominee values.');
-        return;
-      }
-      const isSubmitted = await utils.depositStake(
-        this.nominee,
-        this.stake,
+      let isSubmitted = await utils.depositStake(
+        this.stakeRequired,
         this.getWallet.entry.keys
       );
       if (isSubmitted) {
-        this.stake = '';
-        this.nominee = '';
-        this.notify('Your deposit transaction is submitted to the network.');
+        this.amount = '';
+        this.notify('Your transaction is submitted to network.');
       }
     },
     async onSubmitWithdrawStake() {
-      if (!this.stake || !this.nominee) {
-        this.notify('Please enter both Stake and Nominee values.');
-        return;
-      }
-      const isSubmitted = await utils.withdrawStake(
-        this.nominee,
+      let isSubmitted = await utils.withdrawStake(
+        this.stakeRequired,
         this.getWallet.entry.keys
       );
       if (isSubmitted) {
-        this.nominee = '';
-        this.notify('Your withdraw transaction is submitted to the network.');
+        this.amount = '';
+        this.notify('Your transaction is submitted to network.');
       }
     },
     redirect(url, option) {
@@ -283,37 +259,5 @@ export default {
 .toll-amount-input-container {
   height: 80px;
   margin-bottom: 20px;
-}
-.input-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.input-container a-input {
-  width: 100%;
-  max-width: 400px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.button-form {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-}
-
-.button-form:first-child {
-  margin-right: 10px;
-}
-
-.button-form:last-child {
-  margin-left: 10px;
 }
 </style>

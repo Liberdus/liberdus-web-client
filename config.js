@@ -7,5 +7,6 @@ export default {
     ip: 'test.liberdus.com',
     port: 443
   },
-  version: '1.1.0'
+  version: '1.1.0',
+  useEthereumAddress: true
 }

@@ -81,8 +81,8 @@ export default {
   data: function () {
     return {
       message: '',
-      requiredToll: null,
-      requiredFee: 0.0,
+      requiredToll: BigInt(0),
+      requiredFee: BigInt(0),
       loading: false,
       imageUrl: '',
       fileSize: 0
