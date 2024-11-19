@@ -12,7 +12,7 @@
 
       <a-card title="Update Stake">
         <a-statistic
-          v-if="getAppState"
+          v-if="currentStakedNominee"
           title="Current Staked Amount"
           :value="currentStakedAmount"
           suffix="coins"
@@ -26,7 +26,7 @@
         />
 
         <p v-if="stakeRequired">
-          Required Stake: <strong>{{ stakeRequired }} coins</strong>
+          Required Minimum Stake: <strong>{{ stakeRequired }} coins</strong>
         </p>
 
         <!-- Input fields for stake and nominee -->
@@ -41,9 +41,9 @@
           />
 
           <a-statistic
-          v-if="nominee"
+          v-if="currentStakedNominee"
           title="Nominee Address"
-          :value="nominee"
+          :value="currentStakedNominee"
           valueStyle="margin-bottom: 20px; font-size: small;"
         />
 
@@ -58,7 +58,7 @@
 
         <div class="button-container">
           <form
-            v-if="nominee"
+            v-if="currentStakedAmount"
             class="button-form"
             @submit.prevent="onSubmitWithdrawStake"
           >
@@ -82,7 +82,7 @@
               shape="round"
               size="large"
             >
-              Deposit Stake
+              {{ this.currentStakedNominee ? 'Add More Stake' : 'Deposit Stake' }}
             </a-button>
           </form>
         </div>
@@ -153,9 +153,12 @@ export default {
       if (this.$v.amount.required && this.$v.amount.between) return true;
     },
     currentStakedAmount() {
-      console.log(this.getAppState);
       if (this.getAppState) return this.getAppState.operatorAccountInfo?.stake || 0;
       else return 0;
+    },
+    currentStakedNominee() {
+      if (this.getAppState) return this.getAppState.operatorAccountInfo?.nominee || '';
+      else return '';
     },
     pendingStakeRemoval() {
       if (this.getAppState)
@@ -239,8 +242,8 @@ export default {
       }
     },
     async onSubmitWithdrawStake() {
-      if (!this.stake || !this.nominee) {
-        this.notify('Please enter both Stake and Nominee values.');
+      if (!this.nominee) {
+        this.notify('You dont have any stake to withdraw yet.');
         return;
       }
       const isSubmitted = await utils.withdrawStake(
@@ -248,7 +251,7 @@ export default {
         this.getWallet.entry.keys
       );
       if (isSubmitted) {
-        this.nominee = '';
+        this.stake = '';
         this.notify('Your withdraw transaction is submitted to the network.');
       }
     },
