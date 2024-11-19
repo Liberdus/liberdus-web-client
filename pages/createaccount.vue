@@ -210,6 +210,7 @@ export default {
 
         let wallet = null
         let entry = utils.createWallet(lowUsername)
+        console.log(entry)
 
         wallet = {
           handle: lowUsername,
@@ -234,6 +235,7 @@ export default {
           }, 1000)
         }
       } catch(e) {
+        console.error(e)
         this.$notification.error({
           message: `An error occured while creating account.`,
         });

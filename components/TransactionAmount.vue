@@ -12,7 +12,7 @@
     >
       - {{ transaction.amount + (transaction.fee || 0.001) }}
     </div>
-    <div
+    <!-- <div
       v-else-if="transaction.type === 'stake'"
       class="transaction-amount send-amount"
     >
@@ -23,6 +23,12 @@
       class="transaction-amount receive-amount"
     >
       + {{ transaction.amount }}
+    </div> -->
+    <div
+      v-else-if="transaction.type === 'deposit_stake'"
+      class="transaction-amount send-amount"
+      >
+      - {{ transaction.stake }}
     </div>
     <div
       v-else-if="transaction.type === 'node_reward'"
