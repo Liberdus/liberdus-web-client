@@ -2,7 +2,6 @@
 import * as crypto from '@shardus/crypto-web'
 import axios from 'axios'
 import stringify from 'fast-stable-stringify'
-import { Utils } from '@shardus/types'
 import { ethers } from 'ethers'
 
 // eslint-disable-next-line no-unused-vars
@@ -212,18 +211,18 @@ utils.saveWallet = newWalletEntry => {
   console.log('\n\n saveWallet \n\n', newWalletEntry)
   try {
     // eslint-disable-next-line no-undef
-    const existingWalletList = Utils.safeJsonParse(localStorage.getItem('wallets'))
+    const existingWalletList = crypto.safeJsonParse(localStorage.getItem('wallets'))
     let newWallet = (existingWalletList && existingWalletList.length > 0) ? [...existingWalletList] : []
     newWallet = newWallet.filter(w => w.handle !== newWalletEntry.handle)
     newWallet = newWallet.concat(newWalletEntry)
     // .filter(w => w.handle !== newWalletEntry.handle)
     // .concat(newWalletEntry)
     // eslint-disable-next-line no-undef
-    localStorage.setItem('wallets', Utils.safeStringify(newWallet))
+    localStorage.setItem('wallets', crypto.safeStringify(newWallet))
   } catch (e) {
     console.log(e)
     // eslint-disable-next-line no-undef
-    localStorage.setItem('wallets', Utils.safeStringify([newWalletEntry]))
+    localStorage.setItem('wallets', crypto.safeStringify([newWalletEntry]))
   }
 }
 
@@ -231,7 +230,7 @@ utils.loadWallet = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('wallets')
-    const walletList = Utils.safeJsonParse(loadedEntries)
+    const walletList = crypto.safeJsonParse(loadedEntries)
     return walletList.find(w => w.handle === username)
   } catch (e) {
     return null
@@ -242,7 +241,7 @@ utils.loadLastMessage = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastMessage')
-    const lastMessage = Utils.safeJsonParse(loadedEntries)
+    const lastMessage = crypto.safeJsonParse(loadedEntries)
     return lastMessage[username]
   } catch (e) {
     return null
@@ -253,7 +252,7 @@ utils.loadLastTx = username => {
   try {
     // eslint-disable-next-line no-undef
     const loadedEntries = localStorage.getItem('lastTx')
-    const lastTx = Utils.safeJsonParse(loadedEntries)
+    const lastTx = crypto.safeJsonParse(loadedEntries)
     return lastTx[username]
   } catch (e) {
     return null
@@ -288,7 +287,7 @@ async function getJSON(url) {
   try {
     const response = await axios(url)
     if (response.data) {
-      return Utils.safeJsonParse(Utils.safeStringify(response.data))
+      return crypto.safeJsonParse(crypto.safeStringify(response.data))
     }
   } catch (err) {
     console.log(err)
@@ -304,7 +303,7 @@ async function postJSON(url, obj) {
 async function injectTx(tx) {
   try {
     console.log(tx)
-    const data = Utils.safeStringify(tx)
+    const data = crypto.safeStringify(tx)
     console.log(data.sign || tx.sign)
     const url = getInjectUrl()
     console.log(url)
@@ -361,7 +360,7 @@ utils.getTxStatus = async (url, tx) => {
 }
 
 function convert(tx) {
-  const orig = Utils.safeJsonParse(Utils.safeStringify(tx))
+  const orig = crypto.safeJsonParse(crypto.safeStringify(tx))
   const txid = crypto.hashObj(orig, true)
   const addresses = getKeyFromTransaction(orig)
   const address = getClosestAddress(txid, addresses)
@@ -620,9 +619,9 @@ utils.importWallet = async sk => {
 utils.listWallet = name => {
   const wallet = walletEntries[name]
   if (typeof wallet !== 'undefined' && wallet !== null) {
-    console.log(`${Utils.safeStringify(wallet, null, 2)}`)
+    console.log(`${crypto.safeStringify(wallet, null, 2)}`)
   } else {
-    console.log(`${Utils.safeStringify(walletEntries, null, 2)}`)
+    console.log(`${crypto.safeStringify(walletEntries, null, 2)}`)
   }
 }
 
@@ -875,7 +874,7 @@ utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
   }
   const tollAmount = await getToll(targetAddress, source.address)
   const messageTimestamp = Date.now()
-  const message = Utils.safeStringify({
+  const message = crypto.safeStringify({
     body: msgObject,
     timestamp: messageTimestamp,
     handle: sourceAcc.handle
@@ -1447,7 +1446,7 @@ utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
 }
 
 utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-  // return Utils.safeJsonParse(
+  // return crypto.safeJsonParse(
   //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
   // )
   return encryptedMessage
@@ -1456,7 +1455,7 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
 utils.queryEncryptedChats = async function (chatId) {
   const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
   console.log(res.data)
-  return res.data.messages.map(m => Utils.safeJsonParse(m))
+  return res.data.messages.map(m => crypto.safeJsonParse(m))
 }
 
 utils.calculateWholeCycleDuration = function (window, devWindow) {
