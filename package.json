@@ -21,7 +21,6 @@
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
     "@shardus/crypto-web": "git+https://gitlab.com/shardus/shardus-crypto-web.git",
-    "@shardus/types": "1.2.21-1",
     "ant-design-vue": "^1.6.4",
     "ethers": "5.7.2",
     "fast-stable-stringify": "^1.0.0",
