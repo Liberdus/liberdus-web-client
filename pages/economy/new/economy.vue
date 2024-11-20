@@ -125,10 +125,10 @@
                 Stake Required
               </td>
               <td class="current-value">
-                {{ networkParameters.current.stakeRequired }}
+                {{ networkParameters.current.stakeRequiredUsd }}
               </td>
               <td class="new-value">
-                <input v-model="form.stakeRequired" required />
+                <input v-model="form.stakeRequiredUsd" required />
               </td>
             </tr>
             <tr>
@@ -296,12 +296,12 @@ export default {
         {
           id: 6,
           text: 'Proposal Fee',
-          value: 'proposalFee',
+          value: 'proposalFeeUsd',
         },
         {
           id: 7,
-          text: 'Stake Required',
-          value: 'stakeRequired',
+          text: 'Stake Required USD',
+          value: 'stakeRequiredUsd',
         },
         {
           id: 8,
@@ -327,7 +327,7 @@ export default {
         nodeRewardAmount: '',
         nodeRewardInterval: '',
         proposalFee: '',
-        stakeRequired: '',
+        stakeRequiredUsd: '',
         transactionFee: '',
         description: '',
         title: '',

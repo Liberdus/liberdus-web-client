@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import * as crypto from '@shardus/crypto-web'
 import axios from 'axios'
+import stringify from 'fast-stable-stringify'
 import { Utils } from '@shardus/types'
 import { ethers } from 'ethers'
 
@@ -835,12 +836,12 @@ utils.depositStake = async (nominee, stake, keys) => {
   })
 }
 
-utils.withdrawStake = async (nominee, keys) => {
+utils.withdrawStake = async (nominee, force, keys) => {
   const tx = {
     type: 'withdraw_stake',
     nominator: keys.publicKey,
     nominee,
-    force: false,
+    force,
     timestamp: Date.now()
   }
   await signObj(tx, keys)
@@ -874,7 +875,7 @@ utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
   }
   const tollAmount = await getToll(targetAddress, source.address)
   const messageTimestamp = Date.now()
-  const message = stringify({
+  const message = Utils.safeStringify({
     body: msgObject,
     timestamp: messageTimestamp,
     handle: sourceAcc.handle
@@ -890,7 +891,7 @@ utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
     amount: tollAmount,
     timestamp: messageTimestamp
   }
-  await signObj(tx, keys)
+  await signObj(tx, source.keys)
   console.log(`signed message`, tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
@@ -1047,7 +1048,7 @@ function isIosSafari() {
 
 utils.queryParameters = async function (component) {
   // console.log(`Calling from ${component}`)
-  const {parameters, error }= await getJSON(utils.getProxyUrl('/network/parameters'))
+  const { parameters, error } = await getJSON(utils.getProxyUrl('/network/parameters'))
   console.log('parameters', parameters)
   if (error) {
     return error
@@ -1057,7 +1058,7 @@ utils.queryParameters = async function (component) {
 }
 
 utils.queryNodeParameters = async function () {
-  const {parameters, error } = await getJSON(utils.getProxyUrl('/network/parameters/node'))
+  const { parameters, error } = await getJSON(utils.getProxyUrl('/network/parameters/node'))
   if (error) {
     return error
   } else {
@@ -1278,7 +1279,7 @@ utils.createVote = async function (
   sourceAcc,
   proposalNumber = 1,
   approve = true,
-  amount = BigInt(50)
+  amount = 50
 ) {
   const source = sourceAcc.entry
   const issueCount = await utils.getIssueCount()
@@ -1290,7 +1291,7 @@ utils.createVote = async function (
     issue: crypto.hash(`issue-${issueCount}`),
     proposal: crypto.hash(`issue-${issueCount}-proposal-${proposalNumber}`),
     approve: approve,
-    amount: amount,
+    amount: BigInt(amount),
     timestamp: Date.now()
   }
   await signObj(tx, source.keys)
@@ -1300,7 +1301,7 @@ utils.createVote = async function (
 utils.createDevVote = async function (
   sourceAcc,
   proposalNumber = 1,
-  amount = BigInt(50),
+  amount = 50,
   approve = true
 ) {
   const source = sourceAcc.entry
@@ -1313,7 +1314,7 @@ utils.createDevVote = async function (
     devProposal: crypto.hash(
       `dev-issue-${devIssueCount}-dev-proposal-${proposalNumber}`
     ),
-    amount,
+    amount: BigInt(amount),
     approve,
     timestamp: Date.now()
   }
@@ -1454,6 +1455,7 @@ utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
 
 utils.queryEncryptedChats = async function (chatId) {
   const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
+  console.log(res.data)
   return res.data.messages.map(m => Utils.safeJsonParse(m))
 }
 
