@@ -10,56 +10,49 @@
         </a-breadcrumb>
       </portal>
 
-      <a-card title="Update Stake">
-        <a-statistic
-          v-if="currentStakedNominee"
-          title="Current Staked Amount"
-          :value="currentStakedAmount"
-          suffix="coins"
-        />
-        <!-- <span v-else-if="pendingStakeRemoval"> (pending for removal)</span> -->
-
-        <a-statistic
+      <a-card title="Manage Your Stake" class="stake-card">
+        <p v-if="stakeRequired" class="stake-required">
+            Minimum Stake Required: <strong>{{ stakeRequired }} coins</strong>
+        </p>
+        <!-- Current Stake Details -->
+        <div class="current-stake">
+          <a-statistic
+            class="stake-amount"
+            v-if="currentStakedNominee"
+            title="Current Staked Amount"
+            :value="Number(currentStakedAmount)"
+            suffix="coins"
+          />
+          <a-statistic
+          class="stake-amount"
           v-else
           title="Current Staked Amount"
           :value="'--'"
         />
 
-        <p v-if="stakeRequired">
-          Required Minimum Stake: <strong>{{ stakeRequired }} coins</strong>
-        </p>
-
-        <!-- Input fields for stake and nominee -->
-        <div class="input-container">
-          <a-input
-            v-model="stake"
-            placeholder="Enter Stake Amount"
-            type="number"
-            min="1"
-            max="1000"
-            style="margin-bottom: 20px;"
-          />
-
-          <a-statistic
+        <a-statistic
+          class="stake-nominee"
           v-if="currentStakedNominee"
           title="Nominee Address"
           :value="currentStakedNominee"
           valueStyle="margin-bottom: 20px; font-size: small;"
         />
 
-          <a-input
-            v-else
-            v-model="nominee"
-            placeholder="Enter Nominee Address"
-            type="text"
-            style="margin-bottom: 20px;"
-          />
         </div>
 
-        <div class="button-container">
+        <!-- Force Unstake Toggle -->
+        <div class="toggle-container" v-if="currentStakedAmount">
+          <a-switch
+            v-model="forceUnstake"
+            checkedChildren="Force Unstake"
+            unCheckedChildren="Normal Unstake"
+          />
+          <p class="toggle-label">Force Unstake: {{ forceUnstake ? 'Enabled' : 'Disabled' }}</p>
+        </div>
+
+        <!-- Withdraw Stake Button -->
+        <div class="button-container withdraw-container" v-if="currentStakedAmount">
           <form
-            v-if="currentStakedAmount"
-            class="button-form"
             @submit.prevent="onSubmitWithdrawStake"
           >
             <a-button
@@ -67,10 +60,36 @@
               type="danger"
               shape="round"
               size="large"
+              class="action-button"
             >
               Withdraw Stake
             </a-button>
           </form>
+        </div>
+
+        <!-- Divider Line -->
+        <div class="divider" v-if="currentStakedAmount"></div>
+
+        <!-- Stake Amount Input and Add More Stake Button -->
+        <div class="input-container">
+          <a-input
+            v-model="stake"
+            placeholder="Enter Stake Amount"
+            type="number"
+            min="1"
+            max="1000"
+            class="input-field"
+          />
+
+          <a-input
+            v-if="!currentStakedNominee"
+            v-model="nominee"
+            placeholder="Enter Nominee Address"
+            type="text"
+            class="input-field"
+          />
+
+          
 
           <form
             class="button-form"
@@ -81,24 +100,18 @@
               type="primary"
               shape="round"
               size="large"
+              class="action-button"
             >
               {{ this.currentStakedNominee ? 'Add More Stake' : 'Deposit Stake' }}
             </a-button>
           </form>
         </div>
       </a-card>
-      <!-- <p v-if="getAppState">
-        Current Staked Amount:
-        <strong>{{ currentStakedAmount }} Coins</strong
-        ><span v-if="pendingStakeRemoval"> (pending for removal)</span>
-      </p>
-      <p v-else>
-        Current Staked Amount: -
-      </p> -->
     </div>
-    <!-- </v-ons-page> -->
   </div>
 </template>
+
+
 
 <script>
 import Vue from 'vue';
@@ -135,6 +148,7 @@ export default {
       stakeRequired: null,
       stake: '', // New input for stake
       nominee: '', // New input for nominee
+      forceUnstake: false,
     };
   },
   validations: {
@@ -144,54 +158,32 @@ export default {
     },
   },
   computed: {
-    ...mapGetters({
-      getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      isUIReady: 'chat/isUIReady',
-    }),
-    isStakeValid() {
-      if (this.$v.amount.required && this.$v.amount.between) return true;
-    },
-    currentStakedAmount() {
-      if (this.getAppState) return this.getAppState.operatorAccountInfo?.stake || 0;
-      else return 0;
-    },
-    currentStakedNominee() {
-      if (this.getAppState) return this.getAppState.operatorAccountInfo?.nominee || '';
-      else return '';
-    },
-    pendingStakeRemoval() {
-      if (this.getAppState)
-        return this.getAppState.data.remove_stake_request !== null;
-      else false;
-    },
-    timestampToRemoveStake() {
-      if (this.pendingStakeRemoval && this.network) {
-        let nodeRewardInterval = this.network.current.nodeRewardInterval;
-        return (
-          this.getAppState.data.remove_stake_request + 2 * nodeRewardInterval
-        );
-      }
-    },
-    timeToRemoveStake() {
-      if (this.timestampToRemoveStake) {
-        return moment(this.timestampToRemoveStake).format(
-          'MMMM Do YYYY, h:mm:ss a'
-        );
-      }
-    },
-    isReadyToRemoveStake() {
-      if (this.timestampToRemoveStake) {
-        return Date.now() >= this.timestampToRemoveStake;
-      }
-    },
+  ...mapGetters({
+    getWallet: 'wallet/getWallet',
+    getAppState: 'chat/getAppState',
+    isUIReady: 'chat/isUIReady',
+  }),
+  currentStakedAmount() {
+    return this.getAppState?.operatorAccountInfo?.stake || 0;
   },
+  currentStakedNominee() {
+    return this.getAppState?.operatorAccountInfo?.nominee || '';
+  },
+  stakeTimestamp() {
+    return this.getAppState?.operatorAccountInfo?.stakeTimestamp || null;
+  },
+  formattedStakeTimestamp() {
+    return this.stakeTimestamp
+      ? moment(this.stakeTimestamp).format('MMMM Do YYYY, h:mm:ss a')
+      : '--';
+  },
+},
   mounted: async function() {
     let network = await utils.queryParameters();
     console.log(network);
     this.network = network;
 
-    this.stakeRequired = network.current.stakeRequired;
+    this.stakeRequired = network.current.stakeRequiredUsd;
     this.nominee = this.getAppState?.operatorAccountInfo?.nominee || '';
   },
   methods: {
@@ -226,12 +218,12 @@ export default {
     //     }
     //   },
     async onSubmitDepositStake() {
-      if (!this.stake || !this.nominee) {
+      if (!this.stake || (!this.nominee && !this.currentStakedNominee)) {
         this.notify('Please enter both Stake and Nominee values.');
         return;
       }
       const isSubmitted = await utils.depositStake(
-        this.nominee,
+        this.nominee || this.currentStakedNominee,
         this.stake,
         this.getWallet.entry.keys
       );
@@ -242,12 +234,13 @@ export default {
       }
     },
     async onSubmitWithdrawStake() {
-      if (!this.nominee) {
+      if (!this.currentStakedNominee) {
         this.notify('You dont have any stake to withdraw yet.');
         return;
       }
       const isSubmitted = await utils.withdrawStake(
-        this.nominee,
+        this.currentStakedNominee,
+        this.forceUnstake,
         this.getWallet.entry.keys
       );
       if (isSubmitted) {
@@ -273,50 +266,70 @@ export default {
   max-width: 600px;
   margin: 20px auto;
   text-align: center;
-  p {
-    text-align: center !important;
-    margin-bottom: 20px;
-    margin-top: 20px;
-  }
 }
-.toll-form .input-error-message {
-  text-align: left;
-  color: red;
+
+.stake-card {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 20px;
 }
-.toll-amount-input-container {
-  height: 80px;
+
+.current-stake {
   margin-bottom: 20px;
 }
+
+.stake-required {
+  color: #555;
+  font-size: 0.9em;
+  margin: 5px 0;
+}
+
+.placeholder-text {
+  color: #999;
+  font-size: 0.85em;
+}
+
+.toggle-container {
+  margin: 20px 0;
+}
+
+.toggle-label {
+  margin-top: 5px;
+  font-size: 0.85em;
+  color: #555;
+}
+
+/* Add this style to target the switch element specifically */
+.a-switch {
+  width: fit-content; /* Allow switch to adjust to its content */
+}
+.withdraw-container {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.divider {
+  height: 1px;
+  background-color: #ddd;
+  margin: 20px 0;
+}
+
 .input-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+
+.input-field {
+  width: 100%;
   margin-bottom: 20px;
 }
 
-.input-container a-input {
-  width: 100%;
-  max-width: 400px;
-}
-
-.button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 20px;
-}
-
 .button-form {
-  flex: 1;
-  display: flex;
-  justify-content: center;
+  text-align: center;
 }
 
-.button-form:first-child {
-  margin-right: 10px;
-}
-
-.button-form:last-child {
-  margin-left: 10px;
+.action-button {
+  font-size: 1em;
 }
 </style>

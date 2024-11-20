@@ -120,11 +120,11 @@
 
             <td class="new-value">
               <span
-                v-if="proposal.proposedParameters.stakeRequired"
+                v-if="proposal.proposedParameters.stakeRequiredUsd"
                 class="new-parameter"
               >
-                {{ proposal.parameters.stakeRequired }}</span>
-              <span v-else> {{ proposal.parameters.stakeRequired }}</span>
+                {{ proposal.parameters.stakeRequiredUsd }}</span>
+              <span v-else> {{ proposal.parameters.stakeRequiredUsd }}</span>
             </td>
           </tr>
           <tr>
