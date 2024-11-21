@@ -550,7 +550,7 @@ async function getToll(friendId, yourId) {
     const { toll } = await getJSON(
       utils.getProxyUrl(`/account/${friendId}/${yourId}/toll`)
     )
-    return toll
+    return toll || BigInt(0)
   } catch (err) {
     return err.message
   }

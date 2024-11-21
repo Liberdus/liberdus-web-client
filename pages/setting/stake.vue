@@ -271,7 +271,7 @@ export default {
 .stake-card {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  padding: 20px;
+  padding: 20px 0 20px 0;
 }
 
 .current-stake {
