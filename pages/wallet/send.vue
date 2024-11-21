@@ -215,8 +215,8 @@ export default {
     },
     hasEnoughBalance () {
       const totalCost =
-        parseFloat(this.amount) + parseFloat(this.requiredTxFee || 0.001)
-      return this.getAppState.data.balance >= parseFloat(totalCost)
+        BigInt(this.amount) + BigInt(this.requiredTxFee || 0.001)
+      return this.getAppState.data.balance >= BigInt(totalCost)
     },
     isOwnName () {
       if (this.username.toLowerCase() === this.getWallet.handle) return true

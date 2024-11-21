@@ -1227,8 +1227,8 @@ utils.createVerifyTx = async function (code, sourceAcc) {
   return tx
 }
 
-utils.registerEmail = function (email, sourceAcc) {
-  const tx = utils.createEmailTx(email, sourceAcc)
+utils.registerEmail = async function (email, sourceAcc) {
+  const tx = await utils.createEmailTx(email, sourceAcc)
   return new Promise((resolve, reject) => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -1238,8 +1238,8 @@ utils.registerEmail = function (email, sourceAcc) {
   })
 }
 
-utils.verifyEmail = function (code, sourceAcc) {
-  const tx = utils.createVerifyTx(code, sourceAcc)
+utils.verifyEmail = async function (code, sourceAcc) {
+  const tx = await utils.createVerifyTx(code, sourceAcc)
   return new Promise((resolve, reject) => {
     injectTx(tx).then(res => {
       console.log(res)

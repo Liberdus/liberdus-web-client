@@ -350,7 +350,7 @@ export default {
         let myWallet = this.getWallet
         let proposal = {
           description: this.description,
-          totalAmount: parseFloat(this.amount),
+          totalAmount: BigInt(this.amount),
           paymentCount: parseInt(this.paymentCount),
           delay: this.delay * 60 * 1000,
           paymentType: this.selectedPaymentType,
