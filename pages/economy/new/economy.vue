@@ -88,24 +88,24 @@
             </tr>
             <tr>
               <td class="parameter-name">
-                Node Penalty
+                Node Penalty USD
               </td>
               <td class="current-value">
-                {{ networkParameters.current.nodePenalty }}
+                {{ networkParameters.current.nodePenaltyUsd }}
               </td>
               <td class="new-value">
-                <input v-model="form.nodePenalty" required />
+                <input v-model="form.nodePenaltyUsd" required />
               </td>
             </tr>
             <tr>
               <td class="parameter-name">
-                Node Reward Amount
+                Node Reward Amount USD
               </td>
               <td class="current-value">
-                {{ networkParameters.current.nodeRewardAmount }}
+                {{ networkParameters.current.nodeRewardAmountUsd }}
               </td>
               <td class="new-value">
-                <input v-model="form.nodeRewardAmount" required />
+                <input v-model="form.nodeRewardAmountUsd" required />
               </td>
             </tr>
             <tr>
@@ -122,7 +122,7 @@
 
             <tr>
               <td class="parameter-name">
-                Stake Required
+                Stake Required USD
               </td>
               <td class="current-value">
                 {{ networkParameters.current.stakeRequiredUsd }}
@@ -280,8 +280,8 @@ export default {
         },
         {
           id: 3,
-          text: 'Node Reward Amount',
-          value: 'nodeRewardAmount',
+          text: 'Node Reward Amount USD',
+          value: 'nodeRewardAmountUsd',
         },
         {
           id: 4,
@@ -296,7 +296,7 @@ export default {
         {
           id: 6,
           text: 'Proposal Fee',
-          value: 'proposalFeeUsd',
+          value: 'proposalFee',
         },
         {
           id: 7,
@@ -305,8 +305,8 @@ export default {
         },
         {
           id: 8,
-          text: 'Node Penalty',
-          value: 'nodePenalty',
+          text: 'Node Penalty USD',
+          value: 'nodePenaltyUsd',
         },
       ],
       newValue: '',
@@ -323,8 +323,8 @@ export default {
         devProposalFee: '',
         maintenanceFee: '',
         maintenanceInterval: '',
-        nodePenalty: '',
-        nodeRewardAmount: '',
+        nodePenaltyUsd: '',
+        nodeRewardAmountUsd: '',
         nodeRewardInterval: '',
         proposalFee: '',
         stakeRequiredUsd: '',
@@ -427,8 +427,10 @@ export default {
         for (let key in this.form) {
           if (key === 'description' || key === 'title') {
             newParameters[key] = this.form[key];
-          } else {
-            newParameters[key] = parseFloat(this.form[key]);
+          } else if (key === 'devProposalFee' || key === 'maintenanceFee' || key === 'nodePenaltyUsd' || key === 'nodeRewardAmountUsd' || key === 'proposalFee' || key === 'stakeRequiredUsd' || key === 'transactionFee' || key === 'faucetAmount' || key === 'defaultToll') {
+            newParameters[key] = BigInt(this.form[key]);
+          } else if (key === 'maintenanceInterval' || key === 'nodeRewardInterval') {
+            newParameters[key] = Number(this.form[key]);
           }
         }
         let proposalTx = await utils.createProposal(myWallet, newParameters);

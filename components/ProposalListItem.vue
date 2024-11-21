@@ -60,29 +60,29 @@
           </tr>
           <tr>
             <td class="parameter-name">
-              Node Penalty
+              Node Penalty USD
             </td>
 
             <td class="new-value">
               <span
-                v-if="proposal.proposedParameters.nodePenalty"
+                v-if="proposal.proposedParameters.nodePenaltyUsd"
                 class="new-parameter"
-              >{{ proposal.parameters.nodePenalty }}</span>
-              <span v-else>{{ proposal.parameters.nodePenalty }}</span>
+              >{{ proposal.parameters.nodePenaltyUsd }}</span>
+              <span v-else>{{ proposal.parameters.nodePenaltyUsd }}</span>
             </td>
           </tr>
           <tr>
             <td class="parameter-name">
-              Node Reward Amount
+              Node Reward Amount USD
             </td>
 
             <td class="new-value">
               <span
-                v-if="proposal.proposedParameters.nodeRewardAmount"
+                v-if="proposal.proposedParameters.nodeRewardAmountUsd"
                 class="new-parameter"
               >
-                {{ proposal.parameters.nodeRewardAmount }}</span>
-              <span v-else> {{ proposal.parameters.nodeRewardAmount }}</span>
+                {{ proposal.parameters.nodeRewardAmountUsd }}</span>
+              <span v-else> {{ proposal.parameters.nodeRewardAmountUsd }}</span>
             </td>
           </tr>
           <tr>
@@ -115,7 +115,7 @@
           </tr>
           <tr>
             <td class="parameter-name">
-              Stake Required
+              Stake Required USD
             </td>
 
             <td class="new-value">
@@ -344,7 +344,7 @@ export default {
     },
     onEnterVote () {
       this.$emit('vote-enter', {
-        amount: parseFloat(this.voteAmount),
+        amount: this.voteAmount,
         approve: this.selectedChoice,
         number: this.proposal.number
       })
