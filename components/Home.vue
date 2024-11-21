@@ -14,7 +14,6 @@
     >
       <!-- <p v-if="getAppState">{{ getAppState }}</p> -->
       <div class="total-balance">
-        // <h1>{{ getAppState.data.balance }}</h1>
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
           {{ getAppState.data.balance }}
           <span class="total-unit">LBD</span>
