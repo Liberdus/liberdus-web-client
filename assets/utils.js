@@ -1165,7 +1165,7 @@ utils.createDevProposal = async function (sourceAcc, proposal) {
   const proposalCount = await utils.getDevProposalCount()
 
   const payments = new Array(paymentCount).fill(1).map((_, i) => ({
-    amount: 1 / paymentCount,
+    amount: BigInt(1) / BigInt(paymentCount),
     delay: delay * i
   }))
   console.log('Issue count:', issueCount)

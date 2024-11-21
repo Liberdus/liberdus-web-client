@@ -81,7 +81,7 @@
           <span class="nav-text">Tx Receipts</span>
         </a-menu-item>
 
-        <a-sub-menu key="settings">
+        <a-sub-menu key="governance">
           <span slot="title"><a-icon type="team" />Governance</span>
           <a-menu-item
               key="funding"
