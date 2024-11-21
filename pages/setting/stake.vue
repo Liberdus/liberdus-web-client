@@ -146,7 +146,7 @@ export default {
       network: null,
       amount: '',
       stakeRequired: null,
-      stake: '', // New input for stake
+      stake: '10', // New input for stake
       nominee: '', // New input for nominee
       forceUnstake: false,
     };
