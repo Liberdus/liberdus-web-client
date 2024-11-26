@@ -265,18 +265,17 @@ export default {
     }
   },
   async mounted () {
-    console.log('mounted')
     let self = this
     if (!this.isUIReady) {
       this.$router.push('/loading')
     }
     window.addEventListener('focus', () => {
       self.updateWindowFocus(true)
-      console.log(`Is window focused: ${self.getWindowFocus}`)
+      if (utils.verboseLogs) console.log(`Is window focused: ${self.getWindowFocus}`)
     })
     window.addEventListener('blur', () => {
       self.updateWindowFocus(false)
-      console.log(`Is window focused: ${self.getWindowFocus}`)
+      if (utils.verboseLogs) console.log(`Is window focused: ${self.getWindowFocus}`)
     })
 
     if (!this.getTimers['nodeHealthChecker']) {

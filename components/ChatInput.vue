@@ -9,18 +9,12 @@
           Not Enough coin to pay toll
         </p>
 
-        <p
-          v-else-if="!isFriend"
-          class="required-toll"
-        >
+        <p v-else-if="!isFriend" class="required-toll">
           <strong>Total Cost: {{ requiredToll + requiredFee }} coins</strong>
           (Toll {{ requiredToll }} coins + Tx fee {{ requiredFee }} coins)
         </p>
 
-        <p
-          v-else-if="isFriend"
-          class="required-toll"
-        >
+        <p v-else-if="isFriend" class="required-toll">
           <strong>Total Cost: {{ requiredFee }} coins</strong>
           (Tx Fee)
         </p>
@@ -28,27 +22,34 @@
 
       <a-col :span="24">
         <a-row>
-          <img class="attached-img" v-if="imageUrl" :src="imageUrl" alt="avatar"/>
-          <p v-if="imageUrl">File size: {{ fileSize  }} KB <a-icon  @click="removeAttachment" type="delete" /></p>
-
+          <img
+            class="attached-img"
+            v-if="imageUrl"
+            :src="imageUrl"
+            alt="avatar"
+          />
+          <p v-if="imageUrl">
+            File size: {{ fileSize }} KB
+            <a-icon @click="removeAttachment" type="delete" />
+          </p>
         </a-row>
         <a-row :gutter="16">
           <a-col :span="24">
             <div style="display: flex; align-items: center; gap: 10px;">
               <a-input
-                  v-model="message"
-                  type="text"
-                  placeholder="Type your message"
-                  :disabled="notEnoughCoin"
-                  @keyup.enter="submitMessage"
-                  style="flex: 1;"
+                v-model="message"
+                type="text"
+                placeholder="Type your message"
+                :disabled="notEnoughCoin"
+                @keyup.enter="submitMessage"
+                style="flex: 1;"
               />
               <a-upload
-                  name="avatar"
-                  class="avatar-uploader"
-                  :show-upload-list="false"
-                  :before-upload="beforeUpload"
-                  @change="handleChange"
+                name="avatar"
+                class="avatar-uploader"
+                :show-upload-list="false"
+                :before-upload="beforeUpload"
+                @change="handleChange"
               >
                 <a-icon type="paper-clip" />
               </a-upload>
@@ -62,108 +63,149 @@
 </template>
 
 <script>
-import utils from '../assets/utils'
-import { mapGetters } from 'vuex'
-import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue'
-import { message } from 'ant-design-vue'
+import utils from "../assets/utils";
+import { mapGetters, mapActions } from "vuex";
+import { PlusOutlined, LoadingOutlined } from "@ant-design/icons-vue";
+import { message } from "ant-design-vue";
+import { secpUtils } from "@thant-dev/ciphersuite";
+import * as crypto from "@shardus/crypto-web";
 
-function getBase64 (img, callback) {
-  const reader = new FileReader()
-  reader.addEventListener('load', () => callback(reader.result))
-  reader.readAsDataURL(img)
+function getBase64(img, callback) {
+  const reader = new FileReader();
+  reader.addEventListener("load", () => callback(reader.result));
+  reader.readAsDataURL(img);
 }
 export default {
-  props: ['friend', 'isFriend', 'setPendingMessage'],
+  props: ['friend', 'isFriend', 'setPendingMessage', 'chatId'],
   components: {
     PlusOutlined,
     LoadingOutlined
   },
-  data: function () {
+  data: function() {
     return {
-      message: '',
+      message: "",
       requiredToll: BigInt(0),
       requiredFee: BigInt(0),
       loading: false,
-      imageUrl: '',
-      fileSize: 0
-    }
+      imageUrl: "",
+      fileSize: 0,
+      e2eEncrypted: true,
+      encryptionMethod: "ratchet"
+    };
   },
   computed: {
     ...mapGetters({
-      getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState'
+      getWallet: "wallet/getWallet",
+      getAppState: 'chat/getAppState',
+      isRatchetInitialized: 'ratchet/isInitialized',
+      getRatchetState: 'ratchet/getRatchetState',
+      getRatchet: 'ratchet/getRatchet'
     }),
-    notEnoughCoin () {
-      // if (this.getAppState.data.balance < parseFloat(this.requiredToll))
-      //   return true;
-      // return false;
-      return false
+    notEnoughCoin() {
+      return false;
     }
   },
-  async mounted () {
-    const to = await utils.getAddress(this.friend)
-    this.requiredToll = await utils.getToll(to, this.getWallet.entry.address)
-    const network = await utils.queryParameters()
+  async mounted() {
+    this.requiredToll = await utils.getToll(
+      this.friendAddress,
+      this.getWallet.entry.address
+    );
+    const network = await utils.queryParameters();
     if (network.current.transactionFee) {
-      this.requiredFee = network.current.transactionFee
+      this.requiredFee = network.current.transactionFee;
+    }
+
+    // Generate a unique session ID for this chat
+    console.log(`Chat session ID: ${this.chatId}`)
+
+    if (!this.isRatchetInitialized) {
+     alert('Ratchet not initialized')
     }
   },
   methods: {
-    async submitMessage () {
-      let messageToSend = {
-        text: this.message,
-        attachment: this.imageUrl ? this.imageUrl : null
-      }
-      this.message = ''
-      let myWallet = this.getWallet
-      let {success, pendingTx} = await utils.sendMessage(
-        messageToSend,
-        myWallet,
-        this.friend
-      )
-      this.imageUrl = ''
-      if (success) {
-        this.setPendingMessage({
+    ...mapActions({
+      createRatchet: 'ratchet/createOrRestoreRatchet',
+      initializeRatchetSession: 'ratchet/initializeRatchet',
+      encryptMessage: 'ratchet/encryptMessage'
+    }),
+    async submitMessage() {
+      try {
+        let messageToSend = {
+          text: this.message,
+          attachment: this.imageUrl ? this.imageUrl : null,
           handle: this.getWallet.handle,
-          timestamp: null,
-          message: pendingTx.message,
-          messageHash: utils.hashMessage(JSON.parse(pendingTx.message)),
-        })
-      } else {
-        message.error('Failed to send message')
+          timestamp: Date.now()
+        };
+
+        // Use the store to encrypt the message
+        const encryptedMessage = this.e2eEncrypted
+          ? await this.encryptMessage({
+              chatId: this.chatId,
+              plaintext: crypto.safeStringify(messageToSend)
+            })
+          : utils.safeStringify(messageToSend);
+
+        let payload = {
+          message: encryptedMessage,
+          encrypted: this.e2eEncrypted,
+          encryptionMethod: this.encryptionMethod
+        };
+
+        this.message = "";
+        let myWallet = this.getWallet;
+        let { success, pendingTx } = await utils.sendMessage(
+          payload,
+          myWallet,
+          this.friend
+        );
+
+        this.imageUrl = "";
+        if (success) {
+          this.setPendingMessage({
+            handle: this.getWallet.handle,
+            timestamp: null,
+            message: pendingTx.message,
+            messageHash: utils.hashMessage(JSON.parse(pendingTx.message))
+          });
+        } else {
+          message.error("Failed to send message");
+        }
+      } catch (error) {
+        console.error("Failed to send message:", error);
+        message.error("Failed to send message");
       }
     },
     /**
      * Handle the change event when a file is selected.
      */
-    handleChange (info) {
-      if (info.file.status === 'uploading') {
-        this.loading = true
-        return
+    handleChange(info) {
+      if (info.file.status === "uploading") {
+        this.loading = true;
+        return;
       }
-      if (info.file.status === 'done') {
-
+      if (info.file.status === "done") {
         // Convert the uploaded file to Base64
-        this.getBase64(info.file.originFileObj, (base64) => {
+        this.getBase64(info.file.originFileObj, base64 => {
           // this.imageUrl = base64
-          this.loading = false
-        })
+          this.loading = false;
+        });
       }
     },
     /**
      * Validate the file before upload and convert to Base64 if valid.
      */
     beforeUpload(file) {
-      const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+      const isJpgOrPng =
+        file.type === "image/jpeg" || file.type === "image/png";
       if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG files!');
+        message.error("You can only upload JPG/PNG files!");
         return false;
       }
 
       const maxSizeInKB = 4;
       // Check if the file size is less than 5 KB
       if (file.size / 1024 < maxSizeInKB) {
-        this.getBase64(file, (base64) => {
+        this.getBase64(file, base64 => {
           this.imageUrl = base64;
           this.loading = false;
           this.fileSize = (file.size / 1024).toFixed(2);
@@ -172,12 +214,17 @@ export default {
       }
 
       // If file is larger than 10 KB, resize it
-      this.resizeImage(file, maxSizeInKB, (resizedBase64) => {
+      this.resizeImage(file, maxSizeInKB, resizedBase64 => {
         this.imageUrl = resizedBase64;
         // Calculate the size of the Base64 string in KB
         const base64Length = this.imageUrl.length;
-        const sizeInBytes = (base64Length * 3) / 4 -
-            (this.imageUrl.endsWith('==') ? 2 : this.imageUrl.endsWith('=') ? 1 : 0);
+        const sizeInBytes =
+          (base64Length * 3) / 4 -
+          (this.imageUrl.endsWith("==")
+            ? 2
+            : this.imageUrl.endsWith("=")
+            ? 1
+            : 0);
         const sizeInKB = sizeInBytes / 1024;
         this.fileSize = sizeInKB.toFixed(2);
         this.loading = false;
@@ -186,15 +233,15 @@ export default {
       return false; // Prevent the default upload behavior
     },
     removeAttachment() {
-      this.imageUrl = ''
+      this.imageUrl = "";
     },
     /**
      * Helper function to convert a file to a Base64 string.
      */
-    getBase64 (file, callback) {
-      const reader = new FileReader()
-      reader.addEventListener('load', () => callback(reader.result))
-      reader.readAsDataURL(file)
+    getBase64(file, callback) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => callback(reader.result));
+      reader.readAsDataURL(file);
     },
     async resizeImage(file, maxSizeInKB, callback) {
       const img = await this.loadImageFromFile(file); // Load image asynchronously
@@ -203,21 +250,23 @@ export default {
       let width = img.width * initialScale;
       let height = img.height * initialScale;
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
 
       let attempt = 0;
       const MAX_TRIES = 10; // Limit the number of compression attempts
 
       // Throttle to avoid performance issues during resizing
       const compressImage = async () => {
-        console.log(`Attempt ${attempt + 1}: Resizing image to ${width}x${height}`);
+        console.log(
+          `Attempt ${attempt + 1}: Resizing image to ${width}x${height}`
+        );
         canvas.width = width;
         canvas.height = height;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, width, height);
 
-        const base64 = canvas.toDataURL('image/jpeg', 0.7); // Adjust quality as needed
+        const base64 = canvas.toDataURL("image/jpeg", 0.7); // Adjust quality as needed
         const sizeInKB = (base64.length * 3) / 4 / 1024; // Estimate size in KB
 
         if (sizeInKB < maxSizeInKB || attempt >= MAX_TRIES) {
@@ -231,7 +280,7 @@ export default {
         attempt++;
 
         // Throttle the loop to avoid performance issues
-        await new Promise((resolve) => setTimeout(resolve, 50)); // Small delay to prevent blocking
+        await new Promise(resolve => setTimeout(resolve, 50)); // Small delay to prevent blocking
 
         compressImage(); // Retry compression
       };
@@ -242,19 +291,18 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(file);
 
-        reader.onload = (event) => {
+        reader.onload = event => {
           const img = new Image();
           img.src = event.target.result;
           img.onload = () => resolve(img);
-          img.onerror = (err) => reject(err);
+          img.onerror = err => reject(err);
         };
 
-        reader.onerror = (err) => reject(err);
+        reader.onerror = err => reject(err);
       });
     }
-
   }
-}
+};
 </script>
 
 <style>
@@ -300,8 +348,8 @@ export default {
 .chat-input-container .required-toll.not-enough-toll {
   color: red;
 }
-input[type='text'],
-input[type='number'],
+input[type="text"],
+input[type="number"],
 textarea {
   font-size: 16px !important;
 }
@@ -331,5 +379,4 @@ textarea {
   width: 0px;
   height: 0px;
 }
-
 </style>

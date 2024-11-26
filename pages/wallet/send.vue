@@ -324,7 +324,7 @@ export default {
     }
   }
 }
-.secret-key-input {
+.private-key-input {
   margin-right: 5px;
 }
 .qr-code-btn {

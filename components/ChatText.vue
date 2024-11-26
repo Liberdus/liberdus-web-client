@@ -13,15 +13,16 @@
 
       <a-col :span="24" class="chat-message-col">
         <div class="chat">
-          <div v-if="isPending">
+          <div v-if="isPending && pendingMessage != null">
             <img class="attached-img" v-if="pendingMessage.attachment" :src="pendingMessage.attachment"
                  alt="avatar"/>
             <br v-if="pendingMessage.attachment">
           </div>
           <div v-else>
-            <img class="attached-img" v-if="confirmedMessage.attachment" :src="confirmedMessage.attachment"
+            <img class="attached-img" v-if="confirmedMessage && confirmedMessage.attachment"
+                 :src="confirmedMessage.attachment"
                  alt="avatar"/>
-            <br v-if="confirmedMessage.attachment">
+            <br v-if="confirmedMessage && confirmedMessage.attachment">
           </div>
 
           <div class="chat-raw-text">
@@ -69,7 +70,8 @@ export default {
       }
     },
     confirmedMessage () {
-      return this.message.body
+      console.log('confirmedMessage', typeof this.message)
+      return this.message
     },
     formattedTimestamp () {
       if (this.isPending) return 'pending...'

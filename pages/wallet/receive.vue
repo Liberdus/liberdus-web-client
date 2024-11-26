@@ -41,10 +41,10 @@
 
       <div>
         <p id="public-key">
-          <strong>{{ getWallet.entry.keys.publicKey }}</strong>
+          <strong>{{ getWallet.entry.keys.address }}</strong>
         </p>
         <qriously
-          :value="getWallet.entry.keys.publicKey"
+          :value="getWallet.entry.keys.address"
           :size="180"
           class="qr-code"
         />
@@ -115,7 +115,7 @@ export default {
       // TODO
       // utils.copyToClipboard(this.getWallet.handle);
       // this.$ons.notification.alert("Copied to clipboard!");
-      utils.copyToClipboard(this.getWallet.entry.keys.publicKey)
+      utils.copyToClipboard(this.getWallet.entry.keys.address)
       this.$notification.success({message: 'Copied address to clipboard!'})
     }
   }

@@ -3,6 +3,7 @@ import * as crypto from '@shardus/crypto-web'
 import axios from 'axios'
 import stringify from 'fast-stable-stringify'
 import { ethers } from 'ethers'
+import { Ratchet, getPublicKey, secpUtils } from '@thant-dev/ciphersuite'
 
 // eslint-disable-next-line no-unused-vars
 import { map, filter, sort, sortBy, orderBy, flow, concat, keys, get } from 'lodash'
@@ -22,6 +23,7 @@ const seedNodeHost = storedSeedNode || defaultSeedNode
 const utils = {}
 const walletEntries = {}
 const network = '0'.repeat(64)
+const verboseLogs = false
 
 utils.init = async defaultHost => {
   host = defaultHost
@@ -68,7 +70,10 @@ utils.getProxyUrl = function (url, option) {
       ip = option.ip
       port = option.port
     }
-    console.log(ip, port)
+    if (verboseLogs) {
+      console.log('getProxyUrl', url, option, ip, port)
+      console.log(ip, port)
+    }
     if (ip === 'localhost' || ip === '127.0.0.1') {
       return `http://localhost:${port}${url}`
     }
@@ -141,28 +146,49 @@ utils.getSeedNode = async (ip, port) => {
   }
 }
 
+utils.bytesToHex = uint8Array => {
+  return Array.from(uint8Array)
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
 utils.createAccount = () => {
   let keys = {
     address: '',
     keys: {
       publicKey: '',
-      secretKey: ''
+      privateKey: ''
     }
   }
   if (config.useEthereumAddress) {
-    const newAccount = ethers.Wallet.createRandom()
-    keys.address = toShardusAddress(newAccount.address)
-    keys.keys.publicKey = keys.address
-    keys.keys.secretKey = newAccount.privateKey
+    // const newAccount = ethers.Wallet.createRandom()
+    // keys.address = toShardusAddress(newAccount.address)
+    // keys.keys.publicKey = keys.address
+    // keys.keys.privateKey = newAccount.privateKey
+
+    // Generate the key pair using @noble/secp256k1
+    const privateKey = secpUtils.randomPrivateKey()
+
+    // Derive Ethereum address if needed
+    const uncompressedPublicKey = getPublicKey(privateKey, false); // false indicates uncompressed
+    const uncompressedPublicKeyHex = ethers.utils.hexlify(uncompressedPublicKey);
+    console.log('uncompressedPublicKeyHex', uncompressedPublicKeyHex)
+    const ethAddress = ethers.utils.computeAddress(uncompressedPublicKeyHex)
+
+    keys.address = toShardusAddress(ethAddress)
+    keys.keys.publicKey = uncompressedPublicKey
+    keys.keys.privateKey = privateKey
+    console.log('keys', keys)
   } else {
     const newAccount = crypto.generateKeys()
     keys.address = newAccount.publicKey
     keys.keys.publicKey = newAccount.publicKey
-    keys.keys.secretKey = newAccount.secretKey
+    keys.keys.privateKey = newAccount.privateKey
   }
   console.log('keys', keys)
   return keys
 }
+
 
 const toShardusAddress = (addressStr) => {
   //  change this: 0x665eab3be2472e83e3100b4233952a16eed20c76
@@ -170,18 +196,22 @@ const toShardusAddress = (addressStr) => {
   return addressStr.slice(2).toLowerCase() + '0'.repeat(24)
 }
 
-const signObj = async (tx, keys) => {
+const signObj = async (tx, source) => {
   if (config.useEthereumAddress) {
-    await signEthereumTx(tx, keys ? keys : USER.keys)
+    await signEthereumTx(tx, source)
   } else {
-    crypto.signObj(tx, keys.secretKey, keys.publicKey)
+    const keys = source.keys
+    crypto.signObj(tx, keys.privateKey, keys.publicKey)
   }
 }
 
-const signEthereumTx = async (tx, keys) => {
-  if (!keys) {
+const signEthereumTx = async (tx, source) => {
+  console.log(`signEthereumTx`, source)
+  if (source == null || source.keys == null) {
     throw new Error('Keys are required for signing')
   }
+
+  const keys = source.keys
 
   // Create a copy of the tx without any existing sign field
   const dataToSign = Object.assign({}, tx)
@@ -192,14 +222,14 @@ const signEthereumTx = async (tx, keys) => {
 
   try {
     // Create wallet from private key
-    const wallet = new ethers.Wallet(keys.secretKey)
+    const wallet = new ethers.Wallet(keys.privateKey)
 
     // Sign the message
     const signature = await wallet.signMessage(message)
 
     // Add signature to transaction
     tx.sign = {
-      owner: keys.publicKey,
+      owner: source.address,
       sig: signature
     }
   } catch (error) {
@@ -306,7 +336,7 @@ async function injectTx(tx) {
     const data = crypto.safeStringify(tx)
     console.log(data.sign || tx.sign)
     const url = getInjectUrl()
-    console.log(url)
+    console.log('url', url)
     const res = await postJSON(url, { tx: data })
     console.log(res)
     return res
@@ -576,6 +606,17 @@ async function getAddress(handle) {
   return null
 }
 
+async function getAccountPublicKey(address) {
+  if (!address) return
+  try {
+    const account = await getAccountData(address)
+    console.log(`getAccountPublicKey`, account)
+    return account.account.publicKey
+  } catch (e) {
+    console.log(`Error while getting public key for ${address}`, e.message)
+  }
+}
+
 async function pollMessages(from, to, timestamp) {
   try {
     const url = utils.getProxyUrl(`/messages/${to}/${from}`)
@@ -602,11 +643,11 @@ utils.createWallet = (name, id) => {
 utils.importWallet = async sk => {
   const keys = {
     publicKey: sk.slice(64),
-    secretKey: sk
+    privateKey: sk
   }
-  const handle = await utils.getHandle(keys.publicKey)
+  const handle = await utils.getHandle(keys.address)
   const entry = {
-    address: keys.publicKey,
+    address: keys.address,
     id: crypto.hash(handle),
     keys
   }
@@ -631,10 +672,11 @@ utils.registerAlias = async (handle, source) => {
     aliasHash: crypto.hash(handle),
     from: source.address,
     alias: handle,
+    publicKey: ethers.utils.hexlify(source.keys.publicKey).slice(2),
     timestamp: Date.now()
   }
-  await signObj(tx, source.keys)
-  console.log(tx)
+  await signObj(tx, source)
+  console.log('register tx', tx)
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -658,7 +700,7 @@ utils.addFriend = async (tgt, keys) => {
     type: 'friend',
     network,
     alias: tgt,
-    from: keys.publicKey,
+    from: keys.address,
     to: targetAddress,
     amount: BigInt(1),
     timestamp: Date.now()
@@ -686,7 +728,7 @@ utils.removeFriend = async (tgt, keys) => {
     type: 'remove_friend',
     network,
     alias: tgt,
-    from: keys.publicKey,
+    from: keys.address,
     to: targetAddress,
     amount: BigInt(1),
     timestamp: Date.now()
@@ -708,7 +750,7 @@ utils.claimTokens = async keys => {
   const tx = {
     type: 'claim_coins',
     network,
-    srcAcc: keys.publicKey,
+    srcAcc: keys.address,
     timestamp: Date.now()
   }
   await signObj(tx, keys)
@@ -728,7 +770,7 @@ utils.setToll = async (toll, keys) => {
   const tx = {
     type: 'toll',
     network,
-    from: keys.publicKey,
+    from: keys.address,
     toll: BigInt(toll),
     timestamp: Date.now()
   }
@@ -750,7 +792,7 @@ utils.setToll = async (toll, keys) => {
 //   const tx = {
 //     type: 'stake',
 //     network,
-//     from: keys.publicKey,
+//     from: keys.address,
 //     stake: stake,
 //     timestamp: Date.now()
 //   }
@@ -772,7 +814,7 @@ utils.setToll = async (toll, keys) => {
 //   const tx = {
 //     type: 'remove_stake',
 //     network,
-//     from: keys.publicKey,
+//     from: keys.address,
 //     stake: stake,
 //     timestamp: Date.now()
 //   }
@@ -794,7 +836,7 @@ utils.setToll = async (toll, keys) => {
 //   const tx = {
 //     type: 'remove_stake_request',
 //     network,
-//     from: keys.publicKey,
+//     from: keys.address,
 //     stake: stake,
 //     timestamp: Date.now()
 //   }
@@ -816,7 +858,7 @@ utils.depositStake = async (nominee, stake, keys) => {
   console.log(keys)
   const tx = {
     type: 'deposit_stake',
-    nominator: keys.publicKey,
+    nominator: keys.address,
     nominee,
     stake: BigInt(stake),
     timestamp: Date.now()
@@ -838,7 +880,7 @@ utils.depositStake = async (nominee, stake, keys) => {
 utils.withdrawStake = async (nominee, force, keys) => {
   const tx = {
     type: 'withdraw_stake',
-    nominator: keys.publicKey,
+    nominator: keys.address,
     nominee,
     force,
     timestamp: Date.now()
@@ -865,7 +907,7 @@ utils.hashMessage = message => {
   return crypto.hashObj(message)
 }
 
-utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
+utils.sendMessage = async (payload, sourceAcc, targetHandle) => {
   const source = sourceAcc.entry
   const targetAddress = await getAddress(targetHandle)
   if (targetAddress === undefined || targetAddress === null) {
@@ -874,24 +916,21 @@ utils.sendMessage = async (msgObject, sourceAcc, targetHandle) => {
   }
   const tollAmount = await getToll(targetAddress, source.address)
   const messageTimestamp = Date.now()
-  const message = crypto.safeStringify({
-    body: msgObject,
-    timestamp: messageTimestamp,
-    handle: sourceAcc.handle
-  })
-  const encryptedMsg = message
+  const stringifiedPayload = crypto.safeStringify(payload)
   const tx = {
     type: 'message',
     network,
     from: source.address,
     to: targetAddress,
     chatId: crypto.hash([source.address, targetAddress].sort().join``),
-    message: encryptedMsg,
+    message: stringifiedPayload,
     amount: tollAmount,
     timestamp: messageTimestamp
   }
-  await signObj(tx, source.keys)
+  console.log(`unsigned tx`, tx, source.keys)
+  await signObj(tx, source)
   console.log(`signed message`, tx)
+  console.log(`signed message`, crypto.safeStringify(tx))
   return new Promise(resolve => {
     injectTx(tx).then(res => {
       console.log(res)
@@ -918,7 +957,7 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
     })
     // const encryptedMsg = crypto.encrypt(
     //   message,
-    //   crypto.convertSkToCurve(source.keys.secretKey),
+    //   crypto.convertSkToCurve(source.keys.privateKey),
     //   crypto.convertPkToCurve(tgtAddress)
     // )
     const encryptedMsg = message
@@ -940,9 +979,9 @@ utils.broadcastMessage = async (text, sourceAcc, recipients) => {
   })
 }
 
-utils.getHandle = async publicKey => {
+utils.getHandle = async address => {
   const { handle } = await getJSON(
-    utils.getProxyUrl(`/account/${publicKey}/alias`)
+    utils.getProxyUrl(`/account/${address}/alias`)
   )
   return handle
 }
@@ -1379,7 +1418,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
   const parameters = await utils.queryParameters()
   const tx = {
     type: 'transfer',
-    from: keys.publicKey,
+    from: keys.address,
     to: targetAddress,
     amount: BigInt(amount),
     timestamp: Date.now(),
@@ -1440,22 +1479,26 @@ utils.updateBadge = (tabName, type) => {
   } catch (e) { }
 }
 
-utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
-  // return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
-  return message
-}
+// utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
+//   // return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
+//   return message
+// }
 
-utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-  // return crypto.safeJsonParse(
-  //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
-  // )
-  return encryptedMessage
-}
+// utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
+//   // return crypto.safeJsonParse(
+//   //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
+//   // )
+//   return encryptedMessage
+// }
 
-utils.queryEncryptedChats = async function (chatId) {
-  const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
-  console.log(res.data)
-  return res.data.messages.map(m => crypto.safeJsonParse(m))
+utils.queryEncryptedChats = async function (chatId, otherPersonPublicKey) {
+  try {
+      const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
+    console.log(res.data)
+    return res.data.messages.map(m => crypto.safeJsonParse(m))
+  } catch (e) {
+    return []
+  }
 }
 
 utils.calculateWholeCycleDuration = function (window, devWindow) {
@@ -1476,6 +1519,13 @@ utils.isNodeOnline = async function () {
   }
 }
 
+utils.bytesArrayToHex = function (bytesArray) {
+  return bytesArray.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), '')
+}
+
 utils.getAddress = getAddress
+utils.getAccountPublicKey = getAccountPublicKey
 utils.getToll = getToll
+utils.verboseLogs = verboseLogs
+
 export default utils

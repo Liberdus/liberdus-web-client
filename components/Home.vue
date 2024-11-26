@@ -81,7 +81,7 @@
   </div>
 </template>
 
-<script>
+<script lang="js">
 import TransactionListItem from '~/components/TransactionListItem'
 import { mapGetters, mapActions } from 'vuex'
 import { map, filter, concat, flow, chain } from 'lodash'
@@ -91,6 +91,7 @@ import ToolBar from '~/components/ToolBar'
 import Title from '~/components/baisc/Title'
 import Button from '~/components/baisc/Button'
 import Notification from '~/components/Notification'
+import {secpUtils} from '@thant-dev/ciphersuite'
 export default {
   components: {
     TransactionListItem,
@@ -103,7 +104,9 @@ export default {
     return {
       lastMessage: null,
       lastTx: null,
-      previousUrl: null
+      previousUrl: null,
+      totalMessages: 0,
+      lastProcessedChats: {},
     }
   },
   computed: {
@@ -318,7 +321,12 @@ export default {
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
-      addTimer: 'chat/addTimer'
+      addTimer: 'chat/addTimer',
+      // Add Ratchet store actions
+      createRatchet: 'ratchet/createOrRestoreRatchet',
+      initializeRatchetSession: 'ratchet/initializeRatchet',
+      decryptMessage: 'ratchet/decryptMessage',
+      loadPersistedStates: 'ratchet/loadPersistedStates'
     }),
     notifyToRegisterEmail () {
       this.$ons.notification.alert(
@@ -333,6 +341,14 @@ export default {
     getLatestMessageFromServer (processedState) {
       let chats = processedState.data.chats
       let messageList = []
+      if (Object.keys(chats).length === 0) {
+        return {
+          body: null,
+          timestamp: null,
+          handle: null
+        }
+      }
+      console.log('chats', chats)
       for (let handle in chats) {
         chats[handle].messages.forEach(m => messageList.push(m))
       }
@@ -352,27 +368,112 @@ export default {
           handle: null
         }
     },
-    async processData (myAccountData) {
+    async processData(myAccountData) {
       let self = this
       try {
         let { account } = myAccountData
+        const oldChats = account.data.chats
         let processed = { ...account }
 
-        for (let otherPersonPk in processed.data.chats) {
-          const chatId = processed.data.chats[otherPersonPk]
-          const encryptedChatList = await utils.queryEncryptedChats(chatId)
-          const decryptedChatList = encryptedChatList.map(data => {
-            return utils.decryptMessage(
-              data,
-              otherPersonPk,
-              self.getWallet.entry.keys.secretKey
-            )
-          })
-          processed.data.chats[otherPersonPk] = {
-            messages: decryptedChatList
-          }
+        const persistedStates = await this.loadPersistedStates()
+        let allChats = {}
+        let totalMessages = 0
+        let hasNewMessages = false
+        console.log('Persisted states:', Object.keys(persistedStates), persistedStates.persistedStates)
+        console.log('My address', self.getWallet.entry.address)
+        console.log('Processed.data.chats', processed.data.chats)
+
+        // calculate total messages before decrypting the new messages
+        for (let otherPersonAddress in processed.data.chats) {
+          const chatId = processed.data.chats[otherPersonAddress]
+          const chatList = await utils.queryEncryptedChats(chatId)
+          totalMessages += chatList.length
+          allChats[chatId] = chatList
         }
 
+        if (totalMessages > this.totalMessages) {
+          hasNewMessages = true
+        }
+
+        this.totalMessages = totalMessages
+
+        // Process each chat
+        if (hasNewMessages) {
+          for (let otherPersonAddress in processed.data.chats) {
+            const chatId = processed.data.chats[otherPersonAddress]
+            const encryptedChatList = allChats[chatId]
+            const otherPersonPk = await utils.getAccountPublicKey(otherPersonAddress)
+
+            if (encryptedChatList.length > 0) {
+              if (!persistedStates.persistedStates[chatId]) {
+                console.log('No persisted state for chat:', chatId, 'Creating new ratchet...')
+                // Create new ratchet for existing chat
+                await this.createRatchet({
+                  chatId,
+                  keyPair: this.getWallet.entry.keys,
+                  isInitiator: false // We're receiving messages in an existing chat
+                })
+
+                await this.initializeRatchetSession({
+                  chatId,
+                  // convert to Uint8Array
+                  remotePublicKey: secpUtils.hexToBytes(otherPersonPk),
+                })
+              } else {
+                console.log('Restoring persisted state for chat:', chatId)
+                console.log('Other person pk:', otherPersonPk)
+                // Restore ratchet with persisted state
+                await this.createRatchet({
+                  chatId,
+                  keyPair: this.getWallet.entry.keys,
+                  isInitiator: false, // We're receiving messages in an existing chat
+                  existingState: persistedStates.persistedStates[chatId]
+                })
+
+                await this.initializeRatchetSession({
+                  chatId,
+                  // convert to Uint8Array
+                  remotePublicKey: secpUtils.hexToBytes(otherPersonPk),
+                })
+              }
+
+              // Decrypt messages using ratchet
+              const decryptedChatList = await Promise.all(
+                  encryptedChatList.map(async data => {
+                    try {
+                      console.log('Decrypting chat:', chatId, data)
+                      if (data.encrypted && data.encryptionMethod === 'ratchet') {
+                        // Use ratchet decryption
+                        const decryptedStr = await this.decryptMessage({
+                          chatId,
+                          encryptedMessage: data.message
+                        })
+                        console.log('Decrypted str:', decryptedStr)
+                        return JSON.parse(decryptedStr)
+                      }
+                    } catch (error) {
+                      throw new Error('Failed to decrypt message:', error)
+                      return null
+                    }
+                  })
+              )
+              console.log('Decrypted chat:', chatId, decryptedChatList)
+
+              // Filter out any failed decryptions
+              const validMessages = decryptedChatList.filter(msg => msg !== null)
+              processed.data.chats[otherPersonAddress] = {
+                messages: validMessages
+              }
+            }
+          }
+          this.lastProcessedChats = processed.data.chats
+        } else {
+          console.log('No new messages...')
+          processed.data.chats = Object.assign({}, this.lastProcessedChats)
+        }
+
+
+        // Process handles
         let keys = Object.keys(account.data.chats)
         let modifiedChats = {}
         for (let i = 0; i < keys.length; i++) {
@@ -390,10 +491,11 @@ export default {
         let friendList = Object.values(processed.data.friends)
         friendList = friendList.filter(f => f !== null)
         processed.data.friends = friendList
+
         return processed
       } catch (e) {
-        console.warn(`Unable to process account state data...`)
-        console.warn(e)
+        console.warn('Unable to process account state data...', e)
+        return null
       }
     },
     getActiveWindow (window, proposalType) {

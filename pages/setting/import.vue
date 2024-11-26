@@ -17,7 +17,7 @@
       </v-ons-button>
 
       <div class="secret-input-container">
-        <a-input placeholder="Secret Key" size="large" v-model="secretKey">
+        <a-input placeholder="Secret Key" size="large" v-model="privateKey">
         </a-input>
         <a-button
           slot="enterButton"
@@ -27,7 +27,7 @@
           <img src="../../assets/qrcode.png" alt="qr-code" />
         </a-button>
         <!-- <input
-          v-model="secretKey"
+          v-model="privateKey"
           placeholder="Secret key"
           class="text-input"
         >
@@ -81,7 +81,7 @@ export default {
   },
   data: function() {
     return {
-      secretKey: '',
+      privateKey: '',
       previousUrl: '/',
       showScanner: false,
     };
@@ -92,7 +92,7 @@ export default {
       addWallet: 'wallet/addWallet',
     }),
     onDetectSk(sk) {
-      this.secretKey = sk;
+      this.privateKey = sk;
       this.showScanner = false;
     },
     redirect(url, option) {
@@ -108,7 +108,7 @@ export default {
     async onImportAccount() {
       try {
         let { handle, entry } = await utils.importWallet(
-          this.secretKey.toLowerCase()
+          this.privateKey.toLowerCase()
         );
         let wallet = {
           handle: handle,
@@ -134,7 +134,7 @@ export default {
   text-align: center;
   padding: 20px;
 }
-.secret-key-input {
+.private-key-input {
   margin-right: 5px;
 }
 .qr-code-btn {

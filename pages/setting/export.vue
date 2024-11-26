@@ -4,17 +4,17 @@
     <!-- <tool-bar :option="{ menu: false, notification: false, back: true}" /> -->
     <div class="import-account-container">
       <a-card title="Your Secret Key">
-        <p id="secret-key">
-          <strong>{{ secretKey }}</strong>
+        <p id="private-key">
+          <strong>{{ privateKey }}</strong>
         </p>
 
-        <p class="secret-key-warning">
+        <p class="private-key-warning">
           Do not share your
           <strong>Secret Key</strong> to anyone
         </p>
 
         <qriously
-          :value="secretKey"
+          :value="privateKey"
           :size="200"
           class="qr-code"
         />
@@ -67,8 +67,8 @@ export default {
       getWallet: "wallet/getWallet",
       isUIReady: "chat/isUIReady"
     }),
-    secretKey() {
-      return this.getWallet.entry.keys.secretKey.toLowerCase();
+    privateKey() {
+      return this.getWallet.entry.keys.privateKey.toLowerCase();
       // return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
     }
   },
@@ -77,7 +77,7 @@ export default {
       this.$router.push(url);
     },
     onCopy() {
-      utils.copyToClipboard(this.secretKey);
+      utils.copyToClipboard(this.privateKey);
       this.$ons.notification.alert("Copied to clipboard!");
     }
   }
@@ -85,7 +85,7 @@ export default {
 </script>
 
 <style>
-#secret-key {
+#private-key {
   margin: 20px auto;
   word-break: break-word;
   font-family: Inconsolata;
@@ -95,7 +95,7 @@ export default {
   text-align: center;
   line-height: 27px;
 }
-#secret-key > strong {
+#private-key > strong {
   user-select: text;
 }
 .qr-code {
@@ -104,7 +104,7 @@ export default {
   display: block;
   position: relative;
 }
-.import-account-container .secret-key-warning {
+.import-account-container .private-key-warning {
   font-family: Poppins;
   font-size: 14px;
   color: #ce6f43;
