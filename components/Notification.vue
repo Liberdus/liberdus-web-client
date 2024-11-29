@@ -24,10 +24,10 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getLastMessage: 'chat/getLastMessage',
-      getLastTx: 'chat/getLastTx',
-      isUIReady: 'chat/isUIReady'
+      getAppState: 'app/getAppState',
+      getLastMessage: 'app/getLastMessage',
+      getLastTx: 'app/getLastTx',
+      isUIReady: 'app/isUIReady'
     })
   },
   updated: function () {
@@ -36,10 +36,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx',
-      addNotificationQueue: 'chat/addNotificationQueue'
+      updateAppState: 'app/updateAppState',
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx',
+      addNotificationQueue: 'app/addNotificationQueue'
     }),
     async processTx (tx) {
       let myAddress = this.getWallet.entry.address

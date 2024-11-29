@@ -105,8 +105,8 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      isUIReady: 'chat/isUIReady',
+      getAppState: 'app/getAppState',
+      isUIReady: 'app/isUIReady',
     }),
     isFriend() {
       if (!this.foundAccount || !this.getAppState) return false;

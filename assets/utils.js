@@ -1479,19 +1479,7 @@ utils.updateBadge = (tabName, type) => {
   } catch (e) { }
 }
 
-// utils.encryptMessage = function (message, otherPartyPubKey, mySecKey) {
-//   // return crypto.encryptAB(message, otherPartyPubKey, mySecKey)
-//   return message
-// }
-
-// utils.decryptMessage = function (encryptedMessage, otherPartyPubKey, mySecKey) {
-//   // return crypto.safeJsonParse(
-//   //   crypto.decryptAB(encryptedMessage, otherPartyPubKey, mySecKey)
-//   // )
-//   return encryptedMessage
-// }
-
-utils.queryEncryptedChats = async function (chatId, otherPersonPublicKey) {
+utils.queryEncryptedChats = async function (chatId) {
   try {
       const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
     console.log(res.data)
@@ -1499,6 +1487,15 @@ utils.queryEncryptedChats = async function (chatId, otherPersonPublicKey) {
   } catch (e) {
     return []
   }
+}
+
+utils.isInitiator = (myAddress, otherPersonAddress) => {
+  console.log('isInitiator', myAddress, otherPersonAddress)
+  if (!myAddress || !otherPersonAddress) throw new Error('Invalid address in isInitiator')
+  if (myAddress.length === 0 || otherPersonAddress.length === 0) throw new Error('Invalid address length in isInitiator')
+  const isInitiator = [myAddress, otherPersonAddress].sort()[0] === myAddress
+  console.log(`isInitiator: ${isInitiator}`)
+  return isInitiator
 }
 
 utils.calculateWholeCycleDuration = function (window, devWindow) {

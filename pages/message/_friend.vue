@@ -18,16 +18,17 @@
         :key="`chat${index}`"
         :message="message"
       />
-      <chat-text v-if="pendingMessage" :message="pendingMessage" />
+      <div v-if="pendingMessages.length > 0">
+        <chat-text
+          v-for="msg in pendingMessages"
+          :key="msg.timestamp"
+          :message="msg"
+        />
+      </div>
     </div>
 
     <chat-input
-      v-if="
-        otherPersonPublicKey &&
-          otherPersonAddress &&
-          isRatchetInitialized &&
-          chatId
-      "
+      v-if="otherPersonPublicKey && otherPersonAddress && chatId"
       :friend="friend"
       :chat-id="chatId"
       :is-friend="isFriend"
@@ -72,9 +73,7 @@ export default {
   data: function() {
     return {
       chatId: null,
-      messages: [],
       refresher: null,
-      pendingMessage: null,
       otherPersonAddress: null,
       otherPersonPublicKey: null,
       sessionId: null,
@@ -84,11 +83,10 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      getRatchet: "ratchet/getRatchet",
-      isUIReady: "chat/isUIReady",
-      isRatchetInitialized: "ratchet/isInitialized",
-      getRatchetState: "ratchet/getRatchetState"
+      getAppState: "app/getAppState",
+      isUIReady: "app/isUIReady",
+      chats: "chat/getChats",
+      getPendingMessages: "chat/getPendingMessages"
     }),
     friend() {
       return this.$route.params.friend;
@@ -96,152 +94,27 @@ export default {
     isFriend() {
       if (!this.getAppState) return false;
       return this.getAppState.data.friends.indexOf(this.friend) >= 0;
+    },
+    messages() {
+      if (this.chatId && this.otherPersonAddress) {
+        let chat = this.chats[this.otherPersonAddress];
+        if (chat) {
+          let messages = chat.messages;
+          messagesChanged = true;
+          return messages;
+        }
+      }
+      return [];
+    },
+    pendingMessages() {
+      return this.$store.getters["chat/getPendingMessages"](this.chatId);
     }
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
-      updateLastMessage: "chat/updateLastMessage",
-      createRatchet: "ratchet/createOrRestoreRatchet",
-      initializeRatchetSession: "ratchet/initializeRatchet",
-      decryptMessage: "ratchet/decryptMessage",
-      loadPersistedStates: "ratchet/loadPersistedStates"
+      updateAppState: "app/updateAppState",
+      updateLastMessage: "app/updateLastMessage"
     }),
-
-    async initializeRatchet() {
-      try {
-        console.log("======= INITIALIZING RATCHET IN _FRIEND =======");
-        // Load any persisted ratchet states
-        const persistedStates = await this.loadPersistedStates();
-        const chatId = this.chatId
-        console.log("persistedStates", persistedStates);
-
-        // Get existing chat history
-        let myAccountData = await utils.queryAccount(this.getWallet.handle);
-        let chats = myAccountData.account.data.chats;
-        console.log("chats", chats);
-        const hasExistingChat = chats[this.otherPersonAddress] && chats[this.otherPersonAddress] === chatId;
-
-        console.log("hasExistingChat", hasExistingChat);
-
-        if (!persistedStates.persistedStates[chatId]) {
-          console.log('No persisted state for chat:', chatId, 'Creating new ratchet...')
-          // Create new ratchet for existing chat
-          await this.createRatchet({
-            chatId,
-            keyPair: this.getWallet.entry.keys,
-            isInitiator: false // We're receiving messages in an existing chat
-          })
-
-          // Initialize with other person's public key
-          await this.initializeRatchetSession({
-            chatId,
-            // convert to Uint8Array
-            remotePublicKey: secpUtils.hexToBytes(this.otherPersonPublicKey),
-          })
-        } else {
-          console.log('Restoring persisted state for chat:', chatId)
-          // Restore ratchet with persisted state
-          await this.createRatchet({
-            chatId,
-            keyPair: this.getWallet.entry.keys,
-            isInitiator: false, // We're receiving messages in an existing chat
-            existingState: persistedStates.persistedStates[chatId]
-          })
-          // Initialize with other person's public key
-          await this.initializeRatchetSession({
-            chatId,
-            // convert to Uint8Array
-            remotePublicKey: secpUtils.hexToBytes(this.otherPersonPublicKey),
-          })
-        }
-      } catch (error) {
-        console.error("Failed to initialize ratchet:", error);
-      }
-      console.log('State after initializing ratchet:', this.getRatchetState(this.chatId));
-      console.log("======= DONE INITIALIZING RATCHET IN _FRIEND =======");
-    },
-    async refreshMessages() {
-      try {
-        let myAccountData = await utils.queryAccount(this.getWallet.handle);
-        let chats = myAccountData.account.data.chats;
-        const persistedStates = await this.loadPersistedStates();
-        console.log(
-          "Persisted states:",
-          Object.keys(persistedStates),
-          persistedStates.persistedStates
-        );
-
-        if (this.chatId) {
-          const chatId = this.chatId;
-          const encryptedChatList = await utils.queryEncryptedChats(
-            this.chatId,
-            this.otherPersonPublicKey
-          );
-          if (encryptedChatList.length === this.totalmessages) {
-            console.log("No new messages");
-            return;
-          }
-
-          this.totalmessages = encryptedChatList.length;
-
-          const existingRatchet = this.getRatchet(this.chatId);
-          console.log("Existing ratchet:", existingRatchet);
-
-          if (!existingRatchet) {
-            // we should have a ratchet for this chat
-            throw new Error("Ratchet not initialized for chat ID:", chatId);
-          }
-
-          // Decrypt messages using ratchet
-          const decryptedMessages = await Promise.all(
-            encryptedChatList.map(async sealed => {
-              try {
-                const decryptedStr = await this.decryptMessage({
-                  chatId,
-                  encryptedMessage: sealed.message
-                });
-                console.log("Decrypted message:", decryptedStr);
-                return JSON.parse(decryptedStr);
-              } catch (error) {
-                console.error("Failed to decrypt message:", error);
-                return null;
-              }
-            })
-          );
-
-          // Filter out any failed decryptions
-          const validMessages = decryptedMessages.filter(msg => msg !== null);
-
-          if (validMessages.length > this.messages.length) {
-            this.messages = validMessages;
-            messagesChanged = true;
-
-            let lastMessage = this.messages[this.messages.length - 1];
-            if (lastMessage.handle !== this.getWallet.handle) {
-              this.updateLastMessage({
-                ...lastMessage,
-                read: true,
-                readTimestamp: Date.now(),
-                walletUsername: this.getWallet.handle
-              });
-            }
-
-            if (
-              this.pendingMessage &&
-              this.pendingMessage.handle === lastMessage.handle &&
-              this.pendingMessage.messageHash === utils.hashMessage(lastMessage)
-            ) {
-              this.pendingMessage = null;
-              utils.playSoundFile(sentSoundFile);
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error refreshing messages:", error);
-      }
-    },
-
     setPendingMessage(message) {
       this.pendingMessage = message;
       this.$nextTick(this.scrollToLastMessage);
@@ -256,13 +129,11 @@ export default {
       }
     }
   },
-
   created: async function() {
     this.otherPersonAddress = await utils.getAddress(this.friend);
     this.otherPersonPublicKey = await utils.getAccountPublicKey(
       this.otherPersonAddress
     );
-
     // Get or create chat ID
     let myAccountData = await utils.queryAccount(this.getWallet.handle);
     let chats = myAccountData.account.data.chats;
@@ -271,31 +142,24 @@ export default {
       const newChatId = crypto.hash(
         [this.getWallet.entry.address, this.otherPersonAddress].sort().join``
       );
-      console.log("Creating new chat ID:", newChatId);
       this.chatId = newChatId;
     }
-    console.log("Chat ID:", this.chatId);
-
     if (this.chatId) {
-      // Initialize ratchet with existing chat ID
-      await this.initializeRatchet();
-      await this.refreshMessages();
+      // Initialize the chat first
+      await this.$store.dispatch("chat/initializeChat", {
+        otherPersonAddress: this.otherPersonAddress,
+        chatId: this.chatId
+      });
     }
   },
-
-  mounted: async function() {
-    this.refresher = setInterval(this.refreshMessages.bind(this), 5000);
-  },
-
+  mounted: async function() {},
   updated: function() {
     if (messagesChanged) {
       this.$nextTick(this.scrollToLastMessage);
       messagesChanged = false;
     }
   },
-
   beforeDestroy: function() {
-    console.log("Clearing message refresher...");
     clearInterval(this.refresher);
     this.refresher = null;
   }

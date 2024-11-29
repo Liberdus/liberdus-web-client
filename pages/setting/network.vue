@@ -129,7 +129,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getNetwork: 'chat/getNetwork',
+      getNetwork: 'app/getNetwork',
     }),
     currentSeedNode() {
       return this.getNetwork;
@@ -150,10 +150,10 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateNetwork: 'chat/updateNetwork',
-      updateAppState: 'chat/updateAppState',
+      updateNetwork: 'app/updateNetwork',
+      updateAppState: 'app/updateAppState',
       removeWallet: 'wallet/removeWallet',
-      setUIReady: "chat/setUIReady",
+      setUIReady: "app/setUIReady",
     }),
     redirect(url, option) {
       console.log(`Pushing to ${url}`);

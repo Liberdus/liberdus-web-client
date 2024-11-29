@@ -48,8 +48,8 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
-      getAppState: "chat/getAppState",
-      isUIReady: "chat/isUIReady"
+      getAppState: "app/getAppState",
+      isUIReady: "app/isUIReady"
     }),
     isUser() {
       return this.message.handle === this.getWallet.handle;

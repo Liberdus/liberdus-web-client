@@ -224,8 +224,8 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getWindowFocus: 'chat/getWindowFocus'
+      getAppState: 'app/getAppState',
+      getWindowFocus: 'app/getWindowFocus'
     }),
     secondsToDhms () {
       let seconds = this.remainingSecondToProposalWindow

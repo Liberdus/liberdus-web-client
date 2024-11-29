@@ -81,9 +81,9 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getLastMessage: 'chat/getLastMessage',
-      isUIReady: 'chat/isUIReady',
+      getAppState: 'app/getAppState',
+      getLastMessage: 'app/getLastMessage',
+      isUIReady: 'app/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
@@ -151,9 +151,9 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx',
+      updateAppState: 'app/updateAppState',
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',

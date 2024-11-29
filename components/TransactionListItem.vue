@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getHandleDictionary: 'chat/getHandleDictionary'
+      getHandleDictionary: 'app/getHandleDictionary'
     }),
     timestamp () {
       return moment(this.transaction.timestamp).calendar()
@@ -47,7 +47,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      addHandle: 'chat/addHandle'
+      addHandle: 'app/addHandle'
     })
   }
 }

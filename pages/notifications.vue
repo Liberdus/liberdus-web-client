@@ -33,12 +33,12 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   computed: {
     ...mapGetters({
-      getNotificationQueue: "chat/getNotificationQueue"
+      getNotificationQueue: "app/getNotificationQueue"
     })
   },
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
+      updateAppState: "app/updateAppState",
       removeWallet: "wallet/removeWallet"
     }),
     onSignOut() {

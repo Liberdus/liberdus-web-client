@@ -92,7 +92,7 @@ import { mapGetters, mapActions } from "vuex";
 export default {
   methods: {
     ...mapActions({
-      updateAppState: "chat/updateAppState",
+      updateAppState: "app/updateAppState",
       // removeWallet: "wallet/removeWallet"
     }),
     onSignOut() {

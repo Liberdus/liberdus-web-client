@@ -1,18 +1,14 @@
 <template>
   <!-- <v-ons-page> -->
   <div>
-    <notification
-      :last-message="lastMessage"
-      :last-tx="lastTx"
-    />
+    <!--    <notification-->
+    <!--      :last-message="lastMessage"-->
+    <!--      :last-tx="lastTx"-->
+    <!--    />-->
     <p style="display: none">
       {{ isUIReady }}
     </p>
-    <div
-      v-if="isUIReady"
-      class="home-tab-container"
-    >
-      <!-- <p v-if="getAppState">{{ getAppState }}</p> -->
+    <div v-if="isUIReady" class="home-tab-container">
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
           {{ getAppState.data.balance }}
@@ -32,22 +28,17 @@
         </p>
       </div>
       <div>
-        <h4
-          v-if="getAppState"
-          class="user-alias"
-        >
-          @{{ getWallet.handle }}
-        </h4>
+        <h4 v-if="getAppState" class="user-alias">@{{ getWallet.handle }}</h4>
       </div>
-      <div class="wallet-action-container" v-if="getAppState && getAppState.data.balance >= 0">
+      <div
+        class="wallet-action-container"
+        v-if="getAppState && getAppState.data.balance >= 0"
+      >
         <div class="wallet-action">
-          <!-- <button class="white-button" @click="$router.push('/wallet/send')">
-            <v-ons-icon icon="ion-ios-send" size="lg"></v-ons-icon>Send
-          </button> -->
-          <a-button 
-            type="primary" 
-            shape="round" 
-            size="large" 
+          <a-button
+            type="primary"
+            shape="round"
+            size="large"
             icon="upload"
             @click="$router.push('/wallet/send')"
           >
@@ -55,12 +46,9 @@
           </a-button>
         </div>
         <div class="wallet-action">
-          <!-- <button class="white-button" @click="$router.push('/wallet/receive')">
-            <v-ons-icon icon="ion-ios-download" size="lg"></v-ons-icon>Receive
-          </button> -->
-          <a-button 
-            shape="round" 
-            size="large" 
+          <a-button
+            shape="round"
+            size="large"
             icon="download"
             @click="$router.push('/wallet/receive')"
           >
@@ -77,7 +65,6 @@
         </v-ons-list-item>
       </v-ons-list>
     </div>
-  <!-- </v-ons-page> -->
   </div>
 </template>
 
@@ -102,8 +89,6 @@ export default {
   },
   data: function () {
     return {
-      lastMessage: null,
-      lastTx: null,
       previousUrl: null,
       totalMessages: 0,
       lastProcessedChats: {},
@@ -112,17 +97,19 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getNetwork: 'chat/getNetwork',
-      getTimers: 'chat/getTimers',
-      getLastMessage: 'chat/getLastMessage',
-      isUIReady: 'chat/isUIReady',
-      getWindowFocus: 'chat/getWindowFocus',
-      getHandleDictionary: 'chat/getHandleDictionary',
+      getAppState: 'app/getAppState',
+      getNetwork: 'app/getNetwork',
+      getTimers: 'app/getTimers',
+      getLastMessage: 'app/getLastMessage',
+      isUIReady: 'app/isUIReady',
+      getWindowFocus: 'app/getWindowFocus',
+      getHandleDictionary: 'app/getHandleDictionary',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
-      getCompletedDevProposals: 'proposal/getCompletedDevProposals'
+      getCompletedDevProposals: 'proposal/getCompletedDevProposals',
+      chats: 'chat/getChats',
+      loading: 'chat/getLoading',
     }),
     transactions () {
       if (!this.getWallet || !this.getAppState) return []
@@ -304,29 +291,19 @@ export default {
     }
   },
   mounted: function () {
-    this.refreshAppState()
-    if (!this.getTimers['appRefresher']) {
-      const appRefresher = setInterval(this.refreshAppState, 10000)
-      this.addTimer({ key: 'appRefresher', value: appRefresher })
-    }
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx',
-      setUIReady: 'chat/setUIReady',
-      addHandle: 'chat/addHandle',
+      updateAppState: 'app/updateAppState',
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx',
+      setUIReady: 'app/setUIReady',
+      addHandle: 'app/addHandle',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
-      addTimer: 'chat/addTimer',
-      // Add Ratchet store actions
-      createRatchet: 'ratchet/createOrRestoreRatchet',
-      initializeRatchetSession: 'ratchet/initializeRatchet',
-      decryptMessage: 'ratchet/decryptMessage',
-      loadPersistedStates: 'ratchet/loadPersistedStates'
+      addTimer: 'app/addTimer',
     }),
     notifyToRegisterEmail () {
       this.$ons.notification.alert(
@@ -335,168 +312,10 @@ export default {
     },
     getLastTxFromAPI () {
       if (!this.getAppState) return
-      // let txs = this.getAppState.data.transactions
-      // return txs[txs.length - 1]
     },
-    getLatestMessageFromServer (processedState) {
-      let chats = processedState.data.chats
-      let messageList = []
-      if (Object.keys(chats).length === 0) {
-        return {
-          body: null,
-          timestamp: null,
-          handle: null
-        }
-      }
-      console.log('chats', chats)
-      for (let handle in chats) {
-        chats[handle].messages.forEach(m => messageList.push(m))
-      }
-      if (messageList.length > 0) {
-        let sortedMessageList = messageList.sort(
-          (a, b) => b.timestamp - a.timestamp
-        )
-        return {
-          body: sortedMessageList[0].body,
-          timestamp: sortedMessageList[0].timestamp,
-          handle: sortedMessageList[0].handle
-        }
-      } else
-        return {
-          body: null,
-          timestamp: null,
-          handle: null
-        }
-    },
-    async processData(myAccountData) {
-      let self = this
-      try {
-        let { account } = myAccountData
-        const oldChats = account.data.chats
-        let processed = { ...account }
-
-        const persistedStates = await this.loadPersistedStates()
-        let allChats = {}
-        let totalMessages = 0
-        let hasNewMessages = false
-        console.log('Persisted states:', Object.keys(persistedStates), persistedStates.persistedStates)
-        console.log('My address', self.getWallet.entry.address)
-        console.log('Processed.data.chats', processed.data.chats)
-
-        // calculate total messages before decrypting the new messages
-        for (let otherPersonAddress in processed.data.chats) {
-          const chatId = processed.data.chats[otherPersonAddress]
-          const chatList = await utils.queryEncryptedChats(chatId)
-          totalMessages += chatList.length
-          allChats[chatId] = chatList
-        }
-
-        if (totalMessages > this.totalMessages) {
-          hasNewMessages = true
-        }
-
-        this.totalMessages = totalMessages
-
-        // Process each chat
-        if (hasNewMessages) {
-          for (let otherPersonAddress in processed.data.chats) {
-            const chatId = processed.data.chats[otherPersonAddress]
-            const encryptedChatList = allChats[chatId]
-            const otherPersonPk = await utils.getAccountPublicKey(otherPersonAddress)
-
-            if (encryptedChatList.length > 0) {
-              if (!persistedStates.persistedStates[chatId]) {
-                console.log('No persisted state for chat:', chatId, 'Creating new ratchet...')
-                // Create new ratchet for existing chat
-                await this.createRatchet({
-                  chatId,
-                  keyPair: this.getWallet.entry.keys,
-                  isInitiator: false // We're receiving messages in an existing chat
-                })
-
-                await this.initializeRatchetSession({
-                  chatId,
-                  // convert to Uint8Array
-                  remotePublicKey: secpUtils.hexToBytes(otherPersonPk),
-                })
-              } else {
-                console.log('Restoring persisted state for chat:', chatId)
-                console.log('Other person pk:', otherPersonPk)
-                // Restore ratchet with persisted state
-                await this.createRatchet({
-                  chatId,
-                  keyPair: this.getWallet.entry.keys,
-                  isInitiator: false, // We're receiving messages in an existing chat
-                  existingState: persistedStates.persistedStates[chatId]
-                })
-
-                await this.initializeRatchetSession({
-                  chatId,
-                  // convert to Uint8Array
-                  remotePublicKey: secpUtils.hexToBytes(otherPersonPk),
-                })
-              }
-
-              // Decrypt messages using ratchet
-              const decryptedChatList = await Promise.all(
-                  encryptedChatList.map(async data => {
-                    try {
-                      console.log('Decrypting chat:', chatId, data)
-                      if (data.encrypted && data.encryptionMethod === 'ratchet') {
-                        // Use ratchet decryption
-                        const decryptedStr = await this.decryptMessage({
-                          chatId,
-                          encryptedMessage: data.message
-                        })
-                        console.log('Decrypted str:', decryptedStr)
-                        return JSON.parse(decryptedStr)
-                      }
-                    } catch (error) {
-                      throw new Error('Failed to decrypt message:', error)
-                      return null
-                    }
-                  })
-              )
-              console.log('Decrypted chat:', chatId, decryptedChatList)
-
-              // Filter out any failed decryptions
-              const validMessages = decryptedChatList.filter(msg => msg !== null)
-              processed.data.chats[otherPersonAddress] = {
-                messages: validMessages
-              }
-            }
-          }
-          this.lastProcessedChats = processed.data.chats
-        } else {
-          console.log('No new messages...')
-          processed.data.chats = Object.assign({}, this.lastProcessedChats)
-        }
-
-
-        // Process handles
-        let keys = Object.keys(account.data.chats)
-        let modifiedChats = {}
-        for (let i = 0; i < keys.length; i++) {
-          let handle
-          if (this.getHandleDictionary[keys[i]]) {
-            handle = this.getHandleDictionary[keys[i]]
-          } else {
-            handle = await utils.getHandle(keys[i])
-            this.addHandle({address: keys[i], handle})
-          }
-          modifiedChats[handle] = account.data.chats[keys[i]]
-        }
-
-        processed.data.chats = modifiedChats
-        let friendList = Object.values(processed.data.friends)
-        friendList = friendList.filter(f => f !== null)
-        processed.data.friends = friendList
-
-        return processed
-      } catch (e) {
-        console.warn('Unable to process account state data...', e)
-        return null
-      }
+    async processNewChat(chats) {
+      // Your existing chat processing logic
+      this.lastProcessedChats = chats
     },
     getActiveWindow (window, proposalType) {
       if (!window || !proposalType) return
@@ -561,29 +380,6 @@ export default {
         console.warn(e)
         return null
       }
-    },
-    async refreshAppState () {
-      let self = this
-      console.log('Refreshing app state...')
-      if (!this.getWindowFocus) return
-      if (self.getWallet && self.isUIReady) {
-        let myHandle = this.getWallet.handle
-        let myAccountData = await utils.queryAccount(myHandle)
-        let processedState = await this.processData(myAccountData)
-        self.updateAppState(processedState)
-        let lastMessageFromServer = this.getLatestMessageFromServer(
-          processedState
-        )
-        if (lastMessageFromServer.body) this.lastMessage = lastMessageFromServer
-        let lastTxFromAPI = this.getLastTxFromAPI()
-        if (lastTxFromAPI) {
-          this.lastTx = { ...lastTxFromAPI }
-          this.lastTx.walletUsername = myHandle
-          this.lastTx.timestamp = Date.now()
-        }
-        this.refreshProposalList()
-      }
-      console.log('end Refreshing app state...')
     },
     async refreshProposalList () {
       if (!this.getWindowFocus) return

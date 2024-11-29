@@ -160,8 +160,8 @@ export default {
   computed: {
   ...mapGetters({
     getWallet: 'wallet/getWallet',
-    getAppState: 'chat/getAppState',
-    isUIReady: 'chat/isUIReady',
+    getAppState: 'app/getAppState',
+    isUIReady: 'app/isUIReady',
   }),
   currentStakedAmount() {
     return this.getAppState?.operatorAccountInfo?.stake || 0;

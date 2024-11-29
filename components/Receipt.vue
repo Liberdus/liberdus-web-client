@@ -112,8 +112,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      isUIReady: 'chat/isUIReady',
-      getAppState: 'chat/getAppState',
+      isUIReady: 'app/isUIReady',
+      getAppState: 'app/getAppState',
     }),
   },
   methods: {

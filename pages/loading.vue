@@ -33,15 +33,15 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
-      isUIReady: "chat/isUIReady"
+      isUIReady: "app/isUIReady"
     })
   },
   methods: {
     ...mapActions({
       addWallet: "wallet/addWallet",
-      setUIReady: "chat/setUIReady",
-      updateNetwork: "chat/updateNetwork",
-      updateAppState: "chat/updateAppState",
+      setUIReady: "app/setUIReady",
+      updateNetwork: "app/updateNetwork",
+      updateAppState: "app/updateAppState",
       removeWallet: "wallet/removeWallet"
     })
   },
@@ -65,6 +65,7 @@ export default {
     utils.init(this.host).then(hash => {
       console.log(`Crypto Library is initialised.`);
       self.setUIReady();
+      console.log('UI is ready', this.isUIReady);
     });
     this.updateNetwork(Object.assign({}, randomHost));
 

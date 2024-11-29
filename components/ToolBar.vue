@@ -167,9 +167,9 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      isUIReady: 'chat/isUIReady',
-      getNotificationQueue: 'chat/getNotificationQueue'
+      getAppState: 'app/getAppState',
+      isUIReady: 'app/isUIReady',
+      getNotificationQueue: 'app/getNotificationQueue'
     }),
     notificationQueue () {
       let queue = [...this.getNotificationQueue]
@@ -178,7 +178,7 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
+      updateAppState: 'app/updateAppState',
       removeWallet: 'wallet/removeWallet'
     }),
     formatTimestamp (ts) {

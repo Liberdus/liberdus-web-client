@@ -115,9 +115,9 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getLastMessage: 'chat/getLastMessage',
-      isUIReady: 'chat/isUIReady',
+      getAppState: 'app/getAppState',
+      getLastMessage: 'app/getLastMessage',
+      isUIReady: 'app/isUIReady',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',

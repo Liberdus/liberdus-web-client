@@ -190,13 +190,18 @@ export default {
         !this.isUsernameTaken &&
         !this.checkingUsername
       )
-    }
+    },
+    ...mapGetters({
+      getWallet: 'wallet/getWallet',
+      getAppState: 'app/getAppState',
+      isUIReady: 'app/isUIReady'
+    })
   },
   methods: {
     ...mapActions({
       addWallet: 'wallet/addWallet',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx'
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx'
     }),
     async onCreateAccount () {
       this.loadingCreateAccount = true
@@ -467,10 +472,12 @@ export default {
         if (lastTx) {
           this.updateLastTx(lastTx)
         }
+        console.log('Wallet added', this.getWallet)
         this.loadingSignIn = false
         this.$router.push('/')
       } catch(e) {
         this.loadingSignIn = false
+        console.error("Error", e)
         this.$notification.error({
           message: `An error occured while loading your local wallet.`,
         });

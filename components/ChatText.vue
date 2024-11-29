@@ -49,8 +49,8 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      isUIReady: 'chat/isUIReady'
+      getAppState: 'app/getAppState',
+      isUIReady: 'app/isUIReady'
     }),
     isUser () {
       return this.message.handle === this.getWallet.handle
@@ -59,14 +59,14 @@ export default {
       return !this.isUser
     },
     isPending () {
-      return this.message.timestamp === null
+      return this.message.pending
     },
     pendingMessage() {
       try {
         return JSON.parse(this.message.message).body
       } catch (e) {
         console.log(this.message.message)
-        return 'parse error'
+        return this.message
       }
     },
     confirmedMessage () {

@@ -8,10 +8,10 @@
       >
         <v-ons-icon icon="ion-ios-chatboxes" size="lg"></v-ons-icon>New Message
       </button> -->
-    <a-row 
-      type="flex" 
-      justify="space-around" 
-      align="middle" 
+    <a-row
+      type="flex"
+      justify="space-around"
+      align="middle"
       class="new-button-row"
     >
       <a-button
@@ -28,33 +28,36 @@
     <a-divider>Messages List</a-divider>
 
     <a-list item-layout="horizontal" :data-source="messageList">
-        <a-list-item slot="renderItem" :key="index" slot-scope="message, index">
-          <nuxt-link :to="`/message/${message.handle}`">
-            <a-list-item-meta
-              :key="index"
-              :description="message.lastMessage"
-            >
-              <span slot="title">{{ message.handle }}</span>
-              <a-avatar slot="avatar" style="backgroundColor:#87d068" icon="user" />
-            </a-list-item-meta>
-          </nuxt-link>
-          <div class="message-list-item-timestamp">{{ message.timestampStr }}</div>
-        </a-list-item>
+      <a-list-item slot="renderItem" :key="index" slot-scope="message, index">
+        <nuxt-link :to="`/message/${message.handle}`">
+          <a-list-item-meta :key="index" :description="message.lastMessage">
+            <span slot="title">{{ message.handle }}</span>
+            <a-avatar
+              slot="avatar"
+              style="backgroundColor:#87d068"
+              icon="user"
+            />
+          </a-list-item-meta>
+        </nuxt-link>
+        <div class="message-list-item-timestamp">
+          {{ message.timestampStr }}
+        </div>
+      </a-list-item>
     </a-list>
   </div>
   <!-- </v-ons-page> -->
 </template>
 
 <script>
-import MessageListItem from '~/components/MessageListItem'
+import MessageListItem from "~/components/MessageListItem";
 import moment from "moment";
-import { mapGetters, mapActions } from 'vuex'
-import { last } from 'lodash'
-import utils from '../assets/utils'
-import newMessageSoundFile from '../assets/new_message_sound.mp3'
-import ToolBar from '~/components/ToolBar'
-import Title from '~/components/baisc/Title'
-import Button from '~/components/baisc/Button'
+import { mapGetters, mapActions } from "vuex";
+import { last } from "lodash";
+import utils from "../assets/utils";
+import newMessageSoundFile from "../assets/new_message_sound.mp3";
+import ToolBar from "~/components/ToolBar";
+import Title from "~/components/baisc/Title";
+import Button from "~/components/baisc/Button";
 export default {
   components: {
     MessageListItem,
@@ -62,54 +65,60 @@ export default {
     Button,
     ToolBar
   },
-  data: function () {
-    return {}
+  data: function() {
+    return {};
   },
   computed: {
     ...mapGetters({
-      getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getLastMessage: 'chat/getLastMessage',
-      isUIReady: 'chat/isUIReady'
+      getWallet: "wallet/getWallet",
+      getAppState: "app/getAppState",
+      getLastMessage: "app/getLastMessage",
+      isUIReady: "app/isUIReady",
+      chats: "chat/getChats",
+      getHandleDictionary: "app/getHandleDictionary"
     }),
-    shouldRender () {
-      let should = this.isUIReady
-      return should
+    shouldRender() {
+      let should = this.isUIReady;
+      return should;
     },
-    messageList () {
+    messageList() {
       if (this.getAppState && this.isUIReady) {
-        let chats = this.getAppState.data.chats
-        let handles = Object.keys(chats)
-        let list = []
-        for (let handle in chats) {
-          if (!chats[handle].messages || chats[handle].messages.length === 0) {
-            console.log('no messages')
-            continue
-          }
+        let list = [];
 
+        let keys = Object.keys(this.chats);
+        let modifiedChats = {};
+        for (let i = 0; i < keys.length; i++) {
+          let otherPersonAddress = keys[i];
+          let handle;
+          if (this.getHandleDictionary[otherPersonAddress]) {
+            handle = this.getHandleDictionary[otherPersonAddress];
+          } else {
+            handle = "unknown";
+          }
+          const lastMessage = last(this.chats[otherPersonAddress].messages);
           list.push({
             handle,
-            timestamp: last(chats[handle].messages).timestamp,
-            timestampStr: moment(last(chats[handle].messages).timestamp).calendar(),
-            lastMessage: last(chats[handle].messages).body
-          })
+            timestamp: lastMessage.timestamp,
+            timestampStr: moment(lastMessage.timestamp).calendar(),
+            lastMessage: lastMessage.text
+          });
         }
-        list = list.sort((a, b) => b.timestamp - a.timestamp)
-        return list
+        list = list.sort((a, b) => b.timestamp - a.timestamp);
+        return list;
       } else {
-        return []
+        return [];
       }
     }
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx'
+      updateAppState: "app/updateAppState",
+      updateLastMessage: "app/updateLastMessage",
+      updateLastTx: "app/updateLastTx"
     })
   },
-  mounted: function () {}
-}
+  mounted: function() {}
+};
 </script>
 
 <style lang="scss">

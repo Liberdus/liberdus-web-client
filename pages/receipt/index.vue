@@ -33,7 +33,7 @@ export default {
   layout: 'dashboard',
   computed: {
     ...mapGetters({
-      isUIReady: 'chat/isUIReady',
+      isUIReady: 'app/isUIReady',
     }),
   },
 }

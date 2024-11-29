@@ -109,9 +109,9 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getNetwork: 'chat/getNetwork',
-      isUIReady: 'chat/isUIReady',
+      getAppState: 'app/getAppState',
+      getNetwork: 'app/getNetwork',
+      isUIReady: 'app/isUIReady',
     }),
     transactions() {
       return utils.sortByTimestamp(this.txs, 'desc');
@@ -153,15 +153,15 @@ export default {
   },
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx',
-      setUIReady: 'chat/setUIReady',
+      updateAppState: 'app/updateAppState',
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx',
+      setUIReady: 'app/setUIReady',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
       updateCompletedDevProposals: 'proposal/updateCompletedDevProposals',
-      addTimer: 'chat/addTimer',
+      addTimer: 'app/addTimer',
     }),
     redirect (url = '/') {
       this.$router.push(url)

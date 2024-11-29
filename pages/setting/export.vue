@@ -65,7 +65,7 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
-      isUIReady: "chat/isUIReady"
+      isUIReady: "app/isUIReady"
     }),
     privateKey() {
       return this.getWallet.entry.keys.privateKey.toLowerCase();

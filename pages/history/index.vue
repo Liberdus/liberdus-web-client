@@ -68,10 +68,10 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getNetwork: 'chat/getNetwork',
-      getTimers: 'chat/getTimers',
-      isUIReady: 'chat/isUIReady',
+      getAppState: 'app/getAppState',
+      getNetwork: 'app/getNetwork',
+      getTimers: 'app/getTimers',
+      isUIReady: 'app/isUIReady',
     }),
     title () {
       return this.tabs[this.activeIndex].label

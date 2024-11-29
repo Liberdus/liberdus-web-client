@@ -20,8 +20,8 @@
   "dependencies": {
     "@nuxtjs/axios": "^5.3.6",
     "@nuxtjs/pwa": "^3.0.0-0",
-    "@shardus/crypto-web": "git+https://gitlab.com/shardus/shardus-crypto-web.git",
-    "@thant-dev/ciphersuite": "^1.0.0",
+    "@shardus/crypto-web": "git+https://github.com/shardus/lib-crypto-web.git",
+    "@thant-dev/ciphersuite": "^1.0.2",
     "ant-design-vue": "^1.6.4",
     "ethers": "5.7.2",
     "fast-stable-stringify": "^1.0.0",

@@ -76,7 +76,7 @@ function getBase64(img, callback) {
   reader.readAsDataURL(img);
 }
 export default {
-  props: ['friend', 'isFriend', 'setPendingMessage', 'chatId'],
+  props: ['friend', 'isFriend', 'chatId'],
   components: {
     PlusOutlined,
     LoadingOutlined
@@ -96,10 +96,7 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: "wallet/getWallet",
-      getAppState: 'chat/getAppState',
-      isRatchetInitialized: 'ratchet/isInitialized',
-      getRatchetState: 'ratchet/getRatchetState',
-      getRatchet: 'ratchet/getRatchet'
+      getAppState: 'app/getAppState',
     }),
     notEnoughCoin() {
       return false;
@@ -117,16 +114,11 @@ export default {
 
     // Generate a unique session ID for this chat
     console.log(`Chat session ID: ${this.chatId}`)
-
-    if (!this.isRatchetInitialized) {
-     alert('Ratchet not initialized')
-    }
   },
   methods: {
     ...mapActions({
-      createRatchet: 'ratchet/createOrRestoreRatchet',
-      initializeRatchetSession: 'ratchet/initializeRatchet',
-      encryptMessage: 'ratchet/encryptMessage'
+      encryptMessage: 'ratchet/encryptMessage',
+      setPendingMessage: 'chat/setPendingMessage'
     }),
     async submitMessage() {
       try {
@@ -140,6 +132,7 @@ export default {
         // Use the store to encrypt the message
         const encryptedMessage = this.e2eEncrypted
           ? await this.encryptMessage({
+              walletAddress: this.getWallet.entry.address,
               chatId: this.chatId,
               plaintext: crypto.safeStringify(messageToSend)
             })
@@ -158,14 +151,17 @@ export default {
           myWallet,
           this.friend
         );
+        console.log(`Inject result`, success)
 
         this.imageUrl = "";
         if (success) {
           this.setPendingMessage({
-            handle: this.getWallet.handle,
-            timestamp: null,
-            message: pendingTx.message,
-            messageHash: utils.hashMessage(JSON.parse(pendingTx.message))
+            message: {
+              timestamp: messageToSend.timestamp,
+              text: messageToSend.text,
+              pending: true
+            },
+            chatId: this.chatId
           });
         } else {
           message.error("Failed to send message");

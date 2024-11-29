@@ -163,17 +163,17 @@ export default {
   beforeDestroy: function () {},
   methods: {
     ...mapActions({
-      updateAppState: 'chat/updateAppState',
-      updateLastMessage: 'chat/updateLastMessage',
-      updateLastTx: 'chat/updateLastTx',
-      setUIReady: 'chat/setUIReady',
-      updateWindowFocus: 'chat/updateWindowFocus',
+      updateAppState: 'app/updateAppState',
+      updateLastMessage: 'app/updateLastMessage',
+      updateLastTx: 'app/updateLastTx',
+      setUIReady: 'app/setUIReady',
+      updateWindowFocus: 'app/updateWindowFocus',
       addWallet: 'wallet/addWallet',
       updateActiveProposals: 'proposal/updateActiveProposals',
       updateCompletedProposals: 'proposal/updateCompletedProposals',
       updateActiveDevProposals: 'proposal/updateActiveDevProposals',
-      updateNetwork: 'chat/updateNetwork',
-      addTimer: 'chat/addTimer'
+      updateNetwork: 'app/updateNetwork',
+      addTimer: 'app/addTimer'
     }),
     md () {
       return this.$ons.platform.isAndroid()
@@ -249,12 +249,12 @@ export default {
   computed: {
     ...mapGetters({
       getWallet: 'wallet/getWallet',
-      getAppState: 'chat/getAppState',
-      getLastMessage: 'chat/getLastMessage',
-      getNetwork: 'chat/getNetwork',
-      getTimers: 'chat/getTimers',
-      isUIReady: 'chat/isUIReady',
-      getWindowFocus: 'chat/getWindowFocus',
+      getAppState: 'app/getAppState',
+      getLastMessage: 'app/getLastMessage',
+      getNetwork: 'app/getNetwork',
+      getTimers: 'app/getTimers',
+      isUIReady: 'app/isUIReady',
+      getWindowFocus: 'app/getWindowFocus',
       getActiveProposals: 'proposal/getActiveProposals',
       getCompletedProposals: 'proposal/getCompletedProposals',
       getActiveDevProposals: 'proposal/getActiveDevProposals',
