@@ -641,16 +641,31 @@ utils.createWallet = (name, id) => {
 }
 
 utils.importWallet = async sk => {
-  const keys = {
-    publicKey: sk.slice(64),
-    privateKey: sk
+  let entry = {
+    address: '',
+    keys: {
+      publicKey: '',
+      secretKey: ''
+    }
   }
-  const handle = await utils.getHandle(keys.address)
-  const entry = {
-    address: keys.address,
-    id: crypto.hash(handle),
-    keys
+  if (config.useEthereumAddress) {
+    const newAccount = new ethers.Wallet(sk)
+    entry.address = toShardusAddress(newAccount.address)
+    entry.keys.publicKey = entry.address
+    entry.keys.secretKey = sk
+  } else {
+    entry.address = sk.slice(64)
+    entry.keys.publicKey = keys.address
+    entry.keys.secretKey = sk
   }
+  console.log('entry', entry)
+  let handle = await utils.getHandle(entry.address)
+  if (handle) {
+    entry.id = crypto.hash(handle)
+  } else {
+    handle = 'Nousername'
+  }
+  console.log('handle', handle, entry)
   return {
     handle,
     entry
@@ -1518,6 +1533,10 @@ utils.isNodeOnline = async function () {
 
 utils.bytesArrayToHex = function (bytesArray) {
   return bytesArray.reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), '')
+}
+
+utils.aliasId = function (handle) {
+  return crypto.hash(handle)
 }
 
 utils.getAddress = getAddress
