@@ -1332,7 +1332,7 @@ utils.createVote = async function (
     amount: BigInt(amount),
     timestamp: Date.now()
   }
-  await signObj(tx, source.keys)
+  await signObj(tx, source)
   return tx
 }
 
@@ -1356,7 +1356,7 @@ utils.createDevVote = async function (
     approve,
     timestamp: Date.now()
   }
-  await signObj(tx, source.keys)
+  await signObj(tx, source)
   return tx
 }
 

@@ -150,7 +150,7 @@ export default {
           onOk() {
             utils.addFriend(
               self.foundAccount.alias,
-              self.getWallet.entry.keys
+              self.getWallet.entry
             );
             self.queryHandle = '';
             self.foundAccount = null;
@@ -169,7 +169,7 @@ export default {
         async onOk() {
           let isSubmitted = await utils.removeFriend(
             alias,
-            self.getWallet.entry.keys
+            self.getWallet.entry
           );
           if (isSubmitted) {
             self.$notification.success({

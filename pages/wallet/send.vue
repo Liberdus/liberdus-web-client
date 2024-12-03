@@ -288,7 +288,7 @@ export default {
       let isSubmitted = await utils.transferTokens(
         this.username,
         this.amount,
-        this.getWallet.entry.keys
+        this.getWallet.entry
       )
       if (isSubmitted) {
         this.$ons.notification.alert('Transfer tx is submitted.')

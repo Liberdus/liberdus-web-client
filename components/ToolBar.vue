@@ -221,7 +221,7 @@ export default {
           .confirm(`Confirm to add @${handle} to friend list ?`)
           .then(result => {
             if (result === 1) {
-              utils.addFriend(handle, this.getWallet.entry.keys)
+              utils.addFriend(handle, this.getWallet.entry)
             }
           })
       }

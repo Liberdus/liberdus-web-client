@@ -108,7 +108,7 @@ export default {
     async onUpdateToll() {
       let isSubmitted = await utils.setToll(
         this.newToll,
-        this.getWallet.entry.keys
+        this.getWallet.entry
       );
       if (isSubmitted) {
         this.newToll = '';

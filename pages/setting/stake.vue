@@ -225,7 +225,7 @@ export default {
       const isSubmitted = await utils.depositStake(
         this.nominee || this.currentStakedNominee,
         this.stake,
-        this.getWallet.entry.keys
+        this.getWallet.entry
       );
       if (isSubmitted) {
         this.stake = '';
@@ -241,7 +241,7 @@ export default {
       const isSubmitted = await utils.withdrawStake(
         this.currentStakedNominee,
         this.forceUnstake,
-        this.getWallet.entry.keys
+        this.getWallet.entry
       );
       if (isSubmitted) {
         this.stake = '';
