@@ -8,5 +8,9 @@ export default {
     port: 443
   },
   version: '1.1.0',
-  useEthereumAddress: true
+  useEthereumAddress: true,
+  rpc_server: {
+    ip: '127.0.0.1',
+    port: 8545
+  }
 }

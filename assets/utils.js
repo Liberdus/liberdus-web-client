@@ -25,6 +25,15 @@ const walletEntries = {}
 const network = '0'.repeat(64)
 const verboseLogs = false
 
+const LIB_RRC_METHODS = {
+  SEND_TRANSACTION: "lib_sendTransaction",
+  GET_ACCOUNT: "lib_getAccount",
+  GET_TRANSACTION_RECEIPT: "lib_getTransactionReceipt",
+  GET_TRANSACTION_HISTORY: "lib_getTransactionHistory",
+  GET_MESSAGES: "lib_getMessages"
+}
+
+
 utils.init = async defaultHost => {
   host = defaultHost
   crypto.initialize('69fa4195670576c0160d660c3be36556ff8d504725be8a59b5a96509e0c994bc')
@@ -614,6 +623,49 @@ async function getAccountPublicKey(address) {
     return account.account.publicKey
   } catch (e) {
     console.log(`Error while getting public key for ${address}`, e.message)
+  }
+}
+
+async function getTransactionHistory(address) {
+  console.log('getTransactionHistory', address)
+  try {
+    const transactions = await makeJsonRpcRequest(LIB_RRC_METHODS.GET_TRANSACTION_HISTORY, [address])
+    return transactions
+  } catch (err) {
+    return []
+  }
+}
+
+
+async function makeJsonRpcRequest(method, params = []) {
+  const requestBody = {
+    jsonrpc: '2.0',
+    method,
+    params,
+    id: 1,
+  }
+
+  try {
+    // const url = utils.getProxyUrl(``, { ip: config.rpc_server.ip, port: config.rpc_server.port })
+    const url = `http://${config.rpc_server.ip}:${config.rpc_server.port}`
+    console.log('makeJsonRpcRequest', url)
+    const response = await axios.post(url, requestBody, {
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+    const responseData = response.data
+
+    if (responseData.error) {
+      console.error('makeJsonRpcRequest Error:', method, responseData.error)
+      return []
+    } else {
+      console.log('makeJsonRpcRequest Result:', method, responseData.result)
+      return crypto.safeJsonParse(crypto.safeStringify(responseData.result))
+    }
+  } catch (error) {
+    console.error('makeJsonRpcRequest Error:', method, error)
+    return []
   }
 }
 
@@ -1496,7 +1548,7 @@ utils.updateBadge = (tabName, type) => {
 
 utils.queryEncryptedChats = async function (chatId) {
   try {
-      const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
+    const res = await axios.get(utils.getProxyUrl(`/messages/${chatId}`))
     console.log(res.data)
     return res.data.messages.map(m => crypto.safeJsonParse(m))
   } catch (e) {
@@ -1542,6 +1594,7 @@ utils.aliasId = function (handle) {
 utils.getAddress = getAddress
 utils.getAccountPublicKey = getAccountPublicKey
 utils.getToll = getToll
+utils.getTransactionHistory = getTransactionHistory
 utils.verboseLogs = verboseLogs
 
 export default utils

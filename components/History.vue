@@ -124,9 +124,8 @@ export default {
     //   this.addTimer({ key: 'appRefresher', value: appRefresher })
     // }
     if (this.getAppState.data && this.getAppState.data.transactions == null) {
-      // this.txs = await this.getTransactions();
-      this.txs = [];
-      return
+      this.txs = await utils.getTransactionHistory(this.getWallet.entry.address);
+      return txs;
     }
     let txs = this.getAppState.data.transactions;
 
