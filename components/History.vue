@@ -48,6 +48,7 @@ import Title from '~/components/baisc/Title';
 import Button from '~/components/baisc/Button';
 import Notification from '~/components/Notification';
 import moment from 'moment';
+import * as crypto from '@shardus/crypto-web'
 export default {
   components: {
     TransactionListItem,
@@ -123,12 +124,11 @@ export default {
     //   const appRefresher = setInterval(this.refreshAppState, 10000)
     //   this.addTimer({ key: 'appRefresher', value: appRefresher })
     // }
-    if (this.getAppState.data && this.getAppState.data.transactions == null) {
-      this.txs = await utils.getTransactionHistory(this.getWallet.entry.address);
-      return txs;
+    const txs = await utils.getTransactionHistory(this.getWallet.entry.address);
+    if (txs.length === 0) {
+      this.txs = [];
+      return this.txs;
     }
-    let txs = this.getAppState.data.transactions;
-
     this.txs = await Promise.all(
       txs.map(async (tx) => {
         const { txId, type, timestamp, from, to } = tx;
@@ -169,14 +169,13 @@ export default {
       }
     },
     getLastTxFromAPI() {
-      if (!this.getAppState) return;
-      let txs = this.getAppState.data.transactions;
+      const txs = this.txs;
       return txs[txs.length - 1];
     },
     downloadJSONFile() {
-      let txs = this.getAppState.data.transactions;
+      const txs = this.txs;
       const element = document.createElement('a');
-      const file = new Blob([JSON.stringify(txs, null, 2)], { type: 'text/plain' });
+      const file = new Blob([crypto.safeStringify(txs, null, 2)], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
       element.download = 'transactions.json';
       document.body.appendChild(element); // Required for this to work in FireFox
@@ -184,7 +183,7 @@ export default {
     },
     exportJSONFile(txData) {
       const element = document.createElement('a');
-      const file = new Blob([JSON.stringify(txData, null, 2)], { type: 'text/plain' });
+      const file = new Blob([crypto.safeStringify(txData, null, 2)], { type: 'text/plain' });
       element.href = URL.createObjectURL(file);
       element.download = 'transaction.json';
       document.body.appendChild(element); // Required for this to work in FireFox

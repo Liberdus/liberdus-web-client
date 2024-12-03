@@ -68,7 +68,7 @@ export default {
       isUIReady: "app/isUIReady"
     }),
     privateKey() {
-      return this.getWallet.entry.keys.privateKey.toLowerCase();
+      return utils.getPrivateKeyHex(this.getWallet.entry.keys.privateKey).toLowerCase();
       // return "1ABCDEFGEC9BDF64E5941F6421CB6650E4F8552E1191ECFD372C8ED7D4D5UVWXYZ";
     }
   },

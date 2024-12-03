@@ -187,17 +187,24 @@ utils.createAccount = () => {
     keys.address = toShardusAddress(ethAddress)
     keys.keys.publicKey = uncompressedPublicKey
     keys.keys.privateKey = privateKey
-    console.log('keys', keys)
   } else {
     const newAccount = crypto.generateKeys()
     keys.address = newAccount.publicKey
     keys.keys.publicKey = newAccount.publicKey
     keys.keys.privateKey = newAccount.privateKey
   }
-  console.log('keys', keys)
+    // TODO: Remove the debug log in production
+  console.log('createAccount', keys)
   return keys
 }
 
+utils.getPrivateKeyHex = (sk) => {
+  if (config.useEthereumAddress) {
+    return ethers.utils.hexlify(sk)
+  } else {
+    return sk
+  }
+}
 
 const toShardusAddress = (addressStr) => {
   //  change this: 0x665eab3be2472e83e3100b4233952a16eed20c76
@@ -301,12 +308,12 @@ utils.loadLastTx = username => {
 utils.createAccountAndStoreInWallet = (name, id) => {
   console.log('createAccountAndStoreInWallet', name, id)
   const account = utils.createAccount()
-  console.log('account', account)
   if (typeof id === 'undefined' || id === null) {
     id = crypto.hash(name)
   }
   account.id = id
-  console.log('account', account)
+  // TODO: Remove the debug log in production
+  console.log('createAccountAndStoreInWallet', account)
   return account
 }
 
@@ -627,11 +634,11 @@ async function getAccountPublicKey(address) {
 }
 
 async function getTransactionHistory(address) {
-  console.log('getTransactionHistory', address)
   try {
-    const transactions = await makeJsonRpcRequest(LIB_RRC_METHODS.GET_TRANSACTION_HISTORY, [address])
-    return transactions
+    const result = await makeJsonRpcRequest(LIB_RRC_METHODS.GET_TRANSACTION_HISTORY, [address])
+    return result.transactions
   } catch (err) {
+    console.log(err)
     return []
   }
 }
@@ -658,14 +665,14 @@ async function makeJsonRpcRequest(method, params = []) {
 
     if (responseData.error) {
       console.error('makeJsonRpcRequest Error:', method, responseData.error)
-      return []
+      throw new Error(responseData.error)
     } else {
       console.log('makeJsonRpcRequest Result:', method, responseData.result)
       return crypto.safeJsonParse(crypto.safeStringify(responseData.result))
     }
   } catch (error) {
     console.error('makeJsonRpcRequest Error:', method, error)
-    return []
+    throw new Error(error)
   }
 }
 
@@ -697,27 +704,36 @@ utils.importWallet = async sk => {
     address: '',
     keys: {
       publicKey: '',
-      secretKey: ''
+      privateKey: ''
     }
   }
   if (config.useEthereumAddress) {
-    const newAccount = new ethers.Wallet(sk)
-    entry.address = toShardusAddress(newAccount.address)
-    entry.keys.publicKey = entry.address
-    entry.keys.secretKey = sk
+    // Convert the hex private key to a byte array
+    const privateKey = ethers.utils.arrayify(sk);
+
+    // Validate the private key
+    if (!secpUtils.isValidPrivateKey(privateKey)) {
+      throw new Error('Invalid Ethereum private key');
+    }
+    const uncompressedPublicKey = getPublicKey(privateKey, false); // false indicates uncompressed
+    const uncompressedPublicKeyHex = ethers.utils.hexlify(uncompressedPublicKey);
+    const ethAddress = ethers.utils.computeAddress(uncompressedPublicKeyHex)
+    entry.address = toShardusAddress(ethAddress)
+    entry.keys.publicKey = uncompressedPublicKey
+    entry.keys.privateKey = privateKey
   } else {
     entry.address = sk.slice(64)
     entry.keys.publicKey = keys.address
-    entry.keys.secretKey = sk
+    entry.keys.privateKey = sk
   }
-  console.log('entry', entry)
   let handle = await utils.getHandle(entry.address)
   if (handle) {
     entry.id = crypto.hash(handle)
   } else {
     handle = 'Nousername'
   }
-  console.log('handle', handle, entry)
+  // TODO: Remove the debug log in production
+  console.log('importWallet', handle, entry)
   return {
     handle,
     entry

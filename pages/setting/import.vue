@@ -34,7 +34,7 @@
         </v-ons-button> -->
       </div>
 
-      <a-button @click="onImportAccount" size="large" type="primary" :loading="loadingImport" :disabled="!secretKey">
+      <a-button @click="onImportAccount" size="large" type="primary" :loading="loadingImport" :disabled="!privateKey">
         Import Account
       </a-button>
     </div>
@@ -235,15 +235,12 @@ export default {
       this.showScanner = !this.showScanner;
     },
     async onImportAccount() {
-      if (!this.secretKey) return;
+      if (!this.privateKey) return;
       this.loadingImport = true;
       try {
         let { handle, entry } = await utils.importWallet(
           this.privateKey.toLowerCase()
         );
-
-        console.log("onImportAccount", { handle, entry });
-
         if (handle === "Nousername") {
           // If no username, show name registration
           this.needsNameRegistration = true;
