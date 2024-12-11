@@ -30,7 +30,9 @@ const LIB_RRC_METHODS = {
   GET_ACCOUNT: "lib_getAccount",
   GET_TRANSACTION_RECEIPT: "lib_getTransactionReceipt",
   GET_TRANSACTION_HISTORY: "lib_getTransactionHistory",
-  GET_MESSAGES: "lib_getMessages"
+  GET_MESSAGES: "lib_getMessages",
+  SUBSCRIBE: "lib_subscribe",
+  UNSUBSCRIBE: "lib_unsubscribe"
 }
 
 
@@ -348,14 +350,9 @@ async function postJSON(url, obj) {
 
 async function injectTx(tx) {
   try {
-    console.log(tx)
     const data = crypto.safeStringify(tx)
-    console.log(data.sign || tx.sign)
-    const url = getInjectUrl()
-    console.log('url', url)
-    const res = await postJSON(url, { tx: data })
-    console.log(res)
-    return res
+    const res = await makeJsonRpcRequest(LIB_RRC_METHODS.SEND_TRANSACTION, [data])
+    return { result: res }
   } catch (err) {
     console.warn(err)
     return err.message
@@ -636,7 +633,10 @@ async function getAccountPublicKey(address) {
 async function getTransactionHistory(address) {
   try {
     const result = await makeJsonRpcRequest(LIB_RRC_METHODS.GET_TRANSACTION_HISTORY, [address])
-    return result.transactions
+    if (result.transactions === null) return []
+    if (result.transactions.length === 0) return []
+    const transactions = crypto.safeJsonParse(crypto.safeStringify(result.transactions))
+    return transactions
   } catch (err) {
     console.log(err)
     return []
@@ -644,7 +644,7 @@ async function getTransactionHistory(address) {
 }
 
 
-async function makeJsonRpcRequest(method, params = []) {
+async function makeJsonRpcRequest(method, params = [], ) {
   const requestBody = {
     jsonrpc: '2.0',
     method,
@@ -655,7 +655,6 @@ async function makeJsonRpcRequest(method, params = []) {
   try {
     // const url = utils.getProxyUrl(``, { ip: config.rpc_server.ip, port: config.rpc_server.port })
     const url = `http://${config.rpc_server.ip}:${config.rpc_server.port}`
-    console.log('makeJsonRpcRequest', url)
     const response = await axios.post(url, requestBody, {
       headers: {
         'Access-Control-Allow-Origin': '*'
@@ -668,7 +667,7 @@ async function makeJsonRpcRequest(method, params = []) {
       throw new Error(responseData.error)
     } else {
       console.log('makeJsonRpcRequest Result:', method, responseData.result)
-      return crypto.safeJsonParse(crypto.safeStringify(responseData.result))
+      return responseData.result
     }
   } catch (error) {
     console.error('makeJsonRpcRequest Error:', method, error)
