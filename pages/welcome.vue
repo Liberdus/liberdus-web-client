@@ -58,6 +58,11 @@
           <em>V {{ version }}</em>
         </p> -->
       </div>
+      <div>
+        <a :href="commitUrl" target="_blank">
+          Version: {{ commitHash }}
+        </a>
+      </div>
     </div>
   </v-ons-page>
 </template>
@@ -91,6 +96,14 @@ export default {
       btnDisabled: false,
     }
   },
+  computed: {
+    commitHash() {
+      return process.env.COMMIT_HASH?.substring(0, 7) || 'dev'
+    },
+    commitUrl() {
+      return `${process.env.REPO_URL}/commit/${process.env.COMMIT_HASH}`
+    }
+  },
   methods: {
     onCreateAccount () {
       this.$router.push('/createaccount')
@@ -113,6 +126,8 @@ export default {
       // self.setUIReady();
       // this.$router.push("/welcome");
     }
+    console.log('Commit Hash:', this.commitHash)
+    console.log('Commit URL:', this.commitUrl)
   }
 }
 </script>
