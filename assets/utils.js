@@ -654,7 +654,7 @@ async function makeJsonRpcRequest(method, params = [], ) {
 
   try {
     // const url = utils.getProxyUrl(``, { ip: config.rpc_server.ip, port: config.rpc_server.port })
-    const url = `http://${config.rpc_server.ip}:${config.rpc_server.port}`
+    const url = config.rpc_server
     const response = await axios.post(url, requestBody, {
       headers: {
         'Access-Control-Allow-Origin': '*'

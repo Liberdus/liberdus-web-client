@@ -9,8 +9,5 @@ export default {
   },
   version: '1.1.0',
   useEthereumAddress: true,
-  rpc_server: {
-    ip: 'test.liberdus.com',
-    port: 8545
-  }
+  rpc_server: 'https://test.liberdus.com/rpc'
 }
