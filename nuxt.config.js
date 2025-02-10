@@ -158,13 +158,13 @@ export default {
         return `file://${path}`;  // Removed extra forward slash
       }
       // Add Subresource Integrity
-      if (!ctx.isDev) {
-        config.output.crossOriginLoading = 'anonymous'
-        config.plugins.push(new SriPlugin({
-          hashFuncNames: ['sha384'],
-          enabled: true
-        }))
-      }
+      // if (!ctx.isDev) {
+      //   config.output.crossOriginLoading = 'anonymous'
+      //   config.plugins.push(new SriPlugin({
+      //     hashFuncNames: ['sha384'],
+      //     enabled: true
+      //   }))
+      // }
       // Add Git info via DefinePlugin
       config.plugins.push(
         new webpack.DefinePlugin({

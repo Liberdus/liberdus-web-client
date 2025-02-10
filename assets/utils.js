@@ -223,6 +223,14 @@ const signObj = async (tx, source) => {
   }
 }
 
+utils.ethToWei = (eth) => {
+  return ethers.utils.parseEther(eth)
+}
+
+utils.weiToEth = (wei) => {
+  return ethers.utils.formatEther(wei)
+}
+
 const signEthereumTx = async (tx, source) => {
   console.log(`signEthereumTx`, source)
   if (source == null || source.keys == null) {
@@ -942,7 +950,7 @@ utils.depositStake = async (nominee, stake, keys) => {
     type: 'deposit_stake',
     nominator: keys.address,
     nominee,
-    stake: BigInt(stake),
+    stake: BigInt(stake * 10 ^ 18),
     timestamp: Date.now()
   }
   console.log(tx)
@@ -1502,7 +1510,7 @@ utils.transferTokens = async (tgtHandle, amount, keys) => {
     type: 'transfer',
     from: keys.address,
     to: targetAddress,
-    amount: BigInt(amount),
+    amount: BigInt(amount * 10 ^ 18),
     timestamp: Date.now(),
     network,
     fee: parameters.current.transactionFee || BigInt(1)

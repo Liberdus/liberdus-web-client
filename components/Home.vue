@@ -11,7 +11,7 @@
     <div v-if="isUIReady" class="home-tab-container">
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
-          {{ getAppState.data.balance }}
+          {{ utils.weiToEth(getAppState.data.balance) }}
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
