@@ -11,7 +11,7 @@
     <div v-if="isUIReady" class="home-tab-container">
       <div class="total-balance">
         <h1 v-if="getAppState && getAppState.data.balance >= 0">
-          {{ utils.weiToEth(getAppState.data.balance) }}
+          {{ weiToEther(getAppState.data.balance ) }}
           <span class="total-unit">LBD</span>
         </h1>
         <h1 v-else>
@@ -309,6 +309,9 @@ export default {
       this.$ons.notification.alert(
         'Please register your email to earn some initial coins.'
       )
+    },
+    weiToEther (wei) {
+      return utils.weiToEth(wei)
     },
     getLastTxFromAPI () {
       if (!this.getAppState) return

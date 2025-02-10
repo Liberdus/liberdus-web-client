@@ -12,7 +12,7 @@
 
       <a-card title="Manage Your Stake" class="stake-card">
         <p v-if="stakeRequired" class="stake-required">
-            Minimum Stake Required: <strong>{{ stakeRequired }} coins</strong>
+            Minimum Stake Required: <strong>{{ weiToEth(stakeRequired) }} coins</strong>
         </p>
         <!-- Current Stake Details -->
         <div class="current-stake">
@@ -232,6 +232,9 @@ export default {
         this.nominee = '';
         this.notify('Your deposit transaction is submitted to the network.');
       }
+    },
+    weiToEth(wei) {
+      return utils.weiToEth(wei);
     },
     async onSubmitWithdrawStake() {
       if (!this.currentStakedNominee) {
